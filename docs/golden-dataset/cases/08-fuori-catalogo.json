@@ -1,0 +1,36 @@
+{
+  "id": "08-fuori-catalogo",
+  "title": "Office Manager, fuori catalogo",
+  "notes": "Ruolo non GTM: l'agent lo dice e scrive comunque la JD.",
+  "input": "Cerchiamo un Office Manager per il nostro studio di architettura a Firenze (20 persone): gestirà fornitori, agenda dei soci, accoglienza dei clienti e amministrazione di base. Full time in sede, contratto a tempo determinato di 12 mesi.",
+  "expected": {
+    "diagnosis": {
+      "kind": "outOfCatalog"
+    },
+    "fields": {
+      "companyDescription": {
+        "present": true
+      },
+      "activities": {
+        "minItems": 3
+      },
+      "location": {
+        "includes": {
+          "city": "Firenze",
+          "mode": "onsite"
+        }
+      },
+      "contract": {
+        "includes": {
+          "type": "fixedTerm",
+          "months": 12
+        }
+      }
+    },
+    "absent": [
+      "salary",
+      "sixMonthResults"
+    ],
+    "mustNotContain": []
+  }
+}

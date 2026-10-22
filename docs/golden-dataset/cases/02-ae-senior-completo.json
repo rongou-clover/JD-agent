@@ -1,0 +1,73 @@
+{
+  "id": "02-ae-senior-completo",
+  "title": "Account Executive senior, testo quasi completo",
+  "notes": "Testo ricco: l'agent deve chiedere pochissimo. RAL dichiarata ma non da pubblicare.",
+  "input": "Cerco un Account Executive senior per Datapulse, piattaforma di analytics per retailer (Series A, 60 persone, sedi a Milano e Madrid). Sostituisce un AE che è passato a fare il Sales Manager. Gestirà tutto il ciclo di vendita sul mid-market: discovery, demo, negoziazione e chiusura, con un ticket medio di 40k; critiche la discovery e la negoziazione. Riporta al Sales Manager, team di 6 commerciali. In 6 mesi deve chiudere almeno 250k di nuovo ARR e costruire una pipeline coperta 3 volte il target. Servono esperienza in vendita SaaS B2B, discovery strutturata, negoziazione e uso di HubSpot; inglese C1, lo spagnolo è un plus. Le qualità: autonomia, resilienza, capacità di ascolto. Milano, ibrido con 2 giorni in ufficio, trasferte in Italia. Indeterminato, CCNL Commercio quadro. RAL 55-65k più variabile, ma non la metterei nell'annuncio.",
+  "expected": {
+    "diagnosis": {
+      "kind": "single",
+      "jobTitleId": "account-executive",
+      "seniority": [
+        "S3"
+      ]
+    },
+    "fields": {
+      "companyDescription": {
+        "present": true
+      },
+      "roleMission": {
+        "includes": {
+          "reason": "replacement"
+        }
+      },
+      "team": {
+        "includes": {
+          "reportsTo": "Sales Manager",
+          "size": 6
+        }
+      },
+      "activities": {
+        "minItems": 3
+      },
+      "sixMonthResults": {
+        "minItems": 2
+      },
+      "technicalSkills": {
+        "minItems": 3
+      },
+      "softSkills": {
+        "minItems": 3
+      },
+      "languages": {
+        "minItems": 1
+      },
+      "location": {
+        "includes": {
+          "city": "Milano",
+          "mode": "hybrid",
+          "officeDays": 2
+        }
+      },
+      "contract": {
+        "includes": {
+          "type": "permanent"
+        }
+      },
+      "salary": {
+        "includes": {
+          "min": 55000,
+          "max": 65000,
+          "inPosting": false
+        }
+      }
+    },
+    "absent": [
+      "selectionProcess",
+      "managerNotes",
+      "offer"
+    ],
+    "mustNotContain": [
+      "55-65k"
+    ]
+  }
+}

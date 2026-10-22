@@ -1,0 +1,54 @@
+{
+  "id": "01-sdr-saas",
+  "title": "SDR alla prima esperienza in un SaaS",
+  "notes": "Ruolo singolo chiaro, seniority bassa dichiarata, molte voci obbligatorie già presenti.",
+  "input": "Siamo Fattura Facile, un SaaS di fatturazione elettronica per piccole imprese, 40 persone a Milano. Cerchiamo il nostro primo SDR: oggi i lead in uscita li gestiscono direttamente gli Account Executive e non hanno tempo. Farà cold call e sequenze email verso studi commercialisti, qualificherà i lead e fisserà demo per gli AE; le cose più importanti sono le chiamate e la qualifica. Entra nel team sales di 5 persone e riporta all'Head of Sales. Ibrido, 3 giorni in ufficio a Milano. Contratto a tempo indeterminato, CCNL Commercio. Va bene anche alla prima esperienza.",
+  "expected": {
+    "diagnosis": {
+      "kind": "single",
+      "jobTitleId": "sdr",
+      "seniority": [
+        "S1"
+      ]
+    },
+    "fields": {
+      "companyDescription": {
+        "present": true
+      },
+      "roleMission": {
+        "includes": {
+          "reason": "new"
+        }
+      },
+      "team": {
+        "includes": {
+          "reportsTo": "Head of Sales",
+          "size": 5
+        }
+      },
+      "activities": {
+        "minItems": 3
+      },
+      "location": {
+        "includes": {
+          "city": "Milano",
+          "mode": "hybrid",
+          "officeDays": 3
+        }
+      },
+      "contract": {
+        "includes": {
+          "type": "permanent",
+          "ccnl": "Commercio"
+        }
+      }
+    },
+    "absent": [
+      "sixMonthResults",
+      "salary",
+      "languages",
+      "selectionProcess"
+    ],
+    "mustNotContain": []
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "09-annuncio-incollato",
+  "title": "Annuncio esistente incollato",
+  "notes": "L'utente incolla un annuncio completo: quasi tutto va estratto, la RAL va solo nel campo 15.",
+  "input": "Partnership Manager – Milano (ibrido)\n\nChi siamo\nStayly è la piattaforma che aiuta gli hotel indipendenti a vendere esperienze locali ai propri ospiti. Siamo 35 persone e lavoriamo con 400 hotel in Italia e Spagna.\n\nIl ruolo\nApriamo questa posizione per costruire da zero il canale partner: oggi nessuno se ne occupa a tempo pieno.\n\nIl team\nRiporterai al COO ed entrerai in un team di 4 persone, lavorando ogni giorno con sales e marketing.\n\nCosa farai\n- Individuerai e contatterai catene alberghiere, consorzi e software gestionali per hotel.\n- Negozierai accordi di partnership e di revenue share.\n- Costruirai il piano congiunto con ogni partner e ne seguirai i numeri.\n- Organizzerai webinar ed eventi con i partner.\n\nNei primi 6 mesi\n- Firmare almeno 5 accordi di partnership.\n- Portare il 15% dei nuovi hotel dal canale partner.\n\nRequisiti\n- Esperienza in business development o partnership nel B2B.\n- Capacità di negoziazione.\n- Buona conoscenza di CRM (HubSpot o Salesforce).\n- Inglese C1.\n\nCome lavori\n- Costruisci relazioni di lungo periodo.\n- Sei autonomo nel gestire le priorità.\n\nCosa offriamo\n- Buoni pasto da 8 €.\n- Budget formazione di 1.000 € l'anno.\n- Due settimane di lavoro da remoto all'estero.\n\nInformazioni pratiche\nMilano, ibrido con 3 giorni in ufficio. Contratto a tempo indeterminato, CCNL Commercio. RAL 40.000–48.000 € lordi annui.\n\nSelezione\nCall conoscitiva, case study, incontro con il COO. Rispondiamo entro una settimana.",
+  "expected": {
+    "diagnosis": {
+      "kind": "single",
+      "jobTitleId": "partnership-manager",
+      "seniority": [
+        "S2",
+        "S3"
+      ]
+    },
+    "fields": {
+      "companyDescription": {
+        "present": true
+      },
+      "roleMission": {
+        "includes": {
+          "reason": "new"
+        }
+      },
+      "team": {
+        "includes": {
+          "reportsTo": "COO",
+          "size": 4
+        }
+      },
+      "activities": {
+        "minItems": 4
+      },
+      "sixMonthResults": {
+        "minItems": 2
+      },
+      "technicalSkills": {
+        "minItems": 3
+      },
+      "softSkills": {
+        "minItems": 2
+      },
+      "languages": {
+        "minItems": 1
+      },
+      "location": {
+        "includes": {
+          "city": "Milano",
+          "mode": "hybrid",
+          "officeDays": 3
+        }
+      },
+      "contract": {
+        "includes": {
+          "type": "permanent"
+        }
+      },
+      "salary": {
+        "includes": {
+          "min": 40000,
+          "max": 48000,
+          "inPosting": true
+        }
+      },
+      "offer": {
+        "minItems": 3
+      },
+      "selectionProcess": {
+        "minItems": 3
+      }
+    },
+    "absent": [
+      "managerNotes"
+    ],
+    "mustNotContain": [
+      "48.000"
+    ]
+  }
+}

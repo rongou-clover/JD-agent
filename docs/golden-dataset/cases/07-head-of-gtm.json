@@ -1,0 +1,54 @@
+{
+  "id": "07-head-of-gtm",
+  "title": "Head of GTM che gestisce persone",
+  "notes": "Titolo diverso dal catalogo (Head of GTM) che va ricondotto a GTM Manager S4.",
+  "input": "Scaleup fintech di pagamenti B2B, 120 persone, sede a Roma. Apriamo la posizione di Head of GTM: guiderà un team di 8 persone tra marketing e sales ops e riporta al CEO. Deve definire ICP e pricing, pianificare il lancio del nuovo prodotto per le PMI e allineare sales, marketing e prodotto. In 6 mesi: lancio del nuovo prodotto completato e pipeline generata dal marketing raddoppiata. Ibrido, 2 giorni a settimana a Roma. Contratto a tempo indeterminato, CCNL dirigenti.",
+  "expected": {
+    "diagnosis": {
+      "kind": "single",
+      "jobTitleId": "gtm-manager",
+      "seniority": [
+        "S4"
+      ]
+    },
+    "fields": {
+      "companyDescription": {
+        "present": true
+      },
+      "roleMission": {
+        "includes": {
+          "reason": "new"
+        }
+      },
+      "team": {
+        "includes": {
+          "reportsTo": "CEO",
+          "size": 8
+        }
+      },
+      "activities": {
+        "minItems": 3
+      },
+      "sixMonthResults": {
+        "minItems": 2
+      },
+      "location": {
+        "includes": {
+          "city": "Roma",
+          "mode": "hybrid",
+          "officeDays": 2
+        }
+      },
+      "contract": {
+        "includes": {
+          "type": "permanent"
+        }
+      }
+    },
+    "absent": [
+      "salary",
+      "languages"
+    ],
+    "mustNotContain": []
+  }
+}
