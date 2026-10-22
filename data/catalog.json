@@ -1,0 +1,1094 @@
+{
+  "version": "0.1.0",
+  "status": "draft — P attesi da validare; S4 dei Manager senza P attesi",
+  "seniority": {
+    "S1": "Junior",
+    "S2": "Mid",
+    "S3": "Senior",
+    "S4": "Manager (gestisce persone)"
+  },
+  "jobFamilies": [
+    "Sales",
+    "Customer",
+    "Marketing",
+    "Growth",
+    "GTM"
+  ],
+  "jobTitles": [
+    {
+      "id": "sdr",
+      "family": "Sales",
+      "name": "SDR",
+      "aliases": [
+        "Sales Development Representative",
+        "inside sales",
+        "outbound",
+        "lead generation"
+      ],
+      "seniority": [
+        "S1",
+        "S2"
+      ],
+      "recommendedDimensions": [
+        "Comprensione e comunicazione scritta",
+        "Resilienza",
+        "Organizzazione del tempo",
+        "Intelligenza emotiva",
+        "Competenze AI"
+      ],
+      "skills": [
+        {
+          "name": "Aprire una cold call",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Qualificare un lead",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Gestire le obiezioni",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2"
+          }
+        },
+        {
+          "name": "Scrivere email di prospecting",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Reggere il rifiuto",
+          "type": "soft",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Aggiornare il CRM",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P2",
+            "S2": "P2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bdr",
+      "family": "Sales",
+      "name": "BDR",
+      "aliases": [
+        "Business Development Representative",
+        "business developer junior"
+      ],
+      "seniority": [
+        "S1",
+        "S2"
+      ],
+      "recommendedDimensions": [
+        "Comprensione e comunicazione scritta",
+        "Iniziativa",
+        "Resilienza",
+        "Organizzazione del tempo",
+        "Competenze AI"
+      ],
+      "skills": [
+        {
+          "name": "Fare prospecting multicanale",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Qualificare un lead",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Mappare un account target",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Gestire le obiezioni",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2"
+          }
+        },
+        {
+          "name": "Usare l'AI per la ricerca sugli account",
+          "type": "IA",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "account-executive",
+      "family": "Sales",
+      "name": "Account Executive",
+      "aliases": [
+        "AE",
+        "sales executive",
+        "commerciale B2B",
+        "venditore"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Intelligenza emotiva",
+        "Capacità decisionale",
+        "Comprensione e comunicazione scritta",
+        "Resilienza",
+        "Competenze AI"
+      ],
+      "skills": [
+        {
+          "name": "Condurre una discovery",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Negoziare le condizioni",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P1",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Presentare una demo di valore",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Gestire le obiezioni",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Prevedere la pipeline",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Aggiornare il CRM",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P2",
+            "S2": "P2",
+            "S3": "P2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "account-manager",
+      "family": "Sales",
+      "name": "Account Manager",
+      "aliases": [
+        "key account",
+        "client manager",
+        "gestione clienti"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Intelligenza emotiva",
+        "Problem solving",
+        "Ragionamento numerico",
+        "Comprensione e comunicazione scritta",
+        "Organizzazione del tempo"
+      ],
+      "skills": [
+        {
+          "name": "Gestire la relazione con il cliente",
+          "type": "soft",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Proporre upselling e cross-selling",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Negoziare i rinnovi",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Analizzare l'andamento dell'account",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Gestire un reclamo",
+          "type": "soft",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sales-manager",
+      "family": "Sales",
+      "name": "Sales Manager",
+      "aliases": [
+        "head of sales",
+        "responsabile commerciale"
+      ],
+      "seniority": [
+        "S3",
+        "S4"
+      ],
+      "recommendedDimensions": [
+        "Leadership",
+        "Capacità decisionale",
+        "Ragionamento numerico",
+        "Pensiero sistemico",
+        "Knowledge transfer"
+      ],
+      "skills": [
+        {
+          "name": "Definire il processo di vendita",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Prevedere la pipeline",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Negoziare le condizioni",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Fare coaching ai commerciali",
+          "type": "collaborazione",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Analizzare le metriche commerciali",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "customer-success-manager",
+      "family": "Customer",
+      "name": "Customer Success Manager",
+      "aliases": [
+        "CSM",
+        "customer success",
+        "onboarding manager"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Intelligenza emotiva",
+        "Problem solving",
+        "Comprensione e comunicazione scritta",
+        "Knowledge transfer",
+        "Organizzazione del tempo"
+      ],
+      "skills": [
+        {
+          "name": "Condurre l'onboarding di un cliente",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Gestire la relazione con il cliente",
+          "type": "soft",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Prevenire il churn",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Gestire un'escalation",
+          "type": "soft",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Individuare opportunità di espansione",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "content-social-media-manager",
+      "family": "Marketing",
+      "name": "Content / Social Media Manager",
+      "aliases": [
+        "content manager",
+        "social media manager",
+        "content creator",
+        "copywriter"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Comprensione e comunicazione scritta",
+        "Competenze AI",
+        "Organizzazione del tempo",
+        "Iniziativa",
+        "Gestione del feedback"
+      ],
+      "skills": [
+        {
+          "name": "Costruire un piano editoriale",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Scrivere e revisionare testi",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Girare e montare video",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Gestire i canali social",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Usare l'AI per produrre contenuti",
+          "type": "IA",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Leggere i dati di performance",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "performance-marketing-specialist",
+      "family": "Marketing",
+      "name": "Performance Marketing Specialist",
+      "aliases": [
+        "paid media",
+        "ads specialist",
+        "digital advertising"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Ragionamento numerico",
+        "Attenzione al dettaglio",
+        "Pensiero critico",
+        "Capacità decisionale",
+        "Competenze AI"
+      ],
+      "skills": [
+        {
+          "name": "Impostare campagne adv",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Tracciare le conversioni",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Allocare il budget tra i canali",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Progettare un A/B test",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Briefare le creatività",
+          "type": "collaborazione",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "marketing-manager",
+      "family": "Marketing",
+      "name": "Marketing Manager",
+      "aliases": [
+        "responsabile marketing",
+        "head of marketing"
+      ],
+      "seniority": [
+        "S3",
+        "S4"
+      ],
+      "recommendedDimensions": [
+        "Pensiero sistemico",
+        "Capacità decisionale",
+        "Ragionamento numerico",
+        "Pensiero critico",
+        "Leadership"
+      ],
+      "skills": [
+        {
+          "name": "Definire il posizionamento",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Pianificare il budget di marketing",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Coordinare fornitori e agenzie",
+          "type": "collaborazione",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Analizzare i risultati delle campagne",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Curare la brand identity",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "event-manager",
+      "family": "Marketing",
+      "name": "Event Manager",
+      "aliases": [
+        "event marketing",
+        "field marketing",
+        "organizzazione eventi"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Organizzazione del tempo",
+        "Attenzione al dettaglio",
+        "Problem solving",
+        "Intelligenza emotiva",
+        "Capacità decisionale"
+      ],
+      "skills": [
+        {
+          "name": "Pianificare un evento",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Coordinare fornitori e logistica",
+          "type": "collaborazione",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Gestire il budget di un evento",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Promuovere un evento",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Misurare i risultati di un evento",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "growth-marketer",
+      "family": "Growth",
+      "name": "Growth Marketer",
+      "aliases": [
+        "growth hacker",
+        "growth specialist"
+      ],
+      "seniority": [
+        "S1",
+        "S2"
+      ],
+      "recommendedDimensions": [
+        "Ragionamento numerico",
+        "Pensiero critico",
+        "Velocità di apprendimento",
+        "Iniziativa",
+        "Competenze AI"
+      ],
+      "skills": [
+        {
+          "name": "Progettare un esperimento di crescita",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Analizzare il funnel",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Costruire automazioni di marketing",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Attivare canali di acquisition",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Usare l'AI per automatizzare il lavoro",
+          "type": "IA",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3"
+          }
+        },
+        {
+          "name": "Interrogare i dati con SQL",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "growth-manager",
+      "family": "Growth",
+      "name": "Growth Manager",
+      "aliases": [
+        "head of growth"
+      ],
+      "seniority": [
+        "S3",
+        "S4"
+      ],
+      "recommendedDimensions": [
+        "Pensiero sistemico",
+        "Capacità decisionale",
+        "Ragionamento numerico",
+        "Pensiero critico",
+        "Leadership"
+      ],
+      "skills": [
+        {
+          "name": "Definire la north star metric",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Dare priorità agli esperimenti",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Analizzare funnel e coorti",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Coordinare team diversi",
+          "type": "collaborazione",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Allocare il budget di acquisition",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "revops-specialist",
+      "family": "Growth",
+      "name": "RevOps / Sales Ops Specialist",
+      "aliases": [
+        "revenue operations",
+        "sales operations",
+        "CRM admin"
+      ],
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Attenzione al dettaglio",
+        "Ragionamento numerico",
+        "Pensiero sistemico",
+        "Problem solving",
+        "Competenze AI"
+      ],
+      "skills": [
+        {
+          "name": "Amministrare il CRM",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Costruire report e forecast",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Automatizzare i processi commerciali",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Mantenere la qualità dei dati",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S1": "P2",
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Impostare lead routing e scoring",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S1": "P1",
+            "S2": "P2",
+            "S3": "P3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gtm-manager",
+      "family": "GTM",
+      "name": "GTM Manager",
+      "aliases": [
+        "go-to-market manager",
+        "GTM lead"
+      ],
+      "seniority": [
+        "S3",
+        "S4"
+      ],
+      "recommendedDimensions": [
+        "Pensiero sistemico",
+        "Pensiero critico",
+        "Capacità decisionale",
+        "Comprensione e comunicazione scritta",
+        "Leadership"
+      ],
+      "skills": [
+        {
+          "name": "Definire l'ICP",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Pianificare un lancio di prodotto",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Allineare sales, marketing e prodotto",
+          "type": "collaborazione",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Analizzare il mercato",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Proporre pricing e packaging",
+          "type": "hard",
+          "criticality": "accessoria",
+          "expected": {
+            "S3": "P2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "partnership-manager",
+      "family": "GTM",
+      "name": "Partnership Manager",
+      "aliases": [
+        "partner manager",
+        "alliance manager",
+        "channel manager"
+      ],
+      "seniority": [
+        "S2",
+        "S3"
+      ],
+      "recommendedDimensions": [
+        "Intelligenza emotiva",
+        "Capacità decisionale",
+        "Comprensione e comunicazione scritta",
+        "Iniziativa",
+        "Pensiero sistemico"
+      ],
+      "skills": [
+        {
+          "name": "Individuare e qualificare partner",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S2": "P3",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Negoziare un accordo di partnership",
+          "type": "hard",
+          "criticality": "critica",
+          "expected": {
+            "S2": "P2",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Gestire la relazione con i partner",
+          "type": "soft",
+          "criticality": "importante",
+          "expected": {
+            "S2": "P3",
+            "S3": "P4"
+          }
+        },
+        {
+          "name": "Misurare i risultati del canale",
+          "type": "hard",
+          "criticality": "importante",
+          "expected": {
+            "S2": "P2",
+            "S3": "P3"
+          }
+        },
+        {
+          "name": "Attivare il co-marketing",
+          "type": "collaborazione",
+          "criticality": "accessoria",
+          "expected": {
+            "S2": "P2",
+            "S3": "P3"
+          }
+        }
+      ]
+    }
+  ]
+}

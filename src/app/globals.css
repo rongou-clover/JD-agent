@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* Clover Platform tokens, see design/README.md */
+@theme {
+  --color-primary: #005b7c;
+  --color-primary-hover: #004761;
+  --color-accent: #00bda8;
+  --color-accent-tint: #e6f8f6;
+  --color-accent-foreground: #006a5b;
+  --color-foreground: #111827;
+  --color-body: #374151;
+  --color-body-soft: #4b5563;
+  --color-muted-foreground: #6b7280;
+  --color-surface: #f8fafb;
+  --color-border: #e5e7eb;
+
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  --font-sans: var(--font-poppins), system-ui, sans-serif;
+  --font-document: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
