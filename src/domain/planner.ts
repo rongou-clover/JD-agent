@@ -1,0 +1,56 @@
+import { isFieldDone } from "./checklist";
+import type { Draft } from "./draft";
+import { FIELDS, REQUIRED_FIELD_IDS, type FieldId } from "./fields";
+import { blockingFields, validateDraft } from "./validation";
+
+export const MAX_QUESTIONS_PER_MESSAGE = 2;
+/** Two questions share a message only if their priorities differ by at most this. */
+const MAX_PRIORITY_GAP = 1;
+
+/** Order of the single "anything else?" message, as in docs/domande.md. */
+export const OPTIONAL_ASK_ORDER = [
+  "salary",
+  "offer",
+  "languages",
+  "prerequisites",
+  "kpis",
+  "selectionProcess",
+  "missionValues",
+  "managerNotes",
+] as const satisfies readonly FieldId[];
+
+export type PlannerState = {
+  /** The optional fields have already been offered once. */
+  optionalOffered: boolean;
+};
+
+export type Plan =
+  | { kind: "diagnosis" }
+  | { kind: "required"; fields: FieldId[] }
+  | { kind: "optional"; fields: FieldId[] }
+  | { kind: "done" };
+
+export function missingRequiredFields(draft: Draft): FieldId[] {
+  const blocked = blockingFields(validateDraft(draft));
+  return REQUIRED_FIELD_IDS.filter((field) => !isFieldDone(draft, field, blocked)).sort(
+    (a, b) => (FIELDS[a].priority ?? Infinity) - (FIELDS[b].priority ?? Infinity),
+  );
+}
+
+export function planNext(draft: Draft, state: PlannerState): Plan {
+  const missing = missingRequiredFields(draft);
+  if (missing.includes("jobTitle")) return { kind: "diagnosis" };
+
+  const [first, ...rest] = missing;
+  if (first) {
+    const firstPriority = FIELDS[first].priority ?? Infinity;
+    const companions = rest.filter((field) => (FIELDS[field].priority ?? Infinity) - firstPriority <= MAX_PRIORITY_GAP);
+    return { kind: "required", fields: [first, ...companions].slice(0, MAX_QUESTIONS_PER_MESSAGE) };
+  }
+
+  if (!state.optionalOffered) {
+    const optional = OPTIONAL_ASK_ORDER.filter((field) => draft[field].status === "missing");
+    if (optional.length > 0) return { kind: "optional", fields: optional };
+  }
+  return { kind: "done" };
+}

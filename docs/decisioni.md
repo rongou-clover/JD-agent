@@ -35,6 +35,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-22 · L'estrattore restituisce anche l'intento del messaggio (risposta, dicitura forzata, completa/abbellisci); restano tre agent.
 - 2026-10-22 · Export PDF con la stampa del browser e un CSS di stampa dedicato.
 - 2026-10-22 · Validatore anti-discriminazione con regex sui casi espliciti; il maschile grammaticale non è segnalato.
+- 2026-10-22 · Validatore anti-discriminazione scritto ma spento (flag in codice): non ancora affidabile. Per ora la regola resta solo nei prompt degli agent.
 - 2026-10-22 · Golden dataset completato con 10 casi fittizi (uno per famiglia più casi limite), scritti dall'agent e rivisti da Rongou.
 - 2026-10-22 · Test end-to-end con Playwright, con screenshot e video per i test visivi.
 
