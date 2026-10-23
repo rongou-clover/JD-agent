@@ -10,7 +10,6 @@ const sheet: InternalSheet = {
   jobTitle: "Account Executive",
   seniority: "S2",
   inCatalog: true,
-  hybridRoles: null,
   skills: [{ name: "Negoziare", type: "hard", criticality: "critica", expectedLevel: "P3", required: true, source: "draft" }],
   softSkills: ["Iniziativa"],
   prerequisites: [],

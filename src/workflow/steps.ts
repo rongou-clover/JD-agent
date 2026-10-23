@@ -33,7 +33,7 @@ export function createTurnSteps(deps: TurnDeps) {
   });
 
   /**
-   * Guard, extractor and diagnosis run in parallel, the diagnosis only while the job title is missing.
+   * The job title is picked in Home: guard and extractor read the message in parallel.
    * A blocked message gets the fixed reply; the tokens of the discarded extraction still count.
    */
   const understand = createStep({
@@ -42,8 +42,7 @@ export function createTurnSteps(deps: TurnDeps) {
     execute: async ({ inputData: ctx, bail }) => {
       if (ctx.input.kind !== "message") return ctx;
       const message = ctx.input.text;
-      const diagnose = ctx.state.draft.jobTitle.status === "missing";
-      const [verdict, extraction, diagnosis] = await Promise.all([
+      const [verdict, extraction] = await Promise.all([
         deps.checkMessage(message),
         deps.extract({
           message,
@@ -51,14 +50,13 @@ export function createTurnSteps(deps: TurnDeps) {
           askedFields: ctx.state.planner.askedFields,
           lastAskFields: repeatedAsks(ctx.state.planner, ctx.state.draft),
         }),
-        diagnose ? deps.diagnose({ message }) : null,
       ]);
-      const usage = [...ctx.usage, guardUsage(deps.guardModel(), message), ...extraction.usage, ...(diagnosis?.usage ?? [])];
+      const usage = [...ctx.usage, guardUsage(deps.guardModel(), message), ...extraction.usage];
       if (!verdict.allowed) {
         const state = { ...ctx.state, quickReplies: [] };
-        return bail({ ...ctx, usage, state, message: { text: COPY.blocked, questions: [], quickReplies: [] } });
+        return bail({ ...ctx, usage, state, blocked: true, message: { text: COPY.blocked, questions: [], quickReplies: [] } });
       }
-      return { ...ctx, extraction: extraction.output, diagnosis: diagnosis?.output ?? null, usage };
+      return { ...ctx, extraction: extraction.output, usage };
     },
   });
 

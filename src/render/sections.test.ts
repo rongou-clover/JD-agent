@@ -25,31 +25,31 @@ describe("planSection", () => {
       { language: "Inglese", level: "C1", required: true },
       { language: "Spagnolo", level: "B2", required: false },
     ]);
-    expect(planSection("requirements", draft, null)).toEqual({
+    expect(planSection("requirements", draft)).toEqual({
       kind: "write",
       data: { technicalSkills: ["Montaggio video", "Campagne adv"], languages: ["Inglese C1"], seniority: "S2 Mid" },
     });
-    expect(planSection("niceToHave", draft, null)).toEqual({
+    expect(planSection("niceToHave", draft)).toEqual({
       kind: "write",
       data: { technicalSkills: ["Photoshop"], languages: ["Spagnolo B2"] },
     });
   });
 
   it("omits optional sections without data and puts a placeholder for missing required fields", () => {
-    expect(planSection("offer", completeDraft(), null)).toEqual({ kind: "omit" });
+    expect(planSection("offer", completeDraft())).toEqual({ kind: "omit" });
     const draft = { ...completeDraft(), companyName: { value: null, source: null, status: "missing" as const } };
-    expect(planSection("about", draft, null)).toEqual({ kind: "placeholder" });
+    expect(planSection("about", draft)).toEqual({ kind: "placeholder" });
   });
 
   it("writes practical information only with details beyond the summary box", () => {
-    expect(planSection("practicalInfo", completeDraft(), null)).toEqual({ kind: "omit" });
+    expect(planSection("practicalInfo", completeDraft())).toEqual({ kind: "omit" });
     let draft = withField(completeDraft(), "location", { city: "Milano", mode: "hybrid", officeDays: 2, schedule: null, travel: "Trasferte in Italia" });
     draft = withField(draft, "contract", { type: "permanent", months: null, ccnl: "Commercio", level: "Quadro" });
-    expect(planSection("practicalInfo", draft, null)).toEqual({ kind: "write", data: { location: { travel: "Trasferte in Italia" } } });
+    expect(planSection("practicalInfo", draft)).toEqual({ kind: "write", data: { location: { travel: "Trasferte in Italia" } } });
   });
 
   it("gives the role section the job title as context", () => {
-    const plan = planSection("role", completeDraft(), null);
+    const plan = planSection("role", completeDraft());
     expect(plan.kind === "write" && plan.data.jobTitle).toBe("Content / Social Media Manager");
   });
 });

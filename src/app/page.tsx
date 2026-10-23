@@ -14,8 +14,7 @@ export default function HomePage() {
           Agent dimostrativo
         </span>
         <span>
-          Descrivi il ruolo e la persona: l&apos;agent ti segue e scrive la job description più adatta a quello che stai
-          cercando.
+          Scegli il ruolo e descrivi la persona: l&apos;agent ti segue e scrive la job description.
         </span>
       </div>
 

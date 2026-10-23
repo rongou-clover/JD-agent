@@ -37,7 +37,7 @@ function roleMissionQuestion(planner: PlannerMemory): Question {
   return { text: "Perché assumi adesso?", replies };
 }
 
-/** Only the role diagnosis sets seniority, so a missing one is picked with a quick reply. */
+/** Seniority is always asked, with a quick reply per level the job title allows. */
 function seniorityQuestion(draft: Draft): Question {
   const jobTitle = catalogJobTitle(draft);
   const levels = SENIORITIES.filter((seniority) => !jobTitle || jobTitle.seniority.includes(seniority));

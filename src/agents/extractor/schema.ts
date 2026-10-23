@@ -5,9 +5,9 @@ import { ForcedWording } from "@/render/contract";
 import { DISCRIMINATION_CATEGORIES } from "@/domain/validation/discrimination";
 import { FIELD_IDS, type FieldId } from "@/domain/fields";
 
-export const PROMPT_VERSION = "extractor@5";
+export const PROMPT_VERSION = "extractor@6";
 
-/** Job title and seniority belong to role-diagnosis, not to the extractor. */
+/** The job title is picked in Home and the seniority with a quick reply: the extractor fills neither. */
 export const EXTRACTED_FIELD_IDS = FIELD_IDS.filter(
   (id): id is Exclude<FieldId, "jobTitle" | "seniority"> => id !== "jobTitle" && id !== "seniority",
 );
@@ -57,6 +57,8 @@ export const ExtractorOutput = z.object({
   forcedWording: ForcedWording.nullable(),
   /** Discriminatory requests found in the message; never stored in updates. */
   discriminationFlags: z.array(z.object({ category: z.enum(DISCRIMINATION_CATEGORIES), quote: z.string() })),
+  /** Catalog role that owns all the activities, when it is not the picked one; null otherwise. */
+  closerJobTitleId: z.string().nullable(),
 });
 export type ExtractorOutput = z.infer<typeof ExtractorOutput>;
 

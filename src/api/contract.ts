@@ -57,9 +57,12 @@ export type SessionSummary = z.infer<typeof SessionSummary>;
 export const SessionList = z.object({ sessions: z.array(SessionSummary) });
 export type SessionList = z.infer<typeof SessionList>;
 
-/** POST /api/chat. A null sessionId starts a new session (the Home "Inizia" button). */
+const MessageText = z.string().trim().min(1).max(MAX_INPUT_CHARS);
+
+/** POST /api/chat. "start" opens a new session with the job title picked in Home (the "Inizia" button). */
 export const ChatRequest = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("message"), sessionId: z.uuid().nullable(), text: z.string().trim().min(1).max(MAX_INPUT_CHARS) }),
+  z.object({ kind: z.literal("start"), jobTitleId: z.string().min(1), text: MessageText }),
+  z.object({ kind: z.literal("message"), sessionId: z.uuid(), text: MessageText }),
   z.object({ kind: z.literal("quickReply"), sessionId: z.uuid(), replyId: z.string() }),
 ]);
 export type ChatRequest = z.infer<typeof ChatRequest>;

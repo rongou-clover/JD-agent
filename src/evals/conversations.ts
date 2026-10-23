@@ -1,12 +1,16 @@
+import type { Seniority } from "@/domain/enums";
 import type { FieldId } from "@/domain/fields";
 
 /**
- * Scripted hiring managers for the end-to-end conversation eval. The simulated user confirms the
- * proposed role, answers each asked field with its scripted text, says "Non lo so" when the script
+ * Scripted hiring managers for the end-to-end conversation eval. The simulated user picks the role in Home,
+ * answers each asked field with its scripted text, says "Non lo so" when the script
  * has none, and answers the optional fields once.
  */
 export type Conversation = {
   id: string;
+  /** Catalog role picked in Home, and the seniority button clicked when asked. */
+  jobTitleId: string;
+  seniority: Seniority;
   opening: string;
   answers: Partial<Record<FieldId, string>>;
   /** At most this many turns to reach "JD pronta". */
@@ -16,6 +20,8 @@ export type Conversation = {
 export const CONVERSATIONS: Conversation[] = [
   {
     id: "verdeluce-sdr",
+    jobTitleId: "sdr",
+    seniority: "S1",
     opening:
       "Siamo Verdeluce, una startup di Torino che installa impianti fotovoltaici per piccole aziende, 30 persone. Cerco una persona che faccia prospecting su LinkedIn e via email, prenoti le call per i nostri commerciali e qualifichi i lead in entrata. È il nostro primo ruolo così: finora lo facevano i founder. Prima esperienza va bene.",
     answers: {
@@ -36,6 +42,8 @@ export const CONVERSATIONS: Conversation[] = [
   },
   {
     id: "human-maple-social",
+    jobTitleId: "content-social-media-manager",
+    seniority: "S2",
     opening:
       "Siamo Human Maple: raccogliamo e ricicliamo mozziconi di sigaretta per aziende, PA e comuni, e li trasformiamo in nuovi prodotti. Cerco una persona che gestisca i nostri social (LinkedIn, Instagram, Facebook), giri e monti video brevi agli eventi del weekend e faccia un po' di grafica per report e attestati. Livello tra junior e mid. Riporta al CEO.",
     answers: {

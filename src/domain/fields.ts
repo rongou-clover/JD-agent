@@ -58,6 +58,3 @@ export const FIELDS: Record<FieldId, FieldMeta> = {
 
 export const REQUIRED_FIELD_IDS = FIELD_IDS.filter((id) => FIELDS[id].required);
 export const OPTIONAL_FIELD_IDS = FIELD_IDS.filter((id) => !FIELDS[id].required);
-
-/** Fields closed by the first-message diagnosis, not by a question. */
-export const DIAGNOSIS_FIELD_IDS = ["jobTitle", "seniority"] as const satisfies readonly FieldId[];

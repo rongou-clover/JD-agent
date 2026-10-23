@@ -74,6 +74,7 @@ export const ExtractorLlmOutput = z.object({
   skipped: z.array(z.enum(FIELD_IDS)),
   forcedWording: z.object({ section: ProseSectionId, text: z.string() }).nullish().catch(null),
   discriminationFlags: z.array(z.object({ category: z.enum(DISCRIMINATION_CATEGORIES), quote: z.string() })),
+  closerJobTitleId: z.string().nullish().catch(null),
 });
 export type ExtractorLlmOutput = z.infer<typeof ExtractorLlmOutput>;
 
@@ -93,6 +94,7 @@ export function toExtractorOutput(llm: ExtractorLlmOutput): ExtractorOutput {
     skipped: llm.skipped,
     forcedWording: llm.forcedWording ?? null,
     discriminationFlags: llm.discriminationFlags,
+    closerJobTitleId: llm.closerJobTitleId ?? null,
     updates: {
       companyName: convert(u.companyName, same),
       companyDescription: convert(u.companyDescription, same),

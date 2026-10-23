@@ -40,7 +40,6 @@ describe("sessions repository", () => {
       jobTitle: "Account Executive",
       seniority: "S3",
       inCatalog: true,
-      hybridRoles: ["Account Executive", "Sales Development Representative"],
       skills: [{ name: "Negoziare", type: "hard", criticality: "critica", expectedLevel: "P4", required: true, source: "draft" }],
       softSkills: ["Iniziativa"],
       prerequisites: ["3 anni in vendita SaaS"],

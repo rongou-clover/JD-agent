@@ -50,9 +50,10 @@ export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: S
     notes: [],
     focus: "plan",
     extraction: null,
-    diagnosis: null,
+    suggestedRole: null,
     plan: null,
     message: null,
+    blocked: false,
   };
   const run = await workflow.createRun();
   const result = await run.start({ inputData: initial });
@@ -60,5 +61,6 @@ export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: S
     const cause = result.status === "failed" ? result.error : result.status;
     throw new TurnFailedError(completedUsage(result.steps), { cause });
   }
-  return { state: result.result.state, message: result.result.message, usage: result.result.usage };
+  const { message, usage, blocked } = result.result;
+  return { state: result.result.state, message, usage, blocked };
 }

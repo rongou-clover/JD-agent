@@ -41,7 +41,6 @@ export const YES_NO = { yes: "Sì", no: "No" } as const;
 export const SHEET_COPY = {
   seniority: "Seniority",
   outOfCatalog: "Fuori catalogo: livelli P e dimensioni consigliate non disponibili.",
-  hybrid: (roles: string[]) => `Profilo ibrido: ${roles.join(", ")}, ricerca potenzialmente lunga.`,
   salaryPublished: "pubblicata nell'annuncio",
   salaryHidden: "non pubblicata nell'annuncio",
   empty: "La scheda interna compare dopo la prima bozza dell'annuncio.",

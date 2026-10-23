@@ -1,10 +1,8 @@
 import { findJobTitle } from "@/domain/catalog";
 import { MAX_SOFT_SKILLS } from "@/domain/catalog-proposals";
-import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
-import type { ContractType, HiringReason, Seniority, WorkMode } from "@/domain/enums";
+import type { ContractType, HiringReason, WorkMode } from "@/domain/enums";
 import type { QuickReplyAction } from "./quick-reply-actions";
-import { nearestSeniority, shiftSeniority } from "./roles";
 import type { SessionState } from "./state";
 import type { Focus } from "./turn-context";
 
@@ -16,51 +14,22 @@ function withDraft(state: SessionState, draft: Draft, focus: Focus = "plan"): Re
   return { state: { ...state, draft }, focus };
 }
 
-function confirmRole(state: SessionState): Result {
-  const { jobTitle, seniority } = state.draft;
-  const draft: Draft = {
-    ...state.draft,
-    jobTitle: jobTitle.value === null ? jobTitle : { ...jobTitle, status: "confirmed" },
-    seniority: seniority.value === null ? seniority : { ...seniority, status: "confirmed" },
-  };
-  return withDraft(state, draft);
-}
-
-function setSeniority(state: SessionState, seniority: Seniority, focus: Focus): Result {
-  const diagnosis: Diagnosis | null =
-    state.diagnosis?.kind === "catalog" ? { ...state.diagnosis, seniority } : state.diagnosis;
-  const draft: Draft = { ...state.draft, seniority: { value: seniority, source: "user", status: "proposed" } };
-  return { state: { ...state, draft, diagnosis }, focus };
-}
-
-function shift(state: SessionState, step: -1 | 1): Result {
-  const value = state.draft.jobTitle.value;
-  const current = state.draft.seniority.value;
-  const jobTitle = value?.kind === "catalog" ? findJobTitle(value.id) : undefined;
-  const next = jobTitle && current ? shiftSeniority(jobTitle, current, step) : null;
-  return next ? setSeniority(state, next, "diagnosis") : { state, focus: "diagnosis" };
-}
-
-/** The picked role is confirmed; seniority moves to the closest level the role allows, still to confirm. */
+/** The suggested role is confirmed; a seniority the new role does not allow is asked again. */
 function pickRole(state: SessionState, jobTitleId: string): Result {
   const jobTitle = findJobTitle(jobTitleId);
   if (!jobTitle) return { state, focus: "plan" };
-  const seniority = nearestSeniority(jobTitle, state.draft.seniority.value);
-  const previous = state.diagnosis?.kind === "catalog" ? state.diagnosis : null;
-  const otherRoles = (previous?.otherRoles ?? []).filter((role) => role.jobTitleId !== jobTitleId);
-  const diagnosis: Diagnosis = {
-    kind: "catalog",
-    jobTitleId,
-    seniority,
-    otherRoles,
-    hybrid: (previous?.hybrid ?? false) && otherRoles.length > 0,
-  };
-  const draft: Draft = {
+  const current = state.draft.seniority;
+  const keepsSeniority = current.value !== null && jobTitle.seniority.includes(current.value);
+  return withDraft(state, {
     ...state.draft,
     jobTitle: confirmed({ kind: "catalog" as const, id: jobTitleId }),
-    seniority: { value: seniority, source: "catalog", status: "proposed" },
-  };
-  return { state: { ...state, draft, diagnosis }, focus: "diagnosis" };
+    seniority: keepsSeniority ? current : { value: null, source: null, status: "missing" },
+  });
+}
+
+function keepRole(state: SessionState, declinedId: string): Result {
+  const declinedRoles = [...new Set([...state.planner.declinedRoles, declinedId])];
+  return { state: { ...state, planner: { ...state.planner, declinedRoles } }, focus: "plan" };
 }
 
 /** The reason waits for the sentence that completes the role mission, unless that sentence is already there. */
@@ -101,16 +70,10 @@ function softSkill(state: SessionState, name: string): Result {
 
 export function applyQuickReply(state: SessionState, action: QuickReplyAction): Result {
   switch (action.kind) {
-    case "confirmRole":
-      return confirmRole(state);
-    case "seniorityDown":
-      return shift(state, -1);
-    case "seniorityUp":
-      return shift(state, 1);
-    case "chooseOtherRole":
-      return withDraft(state, { ...state.draft, jobTitle: { value: null, source: null, status: "missing" } });
     case "pickRole":
       return pickRole(state, action.jobTitleId);
+    case "keepRole":
+      return keepRole(state, action.declinedId);
     case "pickSeniority":
       return withDraft(state, { ...state.draft, seniority: confirmed(action.seniority) });
     case "hiringReason":

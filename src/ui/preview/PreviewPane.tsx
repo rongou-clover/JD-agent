@@ -48,14 +48,12 @@ export function PreviewPane({ posting, sheet, pending }: Props) {
     <section aria-label="Anteprima job description" className="relative flex min-h-0 min-w-0 flex-[999_1_560px] flex-col print:block">
       <PreviewTabs selected={selected} onSelect={setSelected} />
       {/* Beside the tabs, out of the flow: the layout does not move when the notice comes and goes. */}
-      <p role="status" className="absolute top-3 right-6 m-0 flex h-9 items-center gap-2 text-xs text-muted-foreground print:hidden">
-        {pending && (
-          <>
-            <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-accent" />
-            {WRITING}
-          </>
-        )}
-      </p>
+      {pending && (
+        <p role="status" className="absolute top-3 right-6 m-0 flex h-9 items-center gap-2 text-xs text-muted-foreground print:hidden">
+          <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-accent" />
+          {WRITING}
+        </p>
+      )}
       <Panel tab="posting" selected={selected}>
         {posting ? <PostingView posting={posting} /> : <Muted>{LOADING}</Muted>}
       </Panel>

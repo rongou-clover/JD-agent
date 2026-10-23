@@ -48,18 +48,12 @@ test("arrow keys move between tabs", async ({ page }) => {
   await expect(page.getByRole("tabpanel", { name: "Annuncio" })).toBeVisible();
 });
 
-test("a hybrid profile is flagged and missing values show a dash", async ({ page }) => {
-  const view = fixture("diagnosis");
-  if (!view.sheet) throw new Error("The diagnosis fixture has a sheet");
-  const hybrid = { ...view.sheet, hybridRoles: ["Content / Social Media Manager", "Videomaker", "Graphic Designer"] };
-  await mockSession(page, ok({ ...view, sheet: hybrid }));
+test("missing values show a dash", async ({ page }) => {
+  await mockSession(page, ok(fixture("diagnosis")));
   await page.goto(CHAT_URL);
   await tab(page, "Scheda interna").click();
 
   const sheet = page.getByRole("tabpanel", { name: "Scheda interna" });
-  await expect(sheet.getByRole("note")).toHaveText(
-    "Profilo ibrido: Content / Social Media Manager, Videomaker, Graphic Designer, ricerca potenzialmente lunga.",
-  );
   await expect(sheet.getByRole("region", { name: "RAL" })).toContainText("—");
   await expect(sheet.getByRole("region", { name: "Note del responsabile" })).toContainText("—");
   expect(await fitsViewport(page)).toBe(true);

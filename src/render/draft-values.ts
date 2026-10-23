@@ -1,5 +1,4 @@
 import { findJobTitle, type JobTitle } from "@/domain/catalog";
-import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import type { FieldId } from "@/domain/fields";
 
@@ -15,10 +14,9 @@ export function isMissing(draft: Draft, field: FieldId): boolean {
 
 export type ResolvedJobTitle = { kind: "catalog"; jobTitle: JobTitle } | { kind: "outOfCatalog"; title: string };
 
-/** Job title from the draft, else from the diagnosis; null when neither names one. */
-export function resolveJobTitle(draft: Draft, diagnosis: Diagnosis | null): ResolvedJobTitle | null {
-  const value = fieldValue(draft, "jobTitle");
-  const source = value ?? (diagnosis?.kind === "catalog" ? { kind: "catalog" as const, id: diagnosis.jobTitleId } : diagnosis);
+/** Job title from the draft; null when it names none. */
+export function resolveJobTitle(draft: Draft): ResolvedJobTitle | null {
+  const source = fieldValue(draft, "jobTitle");
   if (!source) return null;
   if (source.kind === "outOfCatalog") return source.title.trim() === "" ? null : { kind: "outOfCatalog", title: source.title };
   const jobTitle = findJobTitle(source.id);

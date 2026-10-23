@@ -1,6 +1,5 @@
 import type { WriteSection } from "@/agents/renderer/schema";
 import type { Usage } from "@/agents/usage";
-import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import { sectionHash, type HashInput } from "./cache";
 import {
@@ -26,7 +25,6 @@ type ProseResult = { section: PostingSection | null; cacheEntry: CacheEntry | nu
 
 type SectionContext = {
   draft: Draft;
-  diagnosis: Diagnosis | null;
   forcedWording: string | null;
   cached: CacheEntry | undefined;
   write: WriteSection;
@@ -51,13 +49,13 @@ async function writeGuarded(write: WriteSection, request: HashInput): Promise<{ 
 }
 
 async function renderProse(id: ProseSection, context: SectionContext): Promise<ProseResult> {
-  const { draft, diagnosis, forcedWording, cached, write } = context;
+  const { draft, forcedWording, cached, write } = context;
   const heading = sectionHeading(id, draft);
   // Without a model call: the user's own text when there is one, else the placeholder.
   const fallback: PostingBlock[] = forcedWording ? [{ kind: "paragraph", text: forcedWording }] : [{ kind: "placeholder" }];
   const fixed = (blocks: PostingBlock[]): ProseResult => ({ section: { id, heading, blocks }, cacheEntry: null, usage: [] });
 
-  const plan = planSection(id, draft, diagnosis);
+  const plan = planSection(id, draft);
   if (plan.kind === "placeholder") return fixed(fallback);
   if (plan.kind === "omit") return forcedWording ? fixed(fallback) : { section: null, cacheEntry: null, usage: [] };
 
@@ -84,11 +82,11 @@ const equalOpportunity: PostingSection = {
  */
 export function createRender(write: WriteSection): Render {
   return async (raw, cache) => {
-    const { draft, diagnosis, forcedWordings } = RenderInput.parse(raw);
+    const { draft, forcedWordings } = RenderInput.parse(raw);
     const forced = forcedBySection(forcedWordings);
     const results = await Promise.all(
       PROSE_SECTION_IDS.map((id) =>
-        renderProse(id, { draft, diagnosis, forcedWording: forced.get(id) ?? null, cached: cache[id], write }),
+        renderProse(id, { draft, forcedWording: forced.get(id) ?? null, cached: cache[id], write }),
       ),
     );
     const nextCache: SectionCache = {};
@@ -96,8 +94,8 @@ export function createRender(write: WriteSection): Render {
     const sections = results.flatMap(({ section }) => (section ? [section] : []));
     return {
       output: {
-        posting: { title: postingTitle(draft, diagnosis), summary: buildSummary(draft), sections: [...sections, equalOpportunity] },
-        sheet: buildSheet(draft, diagnosis),
+        posting: { title: postingTitle(draft), summary: buildSummary(draft), sections: [...sections, equalOpportunity] },
+        sheet: buildSheet(draft),
         cache: nextCache,
       },
       usage: results.flatMap(({ usage }) => usage),

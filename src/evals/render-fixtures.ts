@@ -1,10 +1,9 @@
-import type { Diagnosis } from "@/domain/diagnosis";
 import { emptyDraft, type Draft } from "@/domain/draft";
 import { withField } from "@/domain/testing";
 import type { ForcedWording } from "@/render/contract";
 
 /** Hand-written drafts from golden cases 02, 09 and Human Maple: deterministic and free to build. */
-export type RenderFixture = { id: string; draft: Draft; diagnosis: Diagnosis; forcedWordings: ForcedWording[] };
+export type RenderFixture = { id: string; draft: Draft; forcedWordings: ForcedWording[] };
 
 function datapulse(): RenderFixture {
   let d = emptyDraft();
@@ -38,7 +37,6 @@ function datapulse(): RenderFixture {
   return {
     id: "02-ae-senior-completo",
     draft: d,
-    diagnosis: { kind: "catalog", jobTitleId: "account-executive", seniority: "S3", otherRoles: [], hybrid: false },
     forcedWordings: [{ section: "role", text: "Qui ogni trattativa che chiudi si vede subito nei numeri dell'azienda." }],
   };
 }
@@ -77,7 +75,6 @@ function stayly(): RenderFixture {
   return {
     id: "09-annuncio-incollato",
     draft: d,
-    diagnosis: { kind: "catalog", jobTitleId: "partnership-manager", seniority: "S2", otherRoles: [], hybrid: false },
     forcedWordings: [{ section: "offer", text: "Ogni anno ci ritroviamo tutti per una settimana in uno dei nostri hotel partner." }],
   };
 }
@@ -108,7 +105,6 @@ function humanMaple(): RenderFixture {
   return {
     id: "04-human-maple",
     draft: d,
-    diagnosis: { kind: "catalog", jobTitleId: "content-social-media-manager", seniority: "S2", otherRoles: [], hybrid: false },
     forcedWordings: [],
   };
 }

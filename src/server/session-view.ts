@@ -6,7 +6,7 @@ import type { SessionState } from "@/workflow/state";
 /** Sessions rendered before the sheet was stored get it rebuilt from the draft: plain code, no model call. */
 function sheetOf(state: SessionState): SessionView["sheet"] {
   if (state.sheet) return state.sheet;
-  return state.posting.sections.length > 0 ? buildSheet(state.draft, state.diagnosis) : null;
+  return state.posting.sections.length > 0 ? buildSheet(state.draft) : null;
 }
 
 export function toSessionView(

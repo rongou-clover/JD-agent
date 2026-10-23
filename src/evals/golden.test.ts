@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { findJobTitle } from "@/domain/catalog";
-import { DIAGNOSIS_FIELD_IDS } from "@/domain/fields";
 import { loadGoldenCases } from "./golden";
 
 const cases = loadGoldenCases();
@@ -22,7 +21,8 @@ describe("golden dataset", () => {
 
     const expectedFields = Object.keys(fields);
     for (const field of absent) expect(expectedFields).not.toContain(field);
-    for (const field of DIAGNOSIS_FIELD_IDS) {
+    // Job title (picked in Home) and seniority (asked with a quick reply) are never extracted.
+    for (const field of ["jobTitle", "seniority"] as const) {
       expect(expectedFields).not.toContain(field);
       expect(absent).not.toContain(field);
     }

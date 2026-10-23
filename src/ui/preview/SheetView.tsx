@@ -89,11 +89,6 @@ export function SheetView({ sheet }: { sheet: InternalSheet }) {
         <span className="font-bold">{SHEET_COPY.seniority}:</span> {seniority}
       </p>
       {!sheet.inCatalog && <p className="m-0 mb-3.5 text-body-soft">{SHEET_COPY.outOfCatalog}</p>}
-      {sheet.hybridRoles && (
-        <p role="note" className="m-0 mb-3.5 rounded-lg bg-accent-tint px-3 py-2 text-accent-foreground">
-          {SHEET_COPY.hybrid(sheet.hybridRoles)}
-        </p>
-      )}
       <Section heading={SHEET_HEADINGS.skills}>
         <SkillTable skills={sheet.skills} />
       </Section>

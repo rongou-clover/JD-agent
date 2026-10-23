@@ -1,5 +1,4 @@
-import { expectedLevel, findJobTitle, type CatalogSkill, type JobTitle } from "@/domain/catalog";
-import type { Diagnosis } from "@/domain/diagnosis";
+import { expectedLevel, type CatalogSkill, type JobTitle } from "@/domain/catalog";
 import type { Draft, FieldValue } from "@/domain/draft";
 import type { Seniority } from "@/domain/enums";
 import { TITLE_PLACEHOLDER } from "./copy";
@@ -47,17 +46,9 @@ function catalogOnlySkills(drafted: DraftSkill[], jobTitle: JobTitle, seniority:
     }));
 }
 
-/** Names of all the roles mixed in a request where no role prevails, main role first. */
-function hybridRoles(diagnosis: Diagnosis | null): string[] | null {
-  if (diagnosis?.kind !== "catalog" || !diagnosis.hybrid) return null;
-  return [diagnosis.jobTitleId, ...diagnosis.otherRoles.map((role) => role.jobTitleId)].map(
-    (id) => findJobTitle(id)?.name ?? id,
-  );
-}
-
 /** The internal sheet: never published, for the hiring team only. */
-export function buildSheet(draft: Draft, diagnosis: Diagnosis | null): InternalSheet {
-  const resolved = resolveJobTitle(draft, diagnosis);
+export function buildSheet(draft: Draft): InternalSheet {
+  const resolved = resolveJobTitle(draft);
   const jobTitle = resolved?.kind === "catalog" ? resolved.jobTitle : null;
   const seniority = fieldValue(draft, "seniority");
   const drafted = fieldValue(draft, "technicalSkills") ?? [];
@@ -65,7 +56,6 @@ export function buildSheet(draft: Draft, diagnosis: Diagnosis | null): InternalS
     jobTitle: jobTitleName(resolved) ?? TITLE_PLACEHOLDER,
     seniority,
     inCatalog: jobTitle !== null,
-    hybridRoles: hybridRoles(diagnosis),
     skills: [
       ...drafted.map((skill) => sheetSkill(skill, jobTitle, seniority)),
       ...(jobTitle ? catalogOnlySkills(drafted, jobTitle, seniority) : []),
