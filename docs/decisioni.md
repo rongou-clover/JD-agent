@@ -61,6 +61,11 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Se all'avvio serve la password, il testo scritto in Home viene conservato e rimesso nel campo dopo l'accesso.
 - 2026-10-23 · Anche la chat scorre al suo interno per rileggere i messaggi precedenti, partendo sempre dall'ultimo; la pagina resta senza scorrimento.
 - 2026-10-23 · In Home, in alto a destra, "Le tue JD" apre un riquadro con le chat iniziate da quel browser (codice anonimo in un cookie): ognuno vede solo le proprie. Niente cancellazione o rinomina per ora.
+- 2026-10-23 · "Non lo so" o "decidi tu" su una voce obbligatoria: l'agent decide e propone un valore quando può ricavarlo dal ruolo e dal contesto (dal catalogo per le skill), e lo dice all'utente; se non può (nome azienda, sede, team, contratto), la voce resta da definire e l'agent va avanti senza richiederla.
+- 2026-10-23 · Sopra l'anteprima due schede: "Annuncio" e "Scheda interna". "Esporta" riguarda solo l'annuncio.
+- 2026-10-23 · Nella demo l'agent non chiede l'errore tipico delle skill né le trasferte.
+- 2026-10-23 · Confermate le scelte del backend dove domande.md non diceva niente: domanda sulla seniority con pulsanti, il motivo cliccato vince su quello dedotto, qualità personali proposte dalle dimensioni consigliate del catalogo, testi nuovi in src/workflow/templates.
+- 2026-10-23 · Niente pubblicazione su Railway per ora: la demo resta in locale.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).
