@@ -2,21 +2,27 @@ import { bigserial, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uui
 import { MESSAGE_ROLES } from "./enums";
 
 /** One chat. The state is plain JSON validated by the workflow schemas on load (src/workflow/state.ts). */
-export const sessions = pgTable("sessions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  draft: jsonb("draft").notNull(),
-  diagnosis: jsonb("diagnosis"),
-  plannerState: jsonb("planner_state").notNull(),
-  forcedWordings: jsonb("forced_wordings").notNull(),
-  sectionCache: jsonb("section_cache").notNull(),
-  posting: jsonb("posting").notNull(),
-  /** Quick replies of the last agent turn, with the action each id stands for. */
-  quickReplies: jsonb("quick_replies").notNull(),
-  /** Optimistic lock: every saved turn increments it. */
-  version: integer("version").notNull().default(1),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Anonymous browser id (client cookie): a browser lists only its own chats. */
+    clientId: uuid("client_id"),
+    draft: jsonb("draft").notNull(),
+    diagnosis: jsonb("diagnosis"),
+    plannerState: jsonb("planner_state").notNull(),
+    forcedWordings: jsonb("forced_wordings").notNull(),
+    sectionCache: jsonb("section_cache").notNull(),
+    posting: jsonb("posting").notNull(),
+    /** Quick replies of the last agent turn, with the action each id stands for. */
+    quickReplies: jsonb("quick_replies").notNull(),
+    /** Optimistic lock: every saved turn increments it. */
+    version: integer("version").notNull().default(1),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("sessions_client_id_idx").on(table.clientId, table.updatedAt)],
+);
 
 export const messageRole = pgEnum("message_role", MESSAGE_ROLES);
 

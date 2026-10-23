@@ -1,7 +1,8 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { AgentMessage, type TranscriptEntry } from "@/api/contract";
 import type { Usage } from "@/agents/usage";
+import { Draft } from "@/domain/draft";
 import { SessionState } from "@/workflow/state";
 import type { Db } from "./client";
 import { messages, sessions, usage as usageTable } from "./schema";
@@ -50,6 +51,8 @@ export async function loadSession(db: Db, id: string): Promise<StoredSession | n
 export type TurnRecord = {
   /** Null for a new session. */
   session: { id: string; version: number } | null;
+  /** Browser that starts a new session; ignored for an existing one. */
+  clientId: string | null;
   state: SessionState;
   userText: string;
   agentMessage: AgentMessage;
@@ -70,7 +73,7 @@ export async function saveTurn(db: Db, record: TurnRecord): Promise<string> {
   return db.transaction(async (tx) => {
     let id: string;
     if (record.session === null) {
-      const [created] = await tx.insert(sessions).values(stateColumns(record.state)).returning({ id: sessions.id });
+      const [created] = await tx.insert(sessions).values({ ...stateColumns(record.state), clientId: record.clientId }).returning({ id: sessions.id });
       if (!created) throw new Error("Session insert returned no row");
       id = created.id;
     } else {
@@ -95,4 +98,19 @@ export async function saveTurn(db: Db, record: TurnRecord): Promise<string> {
 /** Tokens spent by a turn that could not be saved still count against the daily limit. */
 export async function recordUsage(db: Db, sessionId: string | null, usage: Usage[]): Promise<void> {
   if (usage.length > 0) await db.insert(usageTable).values(usageRows(sessionId, usage));
+}
+
+export const SESSION_LIST_LIMIT = 20;
+
+export type SessionListRow = { id: string; draft: Draft; updatedAt: Date };
+
+/** The latest chats of one browser; only the draft is needed to summarise them. */
+export async function listSessions(db: Db, clientId: string): Promise<SessionListRow[]> {
+  const rows = await db
+    .select({ id: sessions.id, draft: sessions.draft, updatedAt: sessions.updatedAt })
+    .from(sessions)
+    .where(eq(sessions.clientId, clientId))
+    .orderBy(desc(sessions.updatedAt))
+    .limit(SESSION_LIST_LIMIT);
+  return rows.map((row) => ({ id: row.id, draft: Draft.parse(row.draft), updatedAt: row.updatedAt }));
 }

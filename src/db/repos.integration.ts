@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, inject, it } from "vitest";
 import type { AgentMessage } from "@/api/contract";
 import { initialState } from "@/workflow/state";
 import { createDb } from "./client";
-import { loadSession, recordUsage, saveTurn, SessionBusyError } from "./sessions-repo";
+import { listSessions, loadSession, recordUsage, saveTurn, SessionBusyError } from "./sessions-repo";
 import { messages, sessions, usage } from "./schema";
 import { usageTotalsSince } from "./usage-repo";
 
@@ -19,9 +19,9 @@ const fastUsage = { model: "m/fast", inputTokens: 10, outputTokens: 3 };
 
 describe("sessions repository", () => {
   it("creates a session and loads state and transcript in order", async () => {
-    const id = await saveTurn(db, { session: null, state: initialState(), userText: "Primo", agentMessage: reply, usage: [fastUsage] });
+    const id = await saveTurn(db, { session: null, clientId: null, state: initialState(), userText: "Primo", agentMessage: reply, usage: [fastUsage] });
     const second = { ...initialState(), planner: { ...initialState().planner, optionalOffered: true } };
-    await saveTurn(db, { session: { id, version: 1 }, state: second, userText: "Secondo", agentMessage: reply, usage: [] });
+    await saveTurn(db, { session: { id, version: 1 }, clientId: null, state: second, userText: "Secondo", agentMessage: reply, usage: [] });
 
     const loaded = await loadSession(db, id);
     expect(loaded?.version).toBe(2);
@@ -34,13 +34,23 @@ describe("sessions repository", () => {
     ]);
   });
 
+  it("lists only the sessions of one browser, newest first", async () => {
+    const mine = "11111111-1111-4111-8111-111111111111";
+    const turn = { state: initialState(), userText: "Primo", agentMessage: reply, usage: [] };
+    const older = await saveTurn(db, { ...turn, session: null, clientId: mine });
+    await saveTurn(db, { ...turn, session: null, clientId: "22222222-2222-4222-8222-222222222222" });
+    const newer = await saveTurn(db, { ...turn, session: null, clientId: mine });
+    await saveTurn(db, { ...turn, session: { id: older, version: 1 }, clientId: null });
+    expect((await listSessions(db, mine)).map((row) => row.id)).toEqual([older, newer]);
+  });
+
   it("returns null for an unknown session", async () => {
     expect(await loadSession(db, "00000000-0000-4000-8000-000000000000")).toBeNull();
   });
 
   it("a stale version is busy and saves nothing", async () => {
-    const id = await saveTurn(db, { session: null, state: initialState(), userText: "Primo", agentMessage: reply, usage: [] });
-    const turn = { session: { id, version: 1 }, state: initialState(), userText: "A", agentMessage: reply, usage: [fastUsage] };
+    const id = await saveTurn(db, { session: null, clientId: null, state: initialState(), userText: "Primo", agentMessage: reply, usage: [] });
+    const turn = { session: { id, version: 1 }, clientId: null, state: initialState(), userText: "A", agentMessage: reply, usage: [fastUsage] };
     const results = await Promise.allSettled([saveTurn(db, turn), saveTurn(db, { ...turn, userText: "B" })]);
     expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
     const rejected = results.find((result) => result.status === "rejected");

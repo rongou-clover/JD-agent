@@ -1,5 +1,6 @@
 import { BuiltByBadge, LogoLockup } from "@/ui/brand";
 import { Headline } from "@/ui/home/Headline";
+import { HistoryMenu } from "@/ui/home/HistoryMenu";
 import { JobMarquee } from "@/ui/home/JobMarquee";
 import { StartForm } from "@/ui/home/StartForm";
 import { SparkleIcon } from "@/ui/icons";
@@ -20,9 +21,7 @@ export default function HomePage() {
 
       <header className="flex items-center justify-between gap-4 px-8 py-4">
         <LogoLockup />
-        <span className="rounded-full border border-[#cfe3ea] px-3 py-1.5 text-[13px] font-medium text-primary">
-          Job description agent
-        </span>
+        <HistoryMenu />
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col items-center justify-center px-6 py-2">

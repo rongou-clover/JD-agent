@@ -60,6 +60,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · L'anteprima della JD scorre solo al suo interno quando l'annuncio è lungo; la pagina resta senza scorrimento.
 - 2026-10-23 · Se all'avvio serve la password, il testo scritto in Home viene conservato e rimesso nel campo dopo l'accesso.
 - 2026-10-23 · Anche la chat scorre al suo interno per rileggere i messaggi precedenti, partendo sempre dall'ultimo; la pagina resta senza scorrimento.
+- 2026-10-23 · In Home, in alto a destra, "Le tue JD" apre un riquadro con le chat iniziate da quel browser (codice anonimo in un cookie): ognuno vede solo le proprie. Niente cancellazione o rinomina per ora.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

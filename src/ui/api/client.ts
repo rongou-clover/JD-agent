@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import { ApiError, ChatRequest, LoginRequest, SessionView } from "@/api/contract";
+import { ApiError, ChatRequest, LoginRequest, SessionList, SessionView } from "@/api/contract";
 
 /** Shown when the server answers with something that is not an ApiError (network down, proxy page...). */
 const FALLBACK_MESSAGE = "Qualcosa è andato storto. Riprova tra poco.";
@@ -53,6 +53,11 @@ export async function sendChat(input: ChatRequest): Promise<SessionView> {
 export async function getSession(sessionId: string): Promise<SessionView> {
   const response = await request(`/api/sessions/${encodeURIComponent(sessionId)}`);
   return parseJson(response, SessionView);
+}
+
+/** GET /api/sessions: the chats started from this browser, newest first. */
+export async function listSessions(): Promise<SessionList> {
+  return parseJson(await request("/api/sessions"), SessionList);
 }
 
 /** POST /api/login: the server sets the session cookie. */

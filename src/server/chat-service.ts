@@ -32,8 +32,11 @@ async function assertBudget(deps: ChatServiceDeps): Promise<void> {
   if (isBudgetExhausted(totalsByKind(rows, deps.models()), deps.limits())) throw new ApiFailure("budgetExhausted");
 }
 
-/** One chat turn: load, check the daily limit, run the workflow (LLM calls, no transaction), save. */
-export async function handleChat(request: ChatRequest, deps: ChatServiceDeps): Promise<SessionView> {
+/**
+ * One chat turn: load, check the daily limit, run the workflow (LLM calls, no transaction), save.
+ * `clientId` is the browser that starts a new session, so it shows up in that browser's list.
+ */
+export async function handleChat(request: ChatRequest, deps: ChatServiceDeps, clientId: string | null = null): Promise<SessionView> {
   const stored = request.sessionId ? await loadSession(deps.db, request.sessionId) : null;
   if (request.sessionId && !stored) throw new ApiFailure("sessionNotFound");
   const input = turnInput(request, stored);
@@ -47,7 +50,7 @@ export async function handleChat(request: ChatRequest, deps: ChatServiceDeps): P
   const session = stored ? { id: stored.id, version: stored.version } : null;
   let sessionId: string;
   try {
-    sessionId = await saveTurn(deps.db, { session, state: outcome.state, userText, agentMessage: outcome.message, usage: outcome.usage });
+    sessionId = await saveTurn(deps.db, { session, clientId, state: outcome.state, userText, agentMessage: outcome.message, usage: outcome.usage });
   } catch (error) {
     if (!(error instanceof SessionBusyError)) throw error;
     await recordUsage(deps.db, stored?.id ?? null, outcome.usage);

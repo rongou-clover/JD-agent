@@ -37,6 +37,22 @@ export const SessionView = z.object({
 });
 export type SessionView = z.infer<typeof SessionView>;
 
+/** One past chat in the Home "Le tue JD" widget. Null title or company: not known yet. */
+export const SessionSummary = z.object({
+  sessionId: z.uuid(),
+  title: z.string().nullable(),
+  companyName: z.string().nullable(),
+  updatedAt: z.iso.datetime(),
+  doneCount: z.number().int(),
+  totalCount: z.number().int(),
+  complete: z.boolean(),
+});
+export type SessionSummary = z.infer<typeof SessionSummary>;
+
+/** GET /api/sessions: the chats started from this browser, newest first. */
+export const SessionList = z.object({ sessions: z.array(SessionSummary) });
+export type SessionList = z.infer<typeof SessionList>;
+
 /** POST /api/chat. A null sessionId starts a new session (the Home "Inizia" button). */
 export const ChatRequest = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("message"), sessionId: z.uuid().nullable(), text: z.string().trim().min(1).max(MAX_INPUT_CHARS) }),
