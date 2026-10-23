@@ -36,9 +36,10 @@ test("the hint explains what the agent needs", async ({ page }) => {
   expect(await fitsViewport(page)).toBe(true);
 });
 
-test("Inizia starts a session and opens the chat", async ({ page }) => {
+test("Inizia opens the chat at once, then the session it starts", async ({ page }) => {
   const view = fixture("diagnosis");
-  const requests = await mockChat(page, ok(view));
+  let release = () => {};
+  const requests = await mockChat(page, ok(view), new Promise<void>((resolve) => (release = resolve)));
   await mockSession(page, ok(view));
   await page.goto("/");
 
@@ -49,12 +50,16 @@ test("Inizia starts a session and opens the chat", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Ruolo" })).toContainText("Content / Social Media Manager");
   await page.getByRole("button", { name: "Inizia", exact: true }).click();
 
+  await expect(page).toHaveURL("/chat/nuova");
+  await expect(page.getByRole("region", { name: "Chat" }).getByText(BRIEF_TEXT)).toBeVisible();
+  await expect(page.getByRole("status", { name: "L'agent sta scrivendo" })).toBeVisible();
+  release();
   await expect(page).toHaveURL(`/chat/${view.sessionId}`);
   expect(requests).toEqual([{ kind: "start", jobTitleId: "content-social-media-manager", text: BRIEF_TEXT }]);
   await expect(page.getByRole("button", { name: "Sì, va bene" })).toBeVisible();
 });
 
-test("an API error is shown inline", async ({ page }) => {
+test("an API error is shown in the chat, and Home keeps the text", async ({ page }) => {
   const message = "Per oggi l'agent ha esaurito il budget: riprova domani.";
   await mockChat(page, fail(429, "budgetExhausted", message));
   await page.goto("/");
@@ -62,10 +67,14 @@ test("an API error is shown inline", async ({ page }) => {
   await page.getByLabel(TEXTAREA).fill(BRIEF_TEXT);
   await page.getByRole("button", { name: "Inizia", exact: true }).click();
 
-  await expect(errorNotice(page)).toHaveText(message);
-  await expect(page).toHaveURL("/");
+  await expect(errorNotice(page)).toContainText(message);
+  await expect(page).toHaveURL("/chat/nuova");
   expect(await fitsViewport(page)).toBe(true);
-  await expect(page).toHaveScreenshot("home-error.png");
+  await expect(page).toHaveScreenshot("chat-start-error.png");
+
+  await page.getByRole("link", { name: "Torna alla home" }).last().click();
+  await expect(page).toHaveURL("/");
+  await expect(page.getByLabel(TEXTAREA)).toHaveValue(BRIEF_TEXT);
 });
 
 test("unauthorized sends the user to the login page", async ({ page }) => {
