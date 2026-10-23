@@ -22,9 +22,9 @@ Non è una domanda: l'agent legge il primo testo e propone.
 
 ## Obbligatorie
 
-### 1 · Descrizione azienda (priorità 1)
-- Domanda: "Raccontami in due righe cosa fa la tua azienda."
-- Coperta quando: settore e attività principale sono chiari.
+### 0 e 1 · Nome e descrizione azienda (priorità 1)
+- Domanda unica: "Come si chiama la tua azienda e cosa fa, in due righe?" Se una delle due voci è già nota, si chiede solo l'altra.
+- Coperta quando: c'è il nome; settore e attività principale sono chiari.
 - Esempio: "Startup di economia circolare: recuperiamo scarti per aziende e comuni."
 
 ### 3 · Missione del ruolo (priorità 2)

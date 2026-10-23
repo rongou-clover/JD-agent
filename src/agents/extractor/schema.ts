@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { FIELD_VALUE_SCHEMAS } from "@/domain/draft";
 import type { Draft } from "@/domain/draft";
+import { ForcedWording } from "@/render/contract";
 import { DISCRIMINATION_CATEGORIES } from "@/domain/validation/discrimination";
 import { FIELD_IDS, type FieldId } from "@/domain/fields";
 
-export const PROMPT_VERSION = "extractor@3";
+export const PROMPT_VERSION = "extractor@4";
 
 /** Job title and seniority belong to role-diagnosis, not to the extractor. */
 export const EXTRACTED_FIELD_IDS = FIELD_IDS.filter(
@@ -26,6 +27,7 @@ function update<T extends z.ZodType>(value: T) {
 const V = FIELD_VALUE_SCHEMAS;
 
 const Updates = z.object({
+  companyName: update(V.companyName),
   companyDescription: update(V.companyDescription),
   missionValues: update(V.missionValues),
   roleMission: update(V.roleMission),
@@ -51,8 +53,8 @@ export const ExtractorOutput = z.object({
   updates: Updates,
   /** Fields the user explicitly skipped ("non lo so", "salta"). */
   skipped: z.array(z.enum(EXTRACTED_FIELD_IDS)),
-  /** Exact wording the user wants in the posting. */
-  forcedWording: z.string().nullable(),
+  /** Exact wording the user wants in one posting section. */
+  forcedWording: ForcedWording.nullable(),
   /** Discriminatory requests found in the message; never stored in updates. */
   discriminationFlags: z.array(z.object({ category: z.enum(DISCRIMINATION_CATEGORIES), quote: z.string() })),
 });

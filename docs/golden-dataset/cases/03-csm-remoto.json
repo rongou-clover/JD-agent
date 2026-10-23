@@ -12,6 +12,9 @@
       ]
     },
     "fields": {
+      "companyName": {
+        "equals": "Cliniko"
+      },
       "companyDescription": {
         "present": true
       },

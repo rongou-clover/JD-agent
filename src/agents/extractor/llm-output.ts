@@ -7,6 +7,7 @@ import {
   PrerequisiteType,
   WorkMode,
 } from "@/domain/enums";
+import { ProseSectionId } from "@/render/contract";
 import { DISCRIMINATION_CATEGORIES } from "@/domain/validation/discrimination";
 import { EXTRACTED_FIELD_IDS, ExtractedSource, Intent, type ExtractorOutput } from "./schema";
 
@@ -50,6 +51,7 @@ const Contract = z.object({
 export const ExtractorLlmOutput = z.object({
   intent: Intent,
   updates: z.object({
+    companyName: withSource(z.string()),
     companyDescription: withSource(z.string()),
     missionValues: withSource(z.string()),
     roleMission: withSource(z.object({ reason: HiringReason, text: z.string() })),
@@ -69,7 +71,7 @@ export const ExtractorLlmOutput = z.object({
     managerNotes: withSource(z.string()),
   }),
   skipped: z.array(z.enum(EXTRACTED_FIELD_IDS)),
-  forcedWording: z.string().nullish(),
+  forcedWording: z.object({ section: ProseSectionId, text: z.string() }).nullish().catch(null),
   discriminationFlags: z.array(z.object({ category: z.enum(DISCRIMINATION_CATEGORIES), quote: z.string() })),
 });
 export type ExtractorLlmOutput = z.infer<typeof ExtractorLlmOutput>;
@@ -91,6 +93,7 @@ export function toExtractorOutput(llm: ExtractorLlmOutput): ExtractorOutput {
     forcedWording: llm.forcedWording ?? null,
     discriminationFlags: llm.discriminationFlags,
     updates: {
+      companyName: convert(u.companyName, same),
       companyDescription: convert(u.companyDescription, same),
       missionValues: convert(u.missionValues, same),
       roleMission: convert(u.roleMission, same),

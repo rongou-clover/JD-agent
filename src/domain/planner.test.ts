@@ -13,10 +13,10 @@ function without(draft: Draft, ...fields: FieldId[]): Draft {
 }
 
 describe("buildChecklist", () => {
-  it("counts the 11 required fields", () => {
-    expect(buildChecklist(emptyDraft())).toMatchObject({ doneCount: 0, totalCount: 11, complete: false });
-    expect(buildChecklist(completeDraft())).toMatchObject({ doneCount: 11, complete: true });
-    expect(REQUIRED_FIELD_IDS).toHaveLength(11);
+  it("counts the 12 required fields", () => {
+    expect(buildChecklist(emptyDraft())).toMatchObject({ doneCount: 0, totalCount: 12, complete: false });
+    expect(buildChecklist(completeDraft())).toMatchObject({ doneCount: 12, complete: true });
+    expect(REQUIRED_FIELD_IDS).toHaveLength(12);
   });
 
   it("counts proposed fields as done", () => {
@@ -26,7 +26,7 @@ describe("buildChecklist", () => {
 
   it("does not count a field with a blocking issue", () => {
     const draft = withField(completeDraft(), "sixMonthResults", ["Solo uno"]);
-    expect(buildChecklist(draft)).toMatchObject({ doneCount: 10, complete: false });
+    expect(buildChecklist(draft)).toMatchObject({ doneCount: 11, complete: false });
   });
 });
 

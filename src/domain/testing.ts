@@ -16,6 +16,7 @@ export function withField<F extends FieldId>(
 /** A draft with all 11 required fields valid and confirmed. */
 export function completeDraft(): Draft {
   let draft = emptyDraft();
+  draft = withField(draft, "companyName", "Human Maple");
   draft = withField(draft, "companyDescription", "Startup di economia circolare: recuperiamo scarti per aziende e comuni.");
   draft = withField(draft, "roleMission", { reason: "new", text: "Deve far crescere i nostri canali social." });
   draft = withField(draft, "jobTitle", { kind: "catalog", id: "content-social-media-manager" });

@@ -19,6 +19,8 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-22 · Il business case non entra nella JD.
 - 2026-10-22 · Urgenza, data di inizio e priorità tra più figure non sono domande dell'agent.
 - 2026-10-22 · Terminologia del catalogo allineata al Framework e al Vocabolario Clover: job title, job family, seniority S1–S5, skill, P atteso, criticità, dimensioni consigliate.
+- 2026-10-23 · Nuova voce obbligatoria 0 "Nome azienda", chiesta insieme alla descrizione; compare sotto il titolo e in "Chi siamo".
+- 2026-10-23 · Testo fisso sulle pari opportunità: «Accogliamo candidature di persone di ogni genere, età, provenienza e orientamento, nel rispetto delle L. 903/77 e L. 125/91. Se non hai tutti i requisiti ma il ruolo ti interessa, candidati comunque. I dati saranno trattati secondo il Regolamento UE 2016/679 (GDPR).»
 
 ## Tecnica
 - 2026-10-22 · Next.js + Mastra + Postgres.
@@ -39,6 +41,9 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-22 · Golden dataset completato con 10 casi fittizi (uno per famiglia più casi limite), scritti dall'agent e rivisti da Rongou.
 - 2026-10-22 · Test end-to-end con Playwright, con screenshot e video per i test visivi.
 - 2026-10-23 · Guard anti prompt injection: PromptInjectionDetector di Mastra con il modello veloce, una volta per messaggio prima degli agent. Blocca sopra 0,8 e blocca anche se il controllo fallisce. Nessun altro guardrail basato sul modello: l'output del renderer si controlla in codice.
+- 2026-10-23 · Il workflow esegue un turno per messaggio e finisce; lo stato della conversazione vive nelle nostre tabelle Postgres (niente sospensione e ripresa di Mastra).
+- 2026-10-23 · Limite d'uso giornaliero, per tutti gli utenti, espresso in token per modello e direzione (variabili DAILY_TOKENS_* in env), dimensionato per restare sotto i $5 al giorno ai prezzi di oggi. Niente tetto totale. Sostituisce il budget globale in dollari.
+- 2026-10-23 · Sviluppo in tre filoni paralleli (renderer, backend, interfaccia) sopra contratti condivisi in src/render/contract.ts e src/api/contract.ts; l'interfaccia si rifinisce alla fine.
 
 ## Esperienza utente
 - 2026-10-22 · Home: sotto il titolo, un breve paragrafo che dice cosa serve all'agent per scrivere la JD.

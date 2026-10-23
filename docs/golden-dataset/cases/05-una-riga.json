@@ -15,6 +15,7 @@
     },
     "fields": {},
     "absent": [
+      "companyName",
       "companyDescription",
       "roleMission",
       "team",

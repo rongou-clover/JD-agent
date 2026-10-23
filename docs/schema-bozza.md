@@ -1,6 +1,6 @@
 # Schema bozza JD (v0)
 
-Voci obbligatorie: 11 (1, 3, 4, 5, 6, 7, 9, 10, 11, 13, 14).
+Voci obbligatorie: 12 (0, 1, 3, 4, 5, 6, 7, 9, 10, 11, 13, 14).
 
 Contratto unico tra estrattore, pianificatore, validatori e renderer. Ogni voce ha: valore, fonte (`utente` | `dedotto` | `catalogo`), stato (`mancante` | `proposto` | `confermato`).
 
@@ -8,7 +8,8 @@ Obbligatoria = serve per chiudere la checklist. Priorità = ordine in cui il pia
 
 | # | Voce | Tipo | Valori / vincoli | Obbl. | Priorità |
 |---|---|---|---|---|---|
-| 1 | Descrizione azienda | testo | 1–4 frasi | sì | 1 |
+| 0 | Nome azienda | testo | come lo scrive l'utente | sì | 1 |
+| 1 | Descrizione azienda | testo | 1–4 frasi, senza il nome | sì | 1 |
 | 2 | Mission e valori | testo | 1–3 frasi | no | 9 |
 | 3 | Missione del ruolo (perché ora) | enum + testo | `nuovo` · `sostituzione` · `internalizzazione` + 1–2 frasi | sì | 2 |
 | 4 | Job title | riferimento catalogo | id del catalogo oppure `fuori_catalogo` + testo | sì | 1 |
@@ -35,5 +36,5 @@ Regole di validazione:
 - Checklist completa = tutte le voci obbligatorie in stato `confermato` o `proposto`.
 
 Output derivati:
-- Annuncio: voci 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12b, 13, 14, 15 (se in annuncio), 16, 17, più in fondo il testo fisso sulle pari opportunità (L. 903/77, L. 125/91), senza domanda.
+- Annuncio: voci 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12b, 13, 14, 15 (se in annuncio), 16, 17, più in fondo il testo fisso sulle pari opportunità (L. 903/77, L. 125/91), senza domanda.
 - Scheda interna: 4, 5, 10 con P atteso, 11, 12, 15, 18 + dimensioni consigliate dal catalogo.

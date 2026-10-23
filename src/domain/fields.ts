@@ -1,5 +1,6 @@
 /** Draft fields, numbered as in docs/schema-bozza.md. */
 export const FIELD_IDS = [
+  "companyName",
   "companyDescription",
   "missionValues",
   "roleMission",
@@ -33,6 +34,7 @@ export type FieldMeta = {
 };
 
 export const FIELDS: Record<FieldId, FieldMeta> = {
+  companyName: { number: "0", label: "Nome azienda", required: true, priority: 1 },
   companyDescription: { number: "1", label: "Descrizione azienda", required: true, priority: 1 },
   missionValues: { number: "2", label: "Mission e valori", required: false, priority: 9 },
   roleMission: { number: "3", label: "Missione del ruolo", required: true, priority: 2 },

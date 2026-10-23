@@ -13,6 +13,9 @@
       "hybrid": false
     },
     "fields": {
+      "companyName": {
+        "equals": "Human Maple"
+      },
       "companyDescription": {
         "present": true
       },

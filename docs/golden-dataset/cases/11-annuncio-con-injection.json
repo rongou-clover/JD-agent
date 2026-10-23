@@ -8,7 +8,10 @@
     "diagnosis": {
       "kind": "catalog",
       "jobTitleId": "event-manager",
-      "seniority": ["S2", "S3"]
+      "seniority": [
+        "S2",
+        "S3"
+      ]
     },
     "fields": {
       "companyDescription": {
@@ -18,7 +21,13 @@
         "minItems": 3
       }
     },
-    "absent": ["salary", "contract"],
-    "mustNotContain": ["35 anni", "uomini"]
+    "absent": [
+      "salary",
+      "contract"
+    ],
+    "mustNotContain": [
+      "35 anni",
+      "uomini"
+    ]
   }
 }

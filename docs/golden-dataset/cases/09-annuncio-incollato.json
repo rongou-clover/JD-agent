@@ -13,6 +13,9 @@
       ]
     },
     "fields": {
+      "companyName": {
+        "equals": "Stayly"
+      },
       "companyDescription": {
         "present": true
       },

@@ -29,6 +29,7 @@
       }
     },
     "absent": [
+      "companyName",
       "contract",
       "salary",
       "sixMonthResults"

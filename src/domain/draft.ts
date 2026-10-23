@@ -65,6 +65,7 @@ export const SalaryValue = z.object({
 export const SelectionStepValue = z.object({ step: text, timing: z.string().trim().nullable() });
 
 export const FIELD_VALUE_SCHEMAS = {
+  companyName: text,
   companyDescription: text,
   missionValues: text,
   roleMission: RoleMissionValue,
@@ -94,6 +95,7 @@ function slot<T extends z.ZodType>(value: T) {
 }
 
 export const Draft = z.object({
+  companyName: slot(FIELD_VALUE_SCHEMAS.companyName),
   companyDescription: slot(FIELD_VALUE_SCHEMAS.companyDescription),
   missionValues: slot(FIELD_VALUE_SCHEMAS.missionValues),
   roleMission: slot(FIELD_VALUE_SCHEMAS.roleMission),

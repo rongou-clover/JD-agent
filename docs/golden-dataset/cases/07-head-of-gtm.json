@@ -46,6 +46,7 @@
       }
     },
     "absent": [
+      "companyName",
       "salary",
       "languages"
     ],

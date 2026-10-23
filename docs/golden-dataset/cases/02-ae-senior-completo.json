@@ -12,6 +12,9 @@
       ]
     },
     "fields": {
+      "companyName": {
+        "equals": "Datapulse"
+      },
       "companyDescription": {
         "present": true
       },

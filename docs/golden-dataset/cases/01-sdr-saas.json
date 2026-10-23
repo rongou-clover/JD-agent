@@ -12,6 +12,9 @@
       ]
     },
     "fields": {
+      "companyName": {
+        "equals": "Fattura Facile"
+      },
       "companyDescription": {
         "present": true
       },

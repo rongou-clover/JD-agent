@@ -6,7 +6,7 @@ Base: analisi di 42 annunci GTM reali (26 Italia, 16 Europa), in `Corpus annunci
 
 | # | Sezione | Contenuto | Lunghezza | Voci dello schema |
 |---|---|---|---|---|
-| 0 | Riquadro di sintesi | Titolo, sede, modalità con giorni in ufficio, contratto e CCNL, RAL (range lordo annuo + variabile), seniority, lingue, riporto | 6–8 righe chiave: valore | 4, 5, 6, 13, 14, 15 |
+| 0 | Riquadro di sintesi | Titolo, nome azienda, sede, modalità con giorni in ufficio, contratto e CCNL, RAL (range lordo annuo + variabile), seniority, lingue, riporto | 6–8 righe chiave: valore | 0, 4, 5, 6, 13, 14, 15 |
 | 1 | Il ruolo e perché lo apriamo | Obiettivo del ruolo e motivo dell'apertura | 2–4 frasi | 3 |
 | 2 | Il team | A chi riporta, dimensione del team, con chi collabora | 2–3 frasi | 6 |
 | 3 | Cosa farai | Verbo + oggetto + metrica dove esiste; per aree se più di 6 punti | 5–8 punti | 7, 8 |
@@ -17,9 +17,9 @@ Base: analisi di 42 annunci GTM reali (26 Italia, 16 Europa), in `Corpus annunci
 | 8 | Cosa offriamo | Benefit concreti con valori, crescita | 4–8 punti | 16 |
 | 9 | Informazioni pratiche | Orario, prova, data di inizio, trasferte | 4–8 righe | 13, 14 |
 | 10 | Processo di selezione | Passaggi, chi, durata, tempo di risposta | 3–5 passaggi | 17 |
-| 11 | Chi siamo | Cosa fa l'azienda, dimensione e fase | 2–4 frasi | 1 |
+| 11 | Chi siamo | Nome, cosa fa l'azienda, dimensione e fase | 2–4 frasi | 0, 1 |
 | 12 | Mission e valori | Valori in forma di comportamenti | 1 frase o 3–4 punti | 2 |
-| 13 | Pari opportunità | Formula standard (L. 903/77, L. 125/91), invito a candidarsi anche senza tutti i requisiti, privacy | 1–2 frasi | testo fisso |
+| 13 | Pari opportunità | Formula standard (L. 903/77, L. 125/91), invito a candidarsi anche senza tutti i requisiti, privacy | 1–2 frasi | testo fisso (vedi decisioni) |
 
 Regole:
 - Sezioni senza dati non compaiono; le voci obbligatorie mancanti restano segnate come "da definire".
