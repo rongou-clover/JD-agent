@@ -7,7 +7,12 @@ import { RendererLlmOutput, SectionRequest, toWrittenBlocks, type WriteSection }
 export const rendererAgent = new Agent({
   id: "renderer",
   name: "Renderer",
-  instructions: loadPrompt("renderer"),
+  // The prompt is the same for every section call: cached, so later calls read it at a tenth of the price.
+  instructions: {
+    role: "system",
+    content: loadPrompt("renderer"),
+    providerOptions: { anthropic: { cacheControl: { type: "ephemeral" } } },
+  },
   model: () => model("writer"),
 });
 

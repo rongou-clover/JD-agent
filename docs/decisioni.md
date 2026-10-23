@@ -48,6 +48,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Limite d'uso giornaliero, per tutti gli utenti, espresso in token per modello e direzione (variabili DAILY_TOKENS_* in env), dimensionato per restare sotto i $5 al giorno ai prezzi di oggi. Niente tetto totale. Sostituisce il budget globale in dollari.
 - 2026-10-23 · Sviluppo in tre filoni paralleli (renderer, backend, interfaccia) sopra contratti condivisi in src/render/contract.ts e src/api/contract.ts; l'interfaccia si rifinisce alla fine.
 - 2026-10-23 · Prompt caching sul renderer rinviato a dopo il merge dei tre filoni.
+- 2026-10-23 · Prompt caching attivo sul prompt del renderer: un annuncio intero passa da circa $0,06 a $0,02. Il limite giornaliero conta i token letti dalla cache a un decimo, come li fattura Anthropic.
 
 ## Esperienza utente
 - 2026-10-22 · Home: sotto il titolo, un breve paragrafo che dice cosa serve all'agent per scrivere la JD.
