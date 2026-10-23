@@ -79,17 +79,6 @@ export function createTurnSteps(deps: TurnDeps) {
     execute: async ({ inputData: ctx }) => ({ ...ctx, plan: planNext(ctx.state.draft, ctx.state.planner) }),
   });
 
-  const render = createStep({
-    id: "render",
-    ...io,
-    execute: async ({ inputData: ctx }) => {
-      const { draft, diagnosis, forcedWordings, sectionCache } = ctx.state;
-      const result = await deps.render({ draft, diagnosis, forcedWordings }, sectionCache);
-      const { posting, sheet, cache } = result.output;
-      return { ...ctx, state: { ...ctx.state, posting, sheet, sectionCache: cache }, usage: [...ctx.usage, ...result.usage] };
-    },
-  });
-
   const compose = createStep({
     id: "compose",
     ...io,
@@ -100,5 +89,5 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  return { guard, quickReply, understand, merge, plan, render, compose };
+  return { guard, quickReply, understand, merge, plan, compose };
 }

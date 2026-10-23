@@ -20,6 +20,8 @@ export const sessions = pgTable(
     quickReplies: jsonb("quick_replies").notNull(),
     /** Optimistic lock: every saved turn increments it. */
     version: integer("version").notNull().default(1),
+    /** Version the posting was rendered for; below `version`, the posting is still being written. */
+    renderedVersion: integer("rendered_version").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

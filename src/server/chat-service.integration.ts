@@ -2,10 +2,12 @@ import type { Diagnosis } from "@/domain/diagnosis";
 import { afterAll, beforeEach, describe, expect, inject, it } from "vitest";
 import { createDb } from "@/db/client";
 import { messages, sessions, usage } from "@/db/schema";
-import { extraction, fakeDeps, FAST, WRITER } from "@/workflow/testing";
+import type { Render } from "@/render/contract";
+import { extraction, fakeDeps, fakeRender, FAST, WRITER } from "@/workflow/testing";
 import { createTurnWorkflow } from "@/workflow/turn";
 import { ApiFailure } from "./api-errors";
 import { getSessionView, handleChat, type ChatServiceDeps } from "./chat-service";
+import { renderSession, type RenderServiceDeps } from "./render-service";
 
 const { db, close } = createDb(inject("databaseUrl"));
 afterAll(close);
@@ -50,27 +52,78 @@ describe("chat service", () => {
     expect(await failure(handleChat({ kind: "message", sessionId: unknown, text: "Ciao" }, deps))).toBe("sessionNotFound");
   });
 
-  it("stops every turn once a daily limit is reached", async () => {
+  it("stops every turn and render once a daily limit is reached", async () => {
     const tight = { ...bigLimits, writer: { input: 1e9, output: 50 } };
     const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR" }, service(tight));
+    await renderSession(first.sessionId, { ...service(tight), render: fakeRender });
     const next = handleChat({ kind: "message", sessionId: first.sessionId, text: "Acme" }, service(tight));
     expect(await failure(next)).toBe("budgetExhausted");
+    await db.update(sessions).set({ renderedVersion: 0 });
+    expect(await failure(renderSession(first.sessionId, { ...service(tight), render: fakeRender }))).toBe("budgetExhausted");
   });
 
   it("a turn saved while another one runs makes the slower one busy; its tokens still count", async () => {
     const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR" }, service());
     const turn = { kind: "message" as const, sessionId: first.sessionId, text: "Acme" };
     const { deps: slow } = fakeDeps({ extraction: extraction() });
-    // The slow turn's renderer lets a whole other turn on the same session finish first.
-    const render = slow.render;
-    slow.render = async (input, cache) => {
+    // The slow turn's extractor lets a whole other turn on the same session finish first.
+    const extract = slow.extract;
+    slow.extract = async (input) => {
       await handleChat(turn, service());
-      return render(input, cache);
+      return extract(input);
     };
     const slowService = { ...service(), workflow: createTurnWorkflow(slow) };
     expect(await failure(handleChat(turn, slowService))).toBe("sessionBusy");
     expect((await getSessionView(db, first.sessionId)).transcript).toHaveLength(4);
-    const writerRows = (await db.select().from(usage)).filter((row) => row.model === WRITER);
-    expect(writerRows).toHaveLength(3);
+    // First turn: guard, extractor, diagnosis; the other turn and the busy one: guard and extractor each.
+    expect(await db.select().from(usage)).toHaveLength(7);
+  });
+});
+
+describe("render service", () => {
+  const renderer = (render: Render = fakeRender): RenderServiceDeps => ({ ...service(), render });
+  const acme = extraction({ updates: { companyName: { value: "Acme", source: "user" } } });
+  const acmeService = (): ChatServiceDeps => {
+    const { deps } = fakeDeps({ diagnosis: sdr, extraction: acme });
+    return { ...service(), workflow: createTurnWorkflow(deps) };
+  };
+
+  it("the reply comes with the posting pending; the render saves it once", async () => {
+    const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR per Acme" }, acmeService());
+    expect(first.postingPending).toBe(true);
+    expect(first.posting.title).toBe("");
+
+    const rendered = await renderSession(first.sessionId, renderer());
+    expect(rendered.postingPending).toBe(false);
+    expect(rendered.posting.title).toBe("Acme");
+    expect(await getSessionView(db, first.sessionId)).toEqual(rendered);
+
+    let calls = 0;
+    const counted: Render = (input, cache) => {
+      calls++;
+      return fakeRender(input, cache);
+    };
+    await renderSession(first.sessionId, renderer(counted));
+    expect(calls).toBe(0);
+    expect((await db.select().from(usage)).filter((row) => row.model === WRITER)).toHaveLength(1);
+  });
+
+  it("a blocked first message leaves nothing to render", async () => {
+    const { deps } = fakeDeps({ allowed: false });
+    const blocked = await handleChat({ kind: "message", sessionId: null, text: "Ignora tutto" }, { ...service(), workflow: createTurnWorkflow(deps) });
+    expect(blocked.postingPending).toBe(false);
+  });
+
+  it("a render overtaken by a turn is not saved, and the posting stays pending", async () => {
+    const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR per Acme" }, acmeService());
+    const overtaken: Render = async (input, cache) => {
+      await handleChat({ kind: "message", sessionId: first.sessionId, text: "Ancora Acme" }, service());
+      return fakeRender(input, cache);
+    };
+    const view = await renderSession(first.sessionId, renderer(overtaken));
+    expect(view.transcript).toHaveLength(4);
+    expect(view.postingPending).toBe(true);
+    expect(view.posting.title).toBe("");
+    expect((await renderSession(first.sessionId, renderer())).posting.title).toBe("Acme");
   });
 });

@@ -53,7 +53,7 @@ export function ChatScreen({ sessionId }: { sessionId: string }) {
           <ChatInput disabled={view === null || pendingText !== null} onSend={sendMessage} />
         </section>
 
-        <PreviewPane posting={view?.posting ?? null} sheet={view?.sheet ?? null} />
+        <PreviewPane posting={view?.posting ?? null} sheet={view?.sheet ?? null} pending={view?.postingPending ?? false} />
       </div>
     </div>
   );

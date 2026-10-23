@@ -5,7 +5,6 @@ import type { DiagnosisInput } from "@/agents/role-diagnosis/schema";
 import type { AgentResult, Usage } from "@/agents/usage";
 import type { Diagnosis } from "@/domain/diagnosis";
 import type { Plan } from "@/domain/planner";
-import type { Render } from "@/render/contract";
 import type { QuickReplyAction } from "./quick-reply-actions";
 import type { SessionState } from "./state";
 
@@ -17,12 +16,11 @@ export type TurnInput =
   | { kind: "message"; text: string }
   | { kind: "quickReply"; label: string; action: QuickReplyAction };
 
-/** Everything a turn calls outside plain code; injected so tests use fakes. */
+/** Everything a turn calls outside plain code; injected so tests use fakes. The renderer runs after the turn. */
 export type TurnDeps = {
   checkMessage: (text: string) => Promise<GuardResult>;
   extract: (input: ExtractorInput) => Promise<AgentResult<ExtractorOutput>>;
   diagnose: (input: DiagnosisInput) => Promise<AgentResult<Diagnosis>>;
-  render: Render;
   /** Model id the guard runs on, for its usage estimate. */
   guardModel: () => string;
   /** Opaque id for a quick reply. */

@@ -10,6 +10,7 @@ const Context = z.custom<TurnContext>();
 /**
  * One workflow run per user message: it runs one turn and ends. No suspend/resume:
  * the conversation state lives in our tables and is passed in and out.
+ * The posting is rendered afterwards (src/server/render-service.ts), so the reply does not wait for it.
  */
 export function createTurnWorkflow(deps: TurnDeps) {
   const steps = createTurnSteps(deps);
@@ -19,7 +20,6 @@ export function createTurnWorkflow(deps: TurnDeps) {
     .then(steps.understand)
     .then(steps.merge)
     .then(steps.plan)
-    .then(steps.render)
     .then(steps.compose)
     .commit();
 }
