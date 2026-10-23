@@ -44,7 +44,7 @@ export const GoldenCase = z.object({
   /** First message of the user, as typed or pasted. */
   input: z.string().min(1),
   expected: z.object({
-    /** The prompt injection guard must stop the message before the agents. */
+    /** The prompt injection guard must stop the message: the agents' output is then discarded. */
     blocked: z.boolean().default(false),
     diagnosis: ExpectedDiagnosis,
     /** Fields the extractor must fill from the input. Diagnosis fields excluded. */

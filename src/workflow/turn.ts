@@ -15,7 +15,6 @@ const Context = z.custom<TurnContext>();
 export function createTurnWorkflow(deps: TurnDeps) {
   const steps = createTurnSteps(deps);
   return createWorkflow({ id: "jd-turn", inputSchema: Context, outputSchema: Context })
-    .then(steps.guard)
     .then(steps.quickReply)
     .then(steps.understand)
     .then(steps.merge)

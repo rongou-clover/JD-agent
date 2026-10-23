@@ -70,6 +70,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Una voce obbligatoria si chiede al massimo due volte di fila: alla terza l'agent fa come per "non lo so". Su una voce incompleta la domanda dice cosa manca, e la proposta dell'agent completa quello che l'utente ha dato.
 - 2026-10-23 · Una domanda per messaggio, o da scegliere con i pulsanti o da scrivere: con due domande il pulsante rispondeva solo a una.
 - 2026-10-23 · La risposta della chat arriva prima dell'annuncio: l'agent risponde dopo guard ed estrazione, poi l'annuncio si aggiorna con una chiamata separata e l'anteprima mostra "Sto scrivendo l'annuncio…". Intanto si può già rispondere.
+- 2026-10-23 · Il guard anti injection gira in parallelo con estrattore e diagnosi per risparmiare tempo: se blocca, il loro risultato si scarta senza toccare la bozza, e i token contano comunque nel limite giornaliero. Gli agent non hanno strumenti che agiscono.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

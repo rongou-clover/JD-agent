@@ -22,19 +22,6 @@ export function guardUsage(model: string, message: string): Usage {
 }
 
 export function createTurnSteps(deps: TurnDeps) {
-  const guard = createStep({
-    id: "guard",
-    ...io,
-    execute: async ({ inputData: ctx, bail }) => {
-      if (ctx.input.kind !== "message") return ctx;
-      const usage = [...ctx.usage, guardUsage(deps.guardModel(), ctx.input.text)];
-      const verdict = await deps.checkMessage(ctx.input.text);
-      if (verdict.allowed) return { ...ctx, usage };
-      const state = { ...ctx.state, quickReplies: [] };
-      return bail({ ...ctx, usage, state, message: { text: COPY.blocked, questions: [], quickReplies: [] } });
-    },
-  });
-
   const quickReply = createStep({
     id: "quick-reply",
     ...io,
@@ -45,15 +32,19 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  /** Extractor and diagnosis run in parallel; the diagnosis only while the job title is missing. */
+  /**
+   * Guard, extractor and diagnosis run in parallel, the diagnosis only while the job title is missing.
+   * A blocked message gets the fixed reply; the tokens of the discarded extraction still count.
+   */
   const understand = createStep({
     id: "understand",
     ...io,
-    execute: async ({ inputData: ctx }) => {
+    execute: async ({ inputData: ctx, bail }) => {
       if (ctx.input.kind !== "message") return ctx;
       const message = ctx.input.text;
       const diagnose = ctx.state.draft.jobTitle.status === "missing";
-      const [extraction, diagnosis] = await Promise.all([
+      const [verdict, extraction, diagnosis] = await Promise.all([
+        deps.checkMessage(message),
         deps.extract({
           message,
           draft: ctx.state.draft,
@@ -62,12 +53,12 @@ export function createTurnSteps(deps: TurnDeps) {
         }),
         diagnose ? deps.diagnose({ message }) : null,
       ]);
-      return {
-        ...ctx,
-        extraction: extraction.output,
-        diagnosis: diagnosis?.output ?? null,
-        usage: [...ctx.usage, ...extraction.usage, ...(diagnosis?.usage ?? [])],
-      };
+      const usage = [...ctx.usage, guardUsage(deps.guardModel(), message), ...extraction.usage, ...(diagnosis?.usage ?? [])];
+      if (!verdict.allowed) {
+        const state = { ...ctx.state, quickReplies: [] };
+        return bail({ ...ctx, usage, state, message: { text: COPY.blocked, questions: [], quickReplies: [] } });
+      }
+      return { ...ctx, extraction: extraction.output, diagnosis: diagnosis?.output ?? null, usage };
     },
   });
 
@@ -89,5 +80,5 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  return { guard, quickReply, understand, merge, plan, compose };
+  return { quickReply, understand, merge, plan, compose };
 }
