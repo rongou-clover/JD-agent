@@ -31,4 +31,11 @@ describe("toSessionView", () => {
     expect(view.sheet).toEqual(sheet);
     expect(() => SessionView.parse(view)).not.toThrow();
   });
+
+  it("rebuilds the sheet of a session rendered before sheets were stored", () => {
+    const posting = { title: "SDR", summary: [], sections: [{ id: "role" as const, heading: "Il ruolo", blocks: [{ kind: "placeholder" as const }] }] };
+    const view = toSessionView(SESSION_ID, { ...initialState(), posting }, []);
+    expect(view.sheet).not.toBeNull();
+    expect(() => SessionView.parse(view)).not.toThrow();
+  });
 });
