@@ -14,6 +14,8 @@ export const sessions = pgTable(
     forcedWordings: jsonb("forced_wordings").notNull(),
     sectionCache: jsonb("section_cache").notNull(),
     posting: jsonb("posting").notNull(),
+    /** Internal sheet of the last render; null before the first render. */
+    sheet: jsonb("sheet"),
     /** Quick replies of the last agent turn, with the action each id stands for. */
     quickReplies: jsonb("quick_replies").notNull(),
     /** Optimistic lock: every saved turn increments it. */

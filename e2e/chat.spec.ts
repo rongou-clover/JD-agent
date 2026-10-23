@@ -89,7 +89,7 @@ test("a long posting scrolls inside the preview only, never the page", async ({ 
   await mockSession(page, ok(fixture("complete")));
   await page.goto(CHAT_URL);
 
-  const preview = page.getByRole("region", { name: "Anteprima job description" });
+  const preview = page.getByRole("tabpanel", { name: "Annuncio" });
   await expect(preview.getByRole("heading", { name: "Pari opportunità" })).toBeAttached();
   expect(await preview.evaluate((pane) => pane.scrollHeight > pane.clientHeight)).toBe(true);
   expect(await fitsViewport(page)).toBe(true);

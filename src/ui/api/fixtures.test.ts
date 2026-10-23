@@ -13,5 +13,6 @@ describe("e2e SessionView fixtures", () => {
     expect(questions.checklist.complete).toBe(false);
     expect(questions.posting.sections.some((s) => s.blocks.some((b) => b.kind === "placeholder"))).toBe(true);
     expect(complete.checklist.complete).toBe(true);
+    expect(complete.sheet.salary).not.toBeNull();
   });
 });

@@ -28,6 +28,7 @@ function stateColumns(state: SessionState) {
     forcedWordings: state.forcedWordings,
     sectionCache: state.sectionCache,
     posting: state.posting,
+    sheet: state.sheet,
     quickReplies: state.quickReplies,
   };
 }
@@ -42,6 +43,7 @@ export async function loadSession(db: Db, id: string): Promise<StoredSession | n
     forcedWordings: row.forcedWordings,
     sectionCache: row.sectionCache,
     posting: row.posting,
+    sheet: row.sheet,
     quickReplies: row.quickReplies,
   });
   const rows = await db.select().from(messages).where(eq(messages.sessionId, id)).orderBy(asc(messages.id));
