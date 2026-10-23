@@ -11,12 +11,14 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     viewport: { width: 1440, height: 900 },
+    /** Deterministic UI: no marquee, no random Home headline (src/ui/home/Headline.tsx). */
+    contextOptions: { reducedMotion: "reduce" },
     screenshot: "on",
     video: "on",
     trace: "retain-on-failure",
   },
   expect: {
-    toHaveScreenshot: { animations: "disabled", maxDiffPixelRatio: 0.01 },
+    toHaveScreenshot: { animations: "disabled", maxDiffPixelRatio: 0.01, stylePath: "./e2e/support/screenshot.css" },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } }],
   webServer: {
