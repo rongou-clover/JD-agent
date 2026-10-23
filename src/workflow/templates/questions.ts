@@ -6,6 +6,7 @@ import type { ReplyOption } from "../quick-reply-actions";
 import { seniorityLabel } from "../roles";
 import type { PlannerMemory } from "../state";
 import { CONTRACT_TYPE_LABELS, HIRING_REASON_LABELS, WORK_MODE_LABELS } from "./copy";
+import { followUpQuestion } from "./follow-ups";
 import { bold } from "./format";
 
 /** Catalog skills suggested in the technical skills question. */
@@ -96,21 +97,15 @@ function contractQuestion(draft: Draft): Question {
   return { text: "Che tipo di contratto offri?", replies };
 }
 
-function sixMonthResultsQuestion(draft: Draft): Question {
-  if (draft.sixMonthResults.value !== null)
-    return { text: "Puoi darmi qualcosa di misurabile? Es. un numero, un progetto chiuso, un risultato.", replies: [] };
-  return {
-    text: "Tra 6 mesi, cosa deve aver ottenuto perché tu dica che è stata la scelta giusta? Due o tre cose concrete.",
-    replies: [],
-  };
-}
-
 const FIXED_QUESTIONS: Partial<Record<FieldId, string>> = {
+  sixMonthResults: "Tra 6 mesi, cosa deve aver ottenuto perché tu dica che è stata la scelta giusta? Due o tre cose concrete.",
   activities: "Cosa farà questa persona ogni settimana? E quali 2 o 3 cose sono le più critiche?",
   team: "In che team entra, quante persone ci sono e a chi riporta?",
 };
 
 function questionFor(field: FieldId, draft: Draft, planner: PlannerMemory): Question | null {
+  const followUp = draft[field].value === null ? null : followUpQuestion(field, draft);
+  if (followUp) return { text: followUp, replies: [] };
   switch (field) {
     case "companyName":
     case "companyDescription":
@@ -127,8 +122,6 @@ function questionFor(field: FieldId, draft: Draft, planner: PlannerMemory): Ques
       return locationQuestion(draft);
     case "contract":
       return contractQuestion(draft);
-    case "sixMonthResults":
-      return sixMonthResultsQuestion(draft);
     default: {
       const text = FIXED_QUESTIONS[field];
       return text ? { text, replies: [] } : null;

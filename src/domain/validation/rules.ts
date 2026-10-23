@@ -6,7 +6,7 @@ import type { Issue } from "./issues";
 type Bounds = { min: number; max: number | null };
 
 /** List sizes from docs/schema-bozza.md: fewer than min blocks, more than max warns. */
-const LIST_BOUNDS = {
+export const LIST_BOUNDS = {
   activities: { min: 3, max: 8 },
   kpis: { min: 0, max: 5 },
   sixMonthResults: { min: 2, max: 3 },

@@ -2,8 +2,10 @@ import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import type { ForcedWording } from "@/render/contract";
 import { applyDiagnosis, applyExtraction } from "./merge";
+import { applySkipped, repeatedAsks } from "./skipped";
 import type { PlannerMemory } from "./state";
 import { COPY, discriminationNote } from "./templates/copy";
+import { fieldLabels } from "./templates/format";
 import type { Focus, TurnContext } from "./turn-context";
 
 /** The diagnosis falls back to an untitled out-of-catalog role when it fails: that one is not applied. */
@@ -52,4 +54,24 @@ export function mergeMessage(ctx: TurnContext): TurnContext {
     else notes.push(COPY.outOfCatalog);
   }
   return { ...ctx, notes, focus, state: { ...ctx.state, draft, diagnosis, planner, forcedWordings } };
+}
+
+/**
+ * Fields the user skipped, and fields asked twice in a row and still not done, are treated alike:
+ * derived ones are announced as proposed, the others are remembered so the planner stops asking.
+ */
+function mergeSkipped(ctx: TurnContext, before: Draft): TurnContext {
+  const { draft, planner } = ctx.state;
+  const skipped = [...(ctx.extraction?.skipped ?? []), ...repeatedAsks(planner, draft)];
+  const outcome = applySkipped({ draft, before, skipped, askedFields: planner.askedFields });
+  const notes = [...ctx.notes];
+  if (outcome.proposed.length > 0) notes.push(COPY.proposedOnSkip(fieldLabels(outcome.proposed)));
+  if (outcome.leftOpen.length > 0) notes.push(COPY.leftOpen(fieldLabels(outcome.leftOpen)));
+  const memory = { ...planner, skipped: [...new Set([...planner.skipped, ...outcome.leftOpen])] };
+  return { ...ctx, notes, state: { ...ctx.state, draft: outcome.draft, planner: memory } };
+}
+
+/** The merge step: the user's message (if any), then skipped and repeatedly asked fields. */
+export function mergeTurn(ctx: TurnContext): TurnContext {
+  return mergeSkipped(mergeMessage(ctx), ctx.state.draft);
 }

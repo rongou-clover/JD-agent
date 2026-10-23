@@ -22,6 +22,8 @@ export const OPTIONAL_ASK_ORDER = [
 export type PlannerState = {
   /** The optional fields have already been offered once. */
   optionalOffered: boolean;
+  /** Required fields the user skipped and the agent could not derive: never asked again in the normal flow. */
+  skipped: FieldId[];
 };
 
 export type Plan =
@@ -41,7 +43,7 @@ export function planNext(draft: Draft, state: PlannerState): Plan {
   const missing = missingRequiredFields(draft);
   if (missing.includes("jobTitle")) return { kind: "diagnosis" };
 
-  const [first, ...rest] = missing;
+  const [first, ...rest] = missing.filter((field) => !state.skipped.includes(field));
   if (first) {
     const firstPriority = FIELDS[first].priority ?? Infinity;
     const companions = rest.filter((field) => (FIELDS[field].priority ?? Infinity) - firstPriority <= MAX_PRIORITY_GAP);

@@ -1,6 +1,10 @@
 import { EXTRACTED_FIELD_IDS, ExtractorOutput } from "@/agents/extractor/schema";
 import type { Diagnosis } from "@/domain/diagnosis";
+import type { Draft } from "@/domain/draft";
+import type { FieldId } from "@/domain/fields";
 import type { Render } from "@/render/contract";
+import { initialState, type SessionState } from "./state";
+import { createTurnWorkflow, runTurn } from "./turn";
 import type { TurnDeps } from "./turn-context";
 
 export const FAST = "test/fast";
@@ -74,4 +78,16 @@ export function fakeDeps(options: FakeOptions = {}) {
     newReplyId: () => `r${++replyId}`,
   };
   return { deps, calls };
+}
+
+/** Test helper: a session with the given draft, as if the last agent message asked `askedFields`. */
+export function session(draft: Draft, askedFields: FieldId[], planner: Partial<SessionState["planner"]> = {}): SessionState {
+  const base = initialState();
+  return { ...base, draft, planner: { ...base.planner, askedFields, ...planner } };
+}
+
+/** Test helper: one user message through the turn workflow, with the given extractor answer. */
+export async function messageTurn(state: SessionState, found = extraction(), text = "Non lo so") {
+  const { deps } = fakeDeps({ extraction: found });
+  return runTurn(createTurnWorkflow(deps), { kind: "message", text }, state);
 }

@@ -5,7 +5,7 @@ import { ForcedWording } from "@/render/contract";
 import { DISCRIMINATION_CATEGORIES } from "@/domain/validation/discrimination";
 import { FIELD_IDS, type FieldId } from "@/domain/fields";
 
-export const PROMPT_VERSION = "extractor@4";
+export const PROMPT_VERSION = "extractor@5";
 
 /** Job title and seniority belong to role-diagnosis, not to the extractor. */
 export const EXTRACTED_FIELD_IDS = FIELD_IDS.filter(
@@ -51,8 +51,8 @@ export const ExtractorOutput = z.object({
   intent: Intent,
   /** Fields found in the message; null when the message says nothing about them. */
   updates: Updates,
-  /** Fields the user explicitly skipped ("non lo so", "salta"). */
-  skipped: z.array(z.enum(EXTRACTED_FIELD_IDS)),
+  /** Asked fields the user explicitly skipped or delegated ("non lo so", "salta", "decidi tu"); seniority included. */
+  skipped: z.array(z.enum(FIELD_IDS)),
   /** Exact wording the user wants in one posting section. */
   forcedWording: ForcedWording.nullable(),
   /** Discriminatory requests found in the message; never stored in updates. */
@@ -65,5 +65,7 @@ export const ExtractorInput = z.object({
   draft: z.custom<Draft>(),
   /** Fields asked in the previous agent message. */
   askedFields: z.array(z.enum(FIELD_IDS)),
+  /** Asked fields the agent already asked twice in a row: not answered now, they count as skipped. */
+  lastAskFields: z.array(z.enum(FIELD_IDS)),
 });
 export type ExtractorInput = z.infer<typeof ExtractorInput>;

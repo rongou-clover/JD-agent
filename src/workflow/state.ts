@@ -13,6 +13,10 @@ export const PlannerMemory = z.object({
   askedFields: z.array(z.enum(FIELD_IDS)),
   /** Hiring reason picked with a quick reply, waiting for the sentence that completes the role mission. */
   pendingHiringReason: HiringReason.nullable(),
+  /** Fields asked in the agent message before the last one: a field asked in both is not asked a third time. */
+  previousAskedFields: z.array(z.enum(FIELD_IDS)).default([]),
+  /** Required fields the user skipped and the agent could not derive; sessions saved before default to none. */
+  skipped: z.array(z.enum(FIELD_IDS)).default([]),
 });
 export type PlannerMemory = z.infer<typeof PlannerMemory>;
 
@@ -35,7 +39,7 @@ export function initialState(): SessionState {
   return {
     draft: emptyDraft(),
     diagnosis: null,
-    planner: { optionalOffered: false, askedFields: [], pendingHiringReason: null },
+    planner: { optionalOffered: false, askedFields: [], pendingHiringReason: null, previousAskedFields: [], skipped: [] },
     forcedWordings: [],
     sectionCache: {},
     posting: EMPTY_POSTING,

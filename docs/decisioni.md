@@ -66,6 +66,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Nella demo l'agent non chiede l'errore tipico delle skill né le trasferte.
 - 2026-10-23 · Confermate le scelte del backend dove domande.md non diceva niente: domanda sulla seniority con pulsanti, il motivo cliccato vince su quello dedotto, qualità personali proposte dalle dimensioni consigliate del catalogo, testi nuovi in src/workflow/templates.
 - 2026-10-23 · Niente pubblicazione su Railway per ora: la demo resta in locale.
+- 2026-10-23 · Una voce obbligatoria si chiede al massimo due volte di fila: alla terza l'agent fa come per "non lo so". Su una voce incompleta la domanda dice cosa manca, e la proposta dell'agent completa quello che l'utente ha dato.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

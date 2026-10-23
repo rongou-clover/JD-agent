@@ -23,6 +23,7 @@ export async function extract(raw: ExtractorInput): Promise<AgentResult<Extracto
     message: input.message,
     draft: draftValues(input),
     askedFields: input.askedFields,
+    lastAskFields: input.lastAskFields,
   });
   const result = await extractorAgent.generate(prompt, {
     structuredOutput: { schema: ExtractorLlmOutput, jsonPromptInjection: true },

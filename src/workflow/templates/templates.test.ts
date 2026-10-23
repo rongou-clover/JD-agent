@@ -81,7 +81,9 @@ describe("required field questions", () => {
       "In che team entra, quante persone ci sono e a chi riporta?",
     ]);
     const vague = withField(sdrDraft, "sixMonthResults", ["Lavorare bene"]);
-    expect(requiredQuestions(["sixMonthResults"], vague, planner).questions[0]).toMatch(/^Puoi darmi qualcosa di misurabile/);
+    expect(requiredQuestions(["sixMonthResults"], vague, planner).questions).toEqual([
+      "Ho **Lavorare bene**: me ne serve almeno un altro, meglio se misurabile: un numero, un progetto chiuso, un risultato.",
+    ]);
   });
 
   it("seniority: quick replies limited to the levels the role allows", () => {

@@ -37,7 +37,7 @@ async function runCase(goldenCase: GoldenCase): Promise<CaseReport> {
   const guardScore = scoreGuard(expected.blocked, guard);
   if (!guard.allowed) return { id, guard, scores: { guard: guardScore }, usage: [] };
   const [extraction, diagnosis] = await Promise.all([
-    extract({ message: input, draft: emptyDraft(), askedFields: [] }),
+    extract({ message: input, draft: emptyDraft(), askedFields: [], lastAskFields: [] }),
     diagnose({ message: input }),
   ]);
   const draft = applyDiagnosis(applyExtraction(emptyDraft(), extraction.output), diagnosis.output);
@@ -48,7 +48,7 @@ async function runCase(goldenCase: GoldenCase): Promise<CaseReport> {
       guard: guardScore,
       diagnosis: scoreDiagnosis(expected.diagnosis, diagnosis.output),
       extraction: scoreExtraction(expected, draft),
-      redundantQuestions: scoreRedundantQuestions(expected, draft, planNext(draft, { optionalOffered: false })),
+      redundantQuestions: scoreRedundantQuestions(expected, draft, planNext(draft, { optionalOffered: false, skipped: [] })),
     },
     diagnosis: diagnosis.output,
     draft,
