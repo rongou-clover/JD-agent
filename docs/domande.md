@@ -11,11 +11,16 @@ Come l'agent chiede ogni voce dello schema. Basato sulle domande dell'onboarding
 - Dopo le 11 obbligatorie l'agent chiede le facoltative in un solo messaggio ("Vuoi aggiungere anche…?"), mai una per una.
 - Mai età, genere, stato civile o nazionalità. Se l'utente li scrive: "Non posso usarlo nell'annuncio; lo traduco in anni di esperienza?"
 
-## 4 · Job title: scelto in Home
-Non è una domanda: l'utente sceglie il job title dalla lista del catalogo, sopra il campo di testo, prima di "Inizia". L'agent non lo diagnostica.
+## Primo messaggio: diagnosi (voci 4 e 5)
+Non è una domanda: l'agent legge il primo testo e propone il job title del catalogo e la seniority.
+- Proposta: "Stai cercando un **[Job title]**, livello **[Seniority]**. Va bene?"
+- Risposte rapide: "Sì, va bene" · "È più junior" · "È più senior" · "Scegli un altro ruolo" (junior e senior solo se il ruolo ha quel livello).
+- "Scegli un altro ruolo": fino a 4 ruoli della stessa famiglia, oppure lo si descrive con parole proprie.
+- Fuori catalogo: "Questo ruolo non è ancora nella mia libreria: scrivo comunque la JD."
+- Ruolo non chiaro: "Quale ruolo stai cercando? Descrivimelo con parole tue."
 - Attività di altri ruoli: restano nella JD, senza avvisi.
-- Attività tutte di un altro ruolo del catalogo: "Quello che descrivi sembra più un **[B]** che un **[A]**. Vuoi cambiare ruolo?"
-- Risposte rapide: "Passa a [B]" · "Resto su [A]". Un ruolo rifiutato non si ripropone.
+- Attività tutte di un altro ruolo del catalogo: "Quello che descrivi sembra più un **[B]** che un **[A]**. Vuoi cambiare ruolo?" Risposte rapide: "Passa a [B]" · "Resto su [A]". Un ruolo rifiutato non si ripropone.
+- Coperta quando: l'utente conferma o sceglie.
 
 ## Obbligatorie
 
@@ -34,7 +39,7 @@ Non è una domanda: l'utente sceglie il job title dalla lista del catalogo, sopr
 - Domanda: "Cosa farà questa persona ogni settimana? E quali 2 o 3 cose sono le più critiche?"
 - Coperta quando: almeno 3 attività, con le critiche indicate.
 
-### 5 · Seniority (priorità 3, chiesta sempre)
+### 5 · Seniority (priorità 3, se la diagnosi non l'ha chiusa)
 - Domanda: "Che livello cerchi? Pensa a cosa farà: eseguire, coordinare o avere la responsabilità di un'area."
 - Risposte rapide: solo i livelli ammessi dal job title scelto (es. SDR: Junior, Mid).
 

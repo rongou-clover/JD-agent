@@ -21,7 +21,7 @@ describe("golden dataset", () => {
 
     const expectedFields = Object.keys(fields);
     for (const field of absent) expect(expectedFields).not.toContain(field);
-    // Job title (picked in Home) and seniority (asked with a quick reply) are never extracted.
+    // Job title and seniority come from the diagnosis, never from the extractor.
     for (const field of ["jobTitle", "seniority"] as const) {
       expect(expectedFields).not.toContain(field);
       expect(absent).not.toContain(field);

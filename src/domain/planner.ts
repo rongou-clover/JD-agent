@@ -23,6 +23,7 @@ export type PlannerState = {
 };
 
 export type Plan =
+  | { kind: "role" }
   | { kind: "required"; fields: FieldId[] }
   | { kind: "optional"; fields: FieldId[] }
   | { kind: "done" };
@@ -36,9 +37,10 @@ export function missingRequiredFields(draft: Draft): FieldId[] {
 
 export function planNext(draft: Draft, state: PlannerState): Plan {
   const missing = missingRequiredFields(draft);
+  // The role comes first, read from the user's text; it cannot be skipped.
+  if (missing.includes("jobTitle")) return { kind: "role" };
   // One question per message: one to pick from the quick replies, or one to write.
-  // The job title is picked in Home, never asked.
-  const next = missing.find((field) => field !== "jobTitle" && !state.skipped.includes(field));
+  const next = missing.find((field) => !state.skipped.includes(field));
   if (next) return { kind: "required", fields: [next] };
 
   if (!state.optionalOffered) {

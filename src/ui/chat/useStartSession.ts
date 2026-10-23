@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import type { SessionView } from "@/api/contract";
 import { ApiClientError, loginUrl, sendChat } from "@/ui/api/client";
-import { clearDraft, loadDraft, loadRole } from "@/ui/home/draft-storage";
+import { clearDraft, loadDraft } from "@/ui/home/draft-storage";
 import { primeSession } from "./primed-session";
 import type { ChatSession } from "./useChatSession";
 
@@ -23,29 +23,27 @@ const noop = async () => false;
 export function useStartSession(): ChatSession {
   const router = useRouter();
   const text = useSyncExternalStore(subscribe, loadDraft, onServer);
-  const jobTitleId = useSyncExternalStore(subscribe, loadRole, onServer);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (text === null) return;
-    if (text.trim() === "" || jobTitleId === null) {
+    if (text.trim() === "") {
       router.replace("/");
       return;
     }
     let active = true;
-    const key = `${jobTitleId}\n${text}`;
-    const request = starts.get(key) ?? sendChat({ kind: "start", jobTitleId, text });
-    starts.set(key, request);
+    const request = starts.get(text) ?? sendChat({ kind: "start", text });
+    starts.set(text, request);
     request.then(
       (view) => {
-        starts.delete(key);
+        starts.delete(text);
         if (!active) return;
         clearDraft();
         primeSession(view);
         router.replace(`/chat/${view.sessionId}`);
       },
       (caught: unknown) => {
-        starts.delete(key);
+        starts.delete(text);
         if (!active) return;
         if (!(caught instanceof ApiClientError)) throw caught;
         if (caught.code === "unauthorized") router.replace(loginUrl("/"));
@@ -55,7 +53,7 @@ export function useStartSession(): ChatSession {
     return () => {
       active = false;
     };
-  }, [text, jobTitleId, router]);
+  }, [text, router]);
 
   return { view: null, pendingText: error === null ? text : null, error, sendMessage: noop, sendQuickReply: noop };
 }

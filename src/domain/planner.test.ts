@@ -26,8 +26,9 @@ describe("buildChecklist", () => {
 });
 
 describe("planNext", () => {
-  it("never asks the job title: it is picked in Home", () => {
-    expect(planNext(emptyDraft(), notOffered)).toEqual({ kind: "required", fields: ["companyName"] });
+  it("starts with the role, which cannot be skipped", () => {
+    expect(planNext(emptyDraft(), notOffered)).toEqual({ kind: "role" });
+    expect(planNext(emptyDraft(), { optionalOffered: false, skipped: ["jobTitle"] })).toEqual({ kind: "role" });
   });
 
   it("asks one field at a time, highest priority first", () => {

@@ -76,6 +76,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Agent di diagnosi del ruolo congelato: resta nel repo ma il workflow non lo chiama. Via il messaggio "Stai cercando un…" e i pulsanti "È più junior/senior" e "Scegli un altro ruolo".
 - 2026-10-23 · Profili ibridi: attività di altri ruoli restano nella JD senza avvisi; solo se le attività sono tutte di un altro ruolo l'agent lo segnala e propone di cambiare, senza bloccare. Il segnale viene dall'estrattore.
 - 2026-10-23 · "Inizia" apre subito la chat: il messaggio compare con i puntini mentre la sessione parte, poi l'indirizzo diventa quello della chat. Un errore all'avvio si vede nella chat, e la Home conserva il testo.
+- 2026-10-23 · Tolto il selettore del ruolo in Home: il job title torna dal testo. La diagnosi gira al primo messaggio, in parallelo con guard ed estrattore, e propone ruolo e seniority da confermare. Restano tolti i suggerimenti del copilot del ruolo e resta la scheda leggera.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

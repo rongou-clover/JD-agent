@@ -1,8 +1,7 @@
 import type { ChatRequest, SessionView } from "@/api/contract";
 import type { Db } from "@/db/client";
 import { loadSession, recordUsage, saveTurn, SessionBusyError, type StoredSession } from "@/db/sessions-repo";
-import { findJobTitle } from "@/domain/catalog";
-import { initialState, needsRender, startState, type SessionState } from "@/workflow/state";
+import { initialState, needsRender, type SessionState } from "@/workflow/state";
 import { runTurn, TurnFailedError, type TurnWorkflow } from "@/workflow/turn";
 import type { TurnInput } from "@/workflow/turn-context";
 import { ApiFailure } from "./api-errors";
@@ -12,7 +11,6 @@ import { toSessionView } from "./session-view";
 export type ChatServiceDeps = BudgetDeps & { workflow: TurnWorkflow };
 
 const STALE_QUICK_REPLY = "Questa risposta rapida non è più valida: scrivi pure in chat.";
-const UNKNOWN_JOB_TITLE = "Scegli il ruolo dall'elenco e riprova.";
 
 function turnInput(request: ChatRequest, stored: StoredSession | null): TurnInput {
   if (request.kind !== "quickReply") return { kind: "message", text: request.text };
@@ -21,15 +19,11 @@ function turnInput(request: ChatRequest, stored: StoredSession | null): TurnInpu
   return { kind: "quickReply", label: reply.label, action: reply.action };
 }
 
-/** The state the turn starts from: the stored one, or a new session on the picked catalog role. */
+/** The state the turn starts from: the stored one, or an empty one for a new session. */
 function previousState(request: ChatRequest, stored: StoredSession | null): SessionState {
-  if (request.kind !== "start") {
-    if (!stored) throw new ApiFailure("sessionNotFound");
-    return stored.state;
-  }
-  const jobTitle = findJobTitle(request.jobTitleId);
-  if (!jobTitle) throw new ApiFailure("invalidRequest", UNKNOWN_JOB_TITLE);
-  return startState(jobTitle);
+  if (request.kind === "start") return initialState();
+  if (!stored) throw new ApiFailure("sessionNotFound");
+  return stored.state;
 }
 
 /**
@@ -48,9 +42,8 @@ export async function handleChat(request: ChatRequest, deps: ChatServiceDeps, cl
     throw error;
   });
   const userText = input.kind === "message" ? input.text : input.label;
-  // A new session is compared with the empty state: its picked role alone already needs a posting. Still pending
-  // if an earlier render was not saved yet; a blocked message never asks for one.
-  const changed = !outcome.blocked && needsRender(stored?.state ?? initialState(), outcome.state);
+  // Still pending if an earlier render was not saved yet; a blocked message never asks for one.
+  const changed = !outcome.blocked && needsRender(previous, outcome.state);
   const postingPending = changed || (stored !== null && stored.renderedVersion < stored.version);
   const session = stored ? { id: stored.id, version: stored.version } : null;
   let sessionId: string;

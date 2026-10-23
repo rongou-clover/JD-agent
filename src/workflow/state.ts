@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { JobTitle } from "@/domain/catalog";
 import { Draft, emptyDraft } from "@/domain/draft";
 import { HiringReason } from "@/domain/enums";
 import { FIELD_IDS } from "@/domain/fields";
@@ -64,11 +63,4 @@ export function initialState(): SessionState {
     sheet: null,
     quickReplies: [],
   };
-}
-
-/** A new session: the job title is picked in Home from the catalog, so it starts confirmed. */
-export function startState(jobTitle: JobTitle): SessionState {
-  const base = initialState();
-  const jobTitleSlot = { value: { kind: "catalog" as const, id: jobTitle.id }, source: "user" as const, status: "confirmed" as const };
-  return { ...base, draft: { ...base.draft, jobTitle: jobTitleSlot } };
 }

@@ -1,13 +1,18 @@
 import type { AgentMessage } from "@/api/contract";
 import type { ExtractorInput, ExtractorOutput } from "@/agents/extractor/schema";
 import type { GuardResult } from "@/agents/prompt-injection/guard";
+import type { DiagnosisInput } from "@/agents/role-diagnosis/schema";
 import type { AgentResult, Usage } from "@/agents/usage";
+import type { Diagnosis } from "@/domain/diagnosis";
 import type { Plan } from "@/domain/planner";
 import type { QuickReplyAction } from "./quick-reply-actions";
 import type { SessionState } from "./state";
 
-/** What the agent message leads with: the planner's next step, the role switch proposal, or the "what is missing" reminder. */
-export const FOCUSES = ["plan", "roleSwitch", "completeAnyway"] as const;
+/**
+ * What the agent message leads with: the planner's next step, the role read from the first message, the list of
+ * other roles, the role switch proposal, or the "what is missing" reminder.
+ */
+export const FOCUSES = ["plan", "diagnosis", "chooseRole", "roleSwitch", "completeAnyway"] as const;
 export type Focus = (typeof FOCUSES)[number];
 
 export type TurnInput =
@@ -18,6 +23,8 @@ export type TurnInput =
 export type TurnDeps = {
   checkMessage: (text: string) => Promise<GuardResult>;
   extract: (input: ExtractorInput) => Promise<AgentResult<ExtractorOutput>>;
+  /** Reads the role from the message while the job title is missing. */
+  diagnose: (input: DiagnosisInput) => Promise<AgentResult<Diagnosis>>;
   /** Model id the guard runs on, for its usage estimate. */
   guardModel: () => string;
   /** Opaque id for a quick reply. */
@@ -33,6 +40,8 @@ export type TurnContext = {
   notes: string[];
   focus: Focus;
   extraction: ExtractorOutput | null;
+  /** Diagnosis produced in this turn, if the role-diagnosis agent ran. */
+  diagnosis: Diagnosis | null;
   /** Catalog role closer to the activities than the current one: proposed when the focus is "roleSwitch". */
   suggestedRole: string | null;
   plan: Plan | null;
