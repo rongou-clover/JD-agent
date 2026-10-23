@@ -55,6 +55,12 @@ export async function getSession(sessionId: string): Promise<SessionView> {
   return parseJson(response, SessionView);
 }
 
+/** POST /api/sessions/[id]/render: writes the posting for the last turn and returns the updated view. */
+export async function renderSession(sessionId: string): Promise<SessionView> {
+  const response = await request(`/api/sessions/${encodeURIComponent(sessionId)}/render`, { method: "POST" });
+  return parseJson(response, SessionView);
+}
+
 /** GET /api/sessions: the chats started from this browser, newest first. */
 export async function listSessions(): Promise<SessionList> {
   return parseJson(await request("/api/sessions"), SessionList);

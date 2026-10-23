@@ -21,20 +21,20 @@ const sheet: InternalSheet = {
 
 describe("toSessionView", () => {
   it("has a null sheet before the first render", () => {
-    const view = toSessionView(SESSION_ID, initialState(), []);
+    const view = toSessionView(SESSION_ID, initialState(), [], false);
     expect(view.sheet).toBeNull();
     expect(() => SessionView.parse(view)).not.toThrow();
   });
 
   it("includes the rendered sheet", () => {
-    const view = toSessionView(SESSION_ID, { ...initialState(), sheet }, []);
+    const view = toSessionView(SESSION_ID, { ...initialState(), sheet }, [], false);
     expect(view.sheet).toEqual(sheet);
     expect(() => SessionView.parse(view)).not.toThrow();
   });
 
   it("rebuilds the sheet of a session rendered before sheets were stored", () => {
     const posting = { title: "SDR", summary: [], sections: [{ id: "role" as const, heading: "Il ruolo", blocks: [{ kind: "placeholder" as const }] }] };
-    const view = toSessionView(SESSION_ID, { ...initialState(), posting }, []);
+    const view = toSessionView(SESSION_ID, { ...initialState(), posting }, [], false);
     expect(view.sheet).not.toBeNull();
     expect(() => SessionView.parse(view)).not.toThrow();
   });

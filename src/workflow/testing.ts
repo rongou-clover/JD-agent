@@ -52,9 +52,9 @@ export type FakeOptions = {
   diagnosis?: Diagnosis;
 };
 
-/** Fake agents and renderer; `calls` records which ones ran. */
+/** Fake agents; `calls` records which ones ran. */
 export function fakeDeps(options: FakeOptions = {}) {
-  const calls = { guard: 0, extract: 0, diagnose: 0, render: 0 };
+  const calls = { guard: 0, extract: 0, diagnose: 0 };
   let replyId = 0;
   const deps: TurnDeps = {
     checkMessage: async () => {
@@ -69,10 +69,6 @@ export function fakeDeps(options: FakeOptions = {}) {
       calls.diagnose++;
       const output = options.diagnosis ?? { kind: "outOfCatalog", title: "" };
       return { output, usage: [{ model: FAST, inputTokens: 20, outputTokens: 8 }] };
-    },
-    render: async (input, cache) => {
-      calls.render++;
-      return fakeRender(input, cache);
     },
     guardModel: () => FAST,
     newReplyId: () => `r${++replyId}`,
