@@ -1,0 +1,4 @@
+/* Hides the Next dev tools badge from visual baselines. */
+nextjs-portal {
+  display: none !important;
+}

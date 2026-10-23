@@ -1,0 +1,186 @@
+{
+  "sessionId": "3f6c1d2e-8a4b-4c5d-9e7f-0a1b2c3d4e5f",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Cerco un social media manager per una startup di economia circolare a Milano. Deve gestire LinkedIn e Instagram, girare video agli eventi e fare un po' di grafica."
+    },
+    {
+      "role": "agent",
+      "message": {
+        "text": "Stai descrivendo tre ruoli in uno: social, video e grafica. Ti propongo **Content & Social Media Manager** come ruolo principale, livello **Mid (S2)**: le attività di video e grafica restano nella JD. Va bene?",
+        "questions": [],
+        "quickReplies": [
+          {
+            "id": "qr-confirm",
+            "label": "Sì, va bene"
+          },
+          {
+            "id": "qr-junior",
+            "label": "È più junior"
+          },
+          {
+            "id": "qr-other",
+            "label": "Scegli un altro ruolo"
+          }
+        ]
+      }
+    }
+  ],
+  "checklist": {
+    "items": [
+      {
+        "field": "companyName",
+        "label": "Nome azienda",
+        "done": false
+      },
+      {
+        "field": "companyDescription",
+        "label": "Descrizione azienda",
+        "done": false
+      },
+      {
+        "field": "roleMission",
+        "label": "Missione del ruolo",
+        "done": false
+      },
+      {
+        "field": "jobTitle",
+        "label": "Job title",
+        "done": true
+      },
+      {
+        "field": "seniority",
+        "label": "Seniority",
+        "done": true
+      },
+      {
+        "field": "team",
+        "label": "Team e riporto",
+        "done": false
+      },
+      {
+        "field": "activities",
+        "label": "Attività ricorrenti",
+        "done": true
+      },
+      {
+        "field": "sixMonthResults",
+        "label": "Risultati a 6 mesi",
+        "done": false
+      },
+      {
+        "field": "technicalSkills",
+        "label": "Skill tecniche",
+        "done": true
+      },
+      {
+        "field": "softSkills",
+        "label": "Skill trasversali",
+        "done": false
+      },
+      {
+        "field": "location",
+        "label": "Sede e modalità",
+        "done": false
+      },
+      {
+        "field": "contract",
+        "label": "Contratto",
+        "done": false
+      }
+    ],
+    "doneCount": 4,
+    "totalCount": 12,
+    "complete": false
+  },
+  "posting": {
+    "title": "Content & Social Media Manager",
+    "summary": [
+      {
+        "label": "Azienda",
+        "value": null
+      },
+      {
+        "label": "Sede",
+        "value": "Milano"
+      },
+      {
+        "label": "Modalità",
+        "value": null
+      },
+      {
+        "label": "Contratto",
+        "value": null
+      },
+      {
+        "label": "Seniority",
+        "value": "Mid (S2)"
+      }
+    ],
+    "sections": [
+      {
+        "id": "role",
+        "heading": "Il ruolo",
+        "blocks": [
+          {
+            "kind": "paragraph",
+            "text": "È una posizione nuova: cerchiamo una persona che prenda la responsabilità di social, video e contenuti e racconti ogni settimana il lavoro dell'azienda."
+          }
+        ]
+      },
+      {
+        "id": "activities",
+        "heading": "Cosa farai",
+        "blocks": [
+          {
+            "kind": "bullets",
+            "items": [
+              "Costruirai e gestirai il piano editoriale di LinkedIn e Instagram.",
+              "Girerai e monterai video brevi per Reels e LinkedIn durante gli eventi settimanali.",
+              "Valorizzerai l'archivio di contenuti e video già prodotti.",
+              "Curerai la grafica dei report per i clienti."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "results",
+        "heading": "Nei primi 6 mesi",
+        "blocks": [
+          {
+            "kind": "placeholder"
+          }
+        ]
+      },
+      {
+        "id": "requirements",
+        "heading": "Cosa cerchiamo",
+        "blocks": [
+          {
+            "kind": "placeholder"
+          }
+        ]
+      },
+      {
+        "id": "about",
+        "heading": "Chi siamo",
+        "blocks": [
+          {
+            "kind": "placeholder"
+          }
+        ]
+      },
+      {
+        "id": "equalOpportunity",
+        "heading": "Pari opportunità",
+        "blocks": [
+          {
+            "kind": "paragraph",
+            "text": "Accogliamo candidature di persone di ogni genere, età, provenienza e orientamento, nel rispetto delle L. 903/77 e L. 125/91. Se non hai tutti i requisiti ma il ruolo ti interessa, candidati comunque. I dati saranno trattati secondo il Regolamento UE 2016/679 (GDPR)."
+          }
+        ]
+      }
+    ]
+  }
+}
