@@ -7,12 +7,19 @@ import { PreviewPane } from "@/ui/preview/PreviewPane";
 import { ChatInput } from "./ChatInput";
 import { ChecklistMenu } from "./ChecklistMenu";
 import { ExportMenu } from "./ExportMenu";
-import { MessageList } from "./MessageList";
-import { useChatSession } from "./useChatSession";
+import { MessageList, PendingTurn } from "./MessageList";
+import { useChatSession, type ChatSession } from "./useChatSession";
 
-/** Chat screen: header (checklist, export), chat column on the left, posting preview on the right. */
 export function ChatScreen({ sessionId }: { sessionId: string }) {
-  const { view, pendingText, error, sendMessage, sendQuickReply } = useChatSession(sessionId);
+  return <ChatLayout session={useChatSession(sessionId)} />;
+}
+
+/**
+ * Chat screen: header (checklist, export), chat column on the left, posting preview on the right.
+ * Before the first view arrives, a pending turn shows the message being answered.
+ */
+export function ChatLayout({ session }: { session: ChatSession }) {
+  const { view, pendingText, error, sendMessage, sendQuickReply } = session;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-surface print:h-auto print:overflow-visible print:bg-white">
@@ -34,8 +41,8 @@ export function ChatScreen({ sessionId }: { sessionId: string }) {
           {view ? (
             <MessageList view={view} pendingText={pendingText} onQuickReply={sendQuickReply} />
           ) : (
-            <div className="flex min-h-0 flex-1 flex-col justify-end px-6 py-5 text-sm text-muted-foreground">
-              {error === null && "Caricamento della conversazione…"}
+            <div className="flex min-h-0 flex-1 flex-col justify-end gap-3 px-6 py-5 text-sm text-muted-foreground">
+              {pendingText !== null ? <PendingTurn text={pendingText} /> : error === null && "Caricamento della conversazione…"}
             </div>
           )}
           {error && (
