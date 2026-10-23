@@ -228,5 +228,80 @@
         ]
       }
     ]
+  },
+  "sheet": {
+    "jobTitle": "Content & Social Media Manager",
+    "seniority": "S2",
+    "inCatalog": true,
+    "hybridRoles": null,
+    "skills": [
+      {
+        "name": "Gestire i canali social",
+        "type": "hard",
+        "criticality": "importante",
+        "expectedLevel": "P3",
+        "required": true,
+        "source": "draft"
+      },
+      {
+        "name": "Girare e montare video",
+        "type": "hard",
+        "criticality": "importante",
+        "expectedLevel": "P3",
+        "required": true,
+        "source": "draft"
+      },
+      {
+        "name": "Grafica per social e report",
+        "type": null,
+        "criticality": null,
+        "expectedLevel": null,
+        "required": false,
+        "source": "draft"
+      },
+      {
+        "name": "Costruire un piano editoriale",
+        "type": "hard",
+        "criticality": "critica",
+        "expectedLevel": "P3",
+        "required": false,
+        "source": "catalog"
+      },
+      {
+        "name": "Scrivere e revisionare testi",
+        "type": "hard",
+        "criticality": "critica",
+        "expectedLevel": "P3",
+        "required": false,
+        "source": "catalog"
+      },
+      {
+        "name": "Usare l'AI per produrre contenuti",
+        "type": "IA",
+        "criticality": "importante",
+        "expectedLevel": "P3",
+        "required": false,
+        "source": "catalog"
+      },
+      {
+        "name": "Leggere i dati di performance",
+        "type": "hard",
+        "criticality": "accessoria",
+        "expectedLevel": "P2",
+        "required": false,
+        "source": "catalog"
+      }
+    ],
+    "softSkills": [],
+    "prerequisites": [],
+    "salary": null,
+    "managerNotes": null,
+    "recommendedDimensions": [
+      "Comprensione e comunicazione scritta",
+      "Competenze AI",
+      "Organizzazione del tempo",
+      "Iniziativa",
+      "Gestione del feedback"
+    ]
   }
 }

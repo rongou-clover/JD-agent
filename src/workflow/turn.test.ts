@@ -48,6 +48,7 @@ describe("turn workflow", () => {
     expect(result.state.draft.jobTitle).toEqual({ value: { kind: "catalog", id: "sdr" }, source: "catalog", status: "proposed" });
     expect(result.state.draft.companyName.value).toBe("Acme");
     expect(result.state.posting.title).toBe("Acme");
+    expect(result.state.sheet).not.toBeNull();
     expect(result.state.planner.askedFields).toEqual(["jobTitle", "seniority"]);
     expect(result.usage.map((entry) => entry.model)).toEqual([FAST, FAST, FAST, WRITER]);
   });

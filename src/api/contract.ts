@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MAX_INPUT_CHARS } from "@/agents/extractor/schema";
-import { Posting } from "@/render/contract";
+import { InternalSheet, Posting } from "@/render/contract";
 
 /** A button under an agent message. The id is opaque and valid only for the session's last agent turn. */
 export const QuickReply = z.object({ id: z.string(), label: z.string() });
@@ -34,6 +34,8 @@ export const SessionView = z.object({
   transcript: z.array(TranscriptEntry),
   checklist: ChecklistView,
   posting: Posting,
+  /** Internal sheet for the hiring team; null before the first render. */
+  sheet: InternalSheet.nullable(),
 });
 export type SessionView = z.infer<typeof SessionView>;
 

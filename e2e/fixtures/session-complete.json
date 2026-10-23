@@ -257,5 +257,90 @@
         ]
       }
     ]
+  },
+  "sheet": {
+    "jobTitle": "Content & Social Media Manager",
+    "seniority": "S2",
+    "inCatalog": true,
+    "hybridRoles": null,
+    "skills": [
+      {
+        "name": "Gestire i canali social",
+        "type": "hard",
+        "criticality": "importante",
+        "expectedLevel": "P3",
+        "required": true,
+        "source": "draft"
+      },
+      {
+        "name": "Girare e montare video",
+        "type": "hard",
+        "criticality": "importante",
+        "expectedLevel": "P3",
+        "required": true,
+        "source": "draft"
+      },
+      {
+        "name": "Grafica per social e report",
+        "type": null,
+        "criticality": null,
+        "expectedLevel": null,
+        "required": false,
+        "source": "draft"
+      },
+      {
+        "name": "Costruire un piano editoriale",
+        "type": "hard",
+        "criticality": "critica",
+        "expectedLevel": "P3",
+        "required": true,
+        "source": "draft"
+      },
+      {
+        "name": "Scrivere e revisionare testi",
+        "type": "hard",
+        "criticality": "critica",
+        "expectedLevel": "P3",
+        "required": false,
+        "source": "catalog"
+      },
+      {
+        "name": "Usare l'AI per produrre contenuti",
+        "type": "IA",
+        "criticality": "importante",
+        "expectedLevel": "P3",
+        "required": false,
+        "source": "catalog"
+      },
+      {
+        "name": "Leggere i dati di performance",
+        "type": "hard",
+        "criticality": "accessoria",
+        "expectedLevel": "P2",
+        "required": false,
+        "source": "catalog"
+      }
+    ],
+    "softSkills": [
+      "Iniziativa",
+      "Organizzazione del tempo"
+    ],
+    "prerequisites": [
+      "2–4 anni di esperienza nella gestione di canali social per un brand",
+      "Canva e suite Adobe"
+    ],
+    "salary": {
+      "min": 32000,
+      "max": 38000,
+      "inPosting": false
+    },
+    "managerNotes": "Serve una persona autonoma sui video: il CEO non ha tempo di rivedere ogni contenuto.",
+    "recommendedDimensions": [
+      "Comprensione e comunicazione scritta",
+      "Competenze AI",
+      "Organizzazione del tempo",
+      "Iniziativa",
+      "Gestione del feedback"
+    ]
   }
 }

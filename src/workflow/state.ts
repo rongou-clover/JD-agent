@@ -3,7 +3,7 @@ import { Diagnosis } from "@/domain/diagnosis";
 import { Draft, emptyDraft } from "@/domain/draft";
 import { HiringReason } from "@/domain/enums";
 import { FIELD_IDS } from "@/domain/fields";
-import { ForcedWording, Posting, SectionCache } from "@/render/contract";
+import { ForcedWording, InternalSheet, Posting, SectionCache } from "@/render/contract";
 import { StoredQuickReply } from "./quick-reply-actions";
 
 /** Planner memory across turns: the domain PlannerState plus what the last agent message asked. */
@@ -24,6 +24,8 @@ export const SessionState = z.object({
   forcedWordings: z.array(ForcedWording),
   sectionCache: SectionCache,
   posting: Posting,
+  /** The renderer's internal sheet; null until the first render. */
+  sheet: InternalSheet.nullable(),
   quickReplies: z.array(StoredQuickReply),
 });
 export type SessionState = z.infer<typeof SessionState>;
@@ -39,6 +41,7 @@ export function initialState(): SessionState {
     forcedWordings: [],
     sectionCache: {},
     posting: EMPTY_POSTING,
+    sheet: null,
     quickReplies: [],
   };
 }
