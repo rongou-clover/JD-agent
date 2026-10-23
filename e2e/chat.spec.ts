@@ -85,6 +85,21 @@ test("complete checklist shows JD pronta and no missing chip", async ({ page }) 
   await expect(page).toHaveScreenshot("chat-complete.png");
 });
 
+test("a long posting scrolls inside the preview only, never the page", async ({ page }) => {
+  await mockSession(page, ok(fixture("complete")));
+  await page.goto(CHAT_URL);
+
+  const preview = page.getByRole("region", { name: "Anteprima job description" });
+  await expect(preview.getByRole("heading", { name: "Pari opportunità" })).toBeAttached();
+  expect(await preview.evaluate((pane) => pane.scrollHeight > pane.clientHeight)).toBe(true);
+  expect(await fitsViewport(page)).toBe(true);
+
+  await preview.evaluate((pane) => pane.scrollTo({ top: pane.scrollHeight }));
+  await expect(preview.getByRole("heading", { name: "Pari opportunità" })).toBeInViewport();
+  expect(await fitsViewport(page)).toBe(true);
+  await expect(page).toHaveScreenshot("chat-complete-preview-bottom.png");
+});
+
 test("a failed turn shows the API message and gives the text back", async ({ page }) => {
   const message = "L'agent sta ancora rispondendo al messaggio precedente.";
   await mockSession(page, ok(fixture("questions")));

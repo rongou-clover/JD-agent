@@ -53,6 +53,8 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-22 · Home e chat stanno ciascuna in una sola schermata, senza scorrimento, anche dentro chat e anteprima.
 - 2026-10-22 · Template dell'output basato sull'analisi di 42 annunci GTM reali (vedi Template output JD e Corpus annunci).
 - 2026-10-23 · Più ruoli in una richiesta: l'agent non chiede quale sia il principale, lo propone lui (quello che copre le attività più importanti) e nomina le attività chiave degli altri ruoli, che restano nella JD. Se nessun ruolo prevale avvisa che il profilo è difficile da trovare, e la scheda interna lo segnala.
+- 2026-10-23 · L'anteprima della JD scorre solo al suo interno quando l'annuncio è lungo; la pagina resta senza scorrimento.
+- 2026-10-23 · Se all'avvio serve la password, il testo scritto in Home viene conservato e rimesso nel campo dopo l'accesso.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

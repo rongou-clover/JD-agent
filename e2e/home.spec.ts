@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { errorNotice, fail, fitsViewport, fixture, mockChat, mockSession, ok } from "./support/mock-api";
+import { errorNotice, fail, fitsViewport, fixture, mockChat, mockLogin, mockSession, ok } from "./support/mock-api";
 
 const BRIEF = fixture("diagnosis").transcript[0];
 const BRIEF_TEXT = BRIEF?.role === "user" ? BRIEF.text : "";
@@ -54,4 +54,27 @@ test("unauthorized sends the user to the login page", async ({ page }) => {
   await page.getByLabel("Descrivi il ruolo e la persona che cerchi").fill(BRIEF_TEXT);
   await page.getByRole("button", { name: "Inizia", exact: true }).click();
   await expect(page).toHaveURL("/accesso?next=%2F");
+});
+
+test("the typed text survives the login and is cleared once the session starts", async ({ page }) => {
+  await mockChat(page, fail(401, "unauthorized", "Accedi per continuare."));
+  await mockLogin(page, "trifoglio");
+  await page.goto("/");
+  await page.getByLabel("Descrivi il ruolo e la persona che cerchi").fill(BRIEF_TEXT);
+  await page.getByRole("button", { name: "Inizia", exact: true }).click();
+
+  await expect(page).toHaveURL("/accesso?next=%2F");
+  await page.getByLabel("Password").fill("trifoglio");
+  await page.getByRole("button", { name: "Entra" }).click();
+
+  await expect(page).toHaveURL("/");
+  await expect(page.getByLabel("Descrivi il ruolo e la persona che cerchi")).toHaveValue(BRIEF_TEXT);
+
+  const view = fixture("diagnosis");
+  await page.unroute("**/api/chat");
+  await mockChat(page, ok(view));
+  await mockSession(page, ok(view));
+  await page.getByRole("button", { name: "Inizia", exact: true }).click();
+  await expect(page).toHaveURL(`/chat/${view.sessionId}`);
+  expect(await page.evaluate(() => sessionStorage.length)).toBe(0);
 });

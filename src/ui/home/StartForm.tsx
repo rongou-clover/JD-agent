@@ -1,18 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import { MAX_INPUT_CHARS } from "@/agents/extractor/schema";
 import { ApiClientError, loginUrl, sendChat } from "@/ui/api/client";
 import { ErrorNotice } from "@/ui/ErrorNotice";
 import { ArrowRightIcon, InfoIcon } from "@/ui/icons";
+import { clearDraft, loadDraft, saveDraft } from "./draft-storage";
+
+/** The stored draft is read once on the client; the server renders an empty field. */
+const subscribe = () => () => {};
+const emptyDraft = () => "";
 
 const PLACEHOLDER =
   "Es. Cerco un social media manager per una startup di Milano: deve gestire LinkedIn e Instagram e girare video agli eventi.";
 
 export function StartForm() {
   const router = useRouter();
-  const [text, setText] = useState("");
+  const storedDraft = useSyncExternalStore(subscribe, loadDraft, emptyDraft);
+  const [typed, setText] = useState<string | null>(null);
+  const text = typed ?? storedDraft;
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -24,11 +31,14 @@ export function StartForm() {
     setError(null);
     try {
       const view = await sendChat({ kind: "message", sessionId: null, text });
+      clearDraft();
       router.push(`/chat/${view.sessionId}`);
     } catch (caught) {
       setPending(false);
-      if (caught instanceof ApiClientError && caught.code === "unauthorized") router.push(loginUrl("/"));
-      else if (caught instanceof ApiClientError) setError(caught.message);
+      if (caught instanceof ApiClientError && caught.code === "unauthorized") {
+        saveDraft(text);
+        router.push(loginUrl("/"));
+      } else if (caught instanceof ApiClientError) setError(caught.message);
       else throw caught;
     }
   }
