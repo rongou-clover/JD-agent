@@ -10,8 +10,11 @@ import { blockTexts, countWords } from "@/render/guard";
 import { SECTION_SPECS, type ProseSection } from "@/render/sections";
 import type { ScoreResult } from "./scorers";
 
-/** Target length of a complete posting (docs/template-output.md). */
-export const WORD_RANGE = { min: 500, max: 700 } as const;
+/**
+ * Accepted length of a complete posting. The template targets 500–700 words; a thin draft may land
+ * a little lower, which beats padding (docs/decisioni.md, 2026-10-23).
+ */
+export const WORD_RANGE = { min: 450, max: 700 } as const;
 
 /** Writer model prices in $ per million tokens (Sonnet 5.5, 2026-10-23). */
 const PRICE = { input: 2, output: 10 } as const;

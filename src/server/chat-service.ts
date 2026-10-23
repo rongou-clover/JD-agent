@@ -4,7 +4,7 @@ import type { Db } from "@/db/client";
 import { loadSession, recordUsage, saveTurn, SessionBusyError, type StoredSession } from "@/db/sessions-repo";
 import { usageTotalsSince } from "@/db/usage-repo";
 import { initialState } from "@/workflow/state";
-import { runTurn, type TurnWorkflow } from "@/workflow/turn";
+import { runTurn, TurnFailedError, type TurnWorkflow } from "@/workflow/turn";
 import type { TurnInput } from "@/workflow/turn-context";
 import { ApiFailure } from "./api-errors";
 import { toSessionView } from "./session-view";
@@ -39,7 +39,10 @@ export async function handleChat(request: ChatRequest, deps: ChatServiceDeps): P
   const input = turnInput(request, stored);
   await assertBudget(deps);
 
-  const outcome = await runTurn(deps.workflow, input, stored?.state ?? initialState());
+  const outcome = await runTurn(deps.workflow, input, stored?.state ?? initialState()).catch(async (error: unknown) => {
+    if (error instanceof TurnFailedError) await recordUsage(deps.db, stored?.id ?? null, error.usage);
+    throw error;
+  });
   const userText = input.kind === "message" ? input.text : input.label;
   const session = stored ? { id: stored.id, version: stored.version } : null;
   let sessionId: string;

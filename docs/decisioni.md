@@ -23,6 +23,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Testo fisso sulle pari opportunità: «Accogliamo candidature di persone di ogni genere, età, provenienza e orientamento, nel rispetto delle L. 903/77 e L. 125/91. Se non hai tutti i requisiti ma il ruolo ti interessa, candidati comunque. I dati saranno trattati secondo il Regolamento UE 2016/679 (GDPR).»
 - 2026-10-23 · La scheda interna elenca, oltre alle skill citate dall'utente, le skill del catalogo per il ruolo non citate, con tipologia, criticità e P atteso, segnate come provenienti dal catalogo.
 - 2026-10-23 · "Informazioni pratiche" compare solo con informazioni in più rispetto al riquadro di sintesi (orario, trasferte); non ripete sede, modalità né contratto.
+- 2026-10-23 · Lunghezza dell'annuncio: l'obiettivo resta 500–700 parole, ma l'eval accetta da 450 quando la bozza ha poche informazioni; meglio corto che allungato con frasi vuote.
 
 ## Tecnica
 - 2026-10-22 · Next.js + Mastra + Postgres.
@@ -58,6 +59,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · Più ruoli in una richiesta: l'agent non chiede quale sia il principale, lo propone lui (quello che copre le attività più importanti) e nomina le attività chiave degli altri ruoli, che restano nella JD. Se nessun ruolo prevale avvisa che il profilo è difficile da trovare, e la scheda interna lo segnala.
 - 2026-10-23 · L'anteprima della JD scorre solo al suo interno quando l'annuncio è lungo; la pagina resta senza scorrimento.
 - 2026-10-23 · Se all'avvio serve la password, il testo scritto in Home viene conservato e rimesso nel campo dopo l'accesso.
+- 2026-10-23 · Anche la chat scorre al suo interno per rileggere i messaggi precedenti, partendo sempre dall'ultimo; la pagina resta senza scorrimento.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

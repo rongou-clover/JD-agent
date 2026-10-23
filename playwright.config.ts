@@ -1,6 +1,20 @@
 import { defineConfig, devices } from "@playwright/test";
+import { ACCESS_COOKIE, signAccess } from "./src/auth/access-cookie";
 
 const PORT = 3100;
+
+/** Test-only access secret: the dev server gets it via env, the browser starts with a valid cookie. */
+const E2E_SESSION_SECRET = "e2e-session-secret-not-used-anywhere-else";
+const accessCookie = {
+  name: ACCESS_COOKIE,
+  value: signAccess(E2E_SESSION_SECRET, new Date()),
+  domain: "localhost",
+  path: "/",
+  expires: -1,
+  httpOnly: true,
+  secure: false,
+  sameSite: "Lax" as const,
+};
 
 export default defineConfig({
   testDir: "./e2e",
@@ -13,6 +27,7 @@ export default defineConfig({
     viewport: { width: 1440, height: 900 },
     /** Deterministic UI: no marquee, no random Home headline (src/ui/home/Headline.tsx). */
     contextOptions: { reducedMotion: "reduce" },
+    storageState: { cookies: [accessCookie], origins: [] },
     screenshot: "on",
     video: "on",
     trace: "retain-on-failure",
@@ -26,5 +41,6 @@ export default defineConfig({
     gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },
     url: `http://localhost:${PORT}/api/health`,
     reuseExistingServer: !process.env.CI,
+    env: { ACCESS_PASSWORD: "e2e-password", SESSION_SECRET: E2E_SESSION_SECRET },
   },
 });

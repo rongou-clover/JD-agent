@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { QuickReply, SessionView } from "@/api/contract";
 import { AgentTurn } from "./AgentTurn";
 
@@ -34,13 +35,22 @@ function TypingIndicator() {
 }
 
 /**
- * The transcript, bottom-aligned: older turns overflow at the top and are clipped (no scrolling, design/README.md).
+ * The transcript, bottom-aligned. It scrolls inside the chat column only, and jumps to the latest turn
+ * whenever a message is added (docs/decisioni.md, 2026-10-23).
  */
 export function MessageList({ view, pendingText, onQuickReply }: Props) {
+  const scroller = useRef<HTMLDivElement>(null);
   const lastIndex = view.transcript.length - 1;
   const missing = view.checklist.totalCount - view.checklist.doneCount;
+
+  useEffect(() => {
+    const element = scroller.current;
+    if (element) element.scrollTop = element.scrollHeight;
+  }, [view.transcript.length, pendingText]);
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-hidden px-6 py-5 [mask-image:linear-gradient(to_bottom,transparent,#000_32px)]">
+    <div ref={scroller} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-5">
+      <div className="mt-auto flex flex-col gap-3">
       {view.transcript.map((entry, index) =>
         entry.role === "user" ? (
           <UserBubble key={index} text={entry.text} />
@@ -59,6 +69,7 @@ export function MessageList({ view, pendingText, onQuickReply }: Props) {
           <TypingIndicator />
         </>
       )}
+      </div>
     </div>
   );
 }

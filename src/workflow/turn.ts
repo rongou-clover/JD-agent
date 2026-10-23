@@ -1,5 +1,6 @@
 import { createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
+import type { Usage } from "@/agents/usage";
 import type { SessionState } from "./state";
 import { createTurnSteps } from "./steps";
 import type { TurnContext, TurnDeps, TurnInput, TurnOutcome } from "./turn-context";
@@ -25,7 +26,22 @@ export function createTurnWorkflow(deps: TurnDeps) {
 
 export type TurnWorkflow = ReturnType<typeof createTurnWorkflow>;
 
-export class TurnFailedError extends Error {}
+/** Carries the usage of the steps that completed, so tokens spent before the failure still count. */
+export class TurnFailedError extends Error {
+  constructor(
+    readonly usage: Usage[],
+    options: { cause: unknown },
+  ) {
+    super("Turn workflow did not complete", options);
+  }
+}
+
+/** Usage accumulates through the context, so the longest list among completed steps is the total so far. */
+function completedUsage(steps: Record<string, { status: string; output?: unknown }>): Usage[] {
+  return Object.values(steps)
+    .flatMap((step) => (step.status === "success" ? [(step.output as TurnContext | undefined)?.usage ?? []] : []))
+    .reduce<Usage[]>((longest, usage) => (usage.length > longest.length ? usage : longest), []);
+}
 
 export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: SessionState): Promise<TurnOutcome> {
   const initial: TurnContext = {
@@ -43,7 +59,7 @@ export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: S
   const result = await run.start({ inputData: initial });
   if (result.status !== "success" || !result.result.message) {
     const cause = result.status === "failed" ? result.error : result.status;
-    throw new TurnFailedError("Turn workflow did not complete", { cause });
+    throw new TurnFailedError(completedUsage(result.steps), { cause });
   }
   return { state: result.result.state, message: result.result.message, usage: result.result.usage };
 }
