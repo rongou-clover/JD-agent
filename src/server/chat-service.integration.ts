@@ -1,4 +1,3 @@
-import type { Diagnosis } from "@/domain/diagnosis";
 import { afterAll, beforeEach, describe, expect, inject, it } from "vitest";
 import { createDb } from "@/db/client";
 import { messages, sessions, usage } from "@/db/schema";
@@ -15,11 +14,10 @@ beforeEach(async () => {
   await db.delete(sessions);
 });
 
-const sdr: Diagnosis = { kind: "catalog", jobTitleId: "sdr", seniority: "S1", otherRoles: [], hybrid: false };
 const bigLimits = { fast: { input: 1e9, output: 1e9 }, writer: { input: 1e9, output: 1e9 } };
 
 function service(limits = bigLimits): ChatServiceDeps {
-  const { deps } = fakeDeps({ diagnosis: sdr, extraction: extraction() });
+  const { deps } = fakeDeps({ extraction: extraction() });
   return { db, workflow: createTurnWorkflow(deps), models: () => ({ fast: FAST, writer: WRITER }), limits: () => limits, now: () => new Date() };
 }
 
@@ -31,7 +29,7 @@ async function failure(promise: Promise<unknown>): Promise<string> {
 describe("chat service", () => {
   it("starts a session, then a quick reply continues it", async () => {
     const deps = service();
-    const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR" }, deps);
+    const first = await handleChat({ kind: "start", jobTitleId: "sdr", text: "Cerco un SDR" }, deps);
     expect(first.transcript).toHaveLength(2);
     const confirm = first.transcript[1]?.role === "agent" ? first.transcript[1].message.quickReplies[0] : undefined;
     expect(confirm?.label).toBe("Sì, va bene");
@@ -44,7 +42,7 @@ describe("chat service", () => {
 
   it("rejects a stale quick reply and an unknown session", async () => {
     const deps = service();
-    const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR" }, deps);
+    const first = await handleChat({ kind: "start", jobTitleId: "sdr", text: "Cerco un SDR" }, deps);
     expect(await failure(handleChat({ kind: "quickReply", sessionId: first.sessionId, replyId: "old" }, deps))).toBe("invalidRequest");
     const unknown = "00000000-0000-4000-8000-000000000000";
     expect(await failure(handleChat({ kind: "message", sessionId: unknown, text: "Ciao" }, deps))).toBe("sessionNotFound");
@@ -52,13 +50,13 @@ describe("chat service", () => {
 
   it("stops every turn once a daily limit is reached", async () => {
     const tight = { ...bigLimits, writer: { input: 1e9, output: 50 } };
-    const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR" }, service(tight));
+    const first = await handleChat({ kind: "start", jobTitleId: "sdr", text: "Cerco un SDR" }, service(tight));
     const next = handleChat({ kind: "message", sessionId: first.sessionId, text: "Acme" }, service(tight));
     expect(await failure(next)).toBe("budgetExhausted");
   });
 
   it("a turn saved while another one runs makes the slower one busy; its tokens still count", async () => {
-    const first = await handleChat({ kind: "message", sessionId: null, text: "Cerco un SDR" }, service());
+    const first = await handleChat({ kind: "start", jobTitleId: "sdr", text: "Cerco un SDR" }, service());
     const turn = { kind: "message" as const, sessionId: first.sessionId, text: "Acme" };
     const { deps: slow } = fakeDeps({ extraction: extraction() });
     // The slow turn's renderer lets a whole other turn on the same session finish first.

@@ -60,7 +60,7 @@ describe("scoreRedundantQuestions", () => {
       score: 0.5,
       failures: ["asked covered field team from scratch"],
     });
-    expect(scoreRedundantQuestions(expected, draft, { kind: "diagnosis" }).score).toBe(1);
+    expect(scoreRedundantQuestions(expected, draft, { kind: "done" }).score).toBe(1);
   });
 
   it("allows a follow-up on a partly filled field", () => {

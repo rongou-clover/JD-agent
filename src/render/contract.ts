@@ -1,6 +1,5 @@
 import { z } from "zod";
 import type { AgentResult } from "@/agents/usage";
-import { Diagnosis } from "@/domain/diagnosis";
 import { Draft } from "@/domain/draft";
 import { Criticality, ExpectedLevel, Seniority, SkillType } from "@/domain/enums";
 
@@ -51,8 +50,6 @@ export const InternalSheet = z.object({
   jobTitle: z.string(),
   seniority: Seniority.nullable(),
   inCatalog: z.boolean(),
-  /** Set when no role prevails: a hard-to-fill profile. */
-  hybridRoles: z.array(z.string()).nullable(),
   skills: z.array(
     z.object({
       name: z.string(),
@@ -84,7 +81,6 @@ export type ForcedWording = z.infer<typeof ForcedWording>;
 
 export const RenderInput = z.object({
   draft: Draft,
-  diagnosis: Diagnosis.nullable(),
   forcedWordings: z.array(ForcedWording),
 });
 export type RenderInput = z.infer<typeof RenderInput>;

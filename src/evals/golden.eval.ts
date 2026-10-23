@@ -8,8 +8,8 @@ import type { Usage } from "@/agents/usage";
 import type { Diagnosis } from "@/domain/diagnosis";
 import { emptyDraft, type Draft } from "@/domain/draft";
 import { planNext } from "@/domain/planner";
-import { applyDiagnosis, applyExtraction } from "@/workflow/merge";
-import { loadGoldenCases, type GoldenCase } from "./golden";
+import { applyExtraction } from "@/workflow/merge";
+import { loadGoldenCases, type ExpectedDiagnosis, type GoldenCase } from "./golden";
 import { scoreDiagnosis, scoreExtraction, scoreGuard, scoreRedundantQuestions, type ScoreResult } from "./scorers";
 
 const THRESHOLDS = { guard: 1, diagnosis: 0.9, extraction: 0.8, redundantQuestions: 1 } as const;
@@ -31,16 +31,27 @@ function average(name: ScorerName): number {
   return scores.length === 0 ? 1 : scores.reduce((sum, score) => sum + score, 0) / scores.length;
 }
 
+/**
+ * The draft as the product starts it: the expected role, as if picked in Home. The frozen role-diagnosis
+ * agent is still scored on its own, but its output never reaches the draft.
+ */
+function pickedRoleDraft(expected: ExpectedDiagnosis): Draft {
+  const draft = emptyDraft();
+  if (expected.kind !== "catalog") return draft;
+  return { ...draft, jobTitle: { value: { kind: "catalog", id: expected.jobTitleId }, source: "user", status: "confirmed" } };
+}
+
 async function runCase(goldenCase: GoldenCase): Promise<CaseReport> {
   const { id, input, expected } = goldenCase;
   const guard = await checkMessage(input);
   const guardScore = scoreGuard(expected.blocked, guard);
   if (!guard.allowed) return { id, guard, scores: { guard: guardScore }, usage: [] };
+  const start = pickedRoleDraft(expected.diagnosis);
   const [extraction, diagnosis] = await Promise.all([
-    extract({ message: input, draft: emptyDraft(), askedFields: [], lastAskFields: [] }),
+    extract({ message: input, draft: start, askedFields: [], lastAskFields: [] }),
     diagnose({ message: input }),
   ]);
-  const draft = applyDiagnosis(applyExtraction(emptyDraft(), extraction.output), diagnosis.output);
+  const draft = applyExtraction(start, extraction.output);
   return {
     id,
     guard,

@@ -26,8 +26,8 @@ describe("buildChecklist", () => {
 });
 
 describe("planNext", () => {
-  it("starts with the diagnosis", () => {
-    expect(planNext(emptyDraft(), notOffered)).toEqual({ kind: "diagnosis" });
+  it("never asks the job title: it is picked in Home", () => {
+    expect(planNext(emptyDraft(), notOffered)).toEqual({ kind: "required", fields: ["companyName"] });
   });
 
   it("asks one field at a time, highest priority first", () => {
@@ -60,11 +60,9 @@ describe("planNext", () => {
     expect(planNext(draft, { optionalOffered: true, skipped: [] })).toEqual({ kind: "done" });
   });
 
-  it("never asks a skipped field again; the diagnosis is never skipped", () => {
+  it("never asks a skipped field again", () => {
     const draft = without(completeDraft(), "companyName", "roleMission", "location");
     expect(planNext(draft, { optionalOffered: false, skipped: ["companyName"] })).toEqual({ kind: "required", fields: ["roleMission"] });
-    const noRole = without(draft, "jobTitle");
-    expect(planNext(noRole, { optionalOffered: false, skipped: ["jobTitle"] })).toEqual({ kind: "diagnosis" });
   });
 
   it("with only skipped fields left, offers the optional fields, then is done", () => {

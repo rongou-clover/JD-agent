@@ -1,41 +1,32 @@
-import type { Diagnosis } from "@/domain/diagnosis";
 import { describe, expect, it } from "vitest";
 import { completeDraft, withField } from "@/domain/testing";
 import { applyQuickReply } from "./apply-quick-reply";
 import { initialState, type SessionState } from "./state";
 
-const sdrDiagnosis: Diagnosis = { kind: "catalog", jobTitleId: "sdr", seniority: "S1", otherRoles: [], hybrid: false };
-
-function proposedSdr(): SessionState {
+function sdrAt(seniority: "S1" | "S2"): SessionState {
   const base = initialState();
-  const draft = withField(withField(base.draft, "jobTitle", { kind: "catalog", id: "sdr" }, "proposed", "catalog"), "seniority", "S1", "proposed", "inferred");
-  return { ...base, draft, diagnosis: sdrDiagnosis };
+  const draft = withField(withField(base.draft, "jobTitle", { kind: "catalog", id: "sdr" }), "seniority", seniority);
+  return { ...base, draft };
 }
 
 describe("applyQuickReply", () => {
-  it("confirms role and seniority", () => {
-    const { state, focus } = applyQuickReply(proposedSdr(), { kind: "confirmRole" });
-    expect(state.draft.jobTitle.status).toBe("confirmed");
-    expect(state.draft.seniority.status).toBe("confirmed");
+  it("switching role confirms it and keeps a seniority the new role allows", () => {
+    const { state, focus } = applyQuickReply(sdrAt("S2"), { kind: "pickRole", jobTitleId: "account-executive" });
+    expect(state.draft.jobTitle).toEqual({ value: { kind: "catalog", id: "account-executive" }, source: "user", status: "confirmed" });
+    expect(state.draft.seniority.value).toBe("S2");
     expect(focus).toBe("plan");
   });
 
-  it("moves seniority within the allowed levels and proposes again", () => {
-    const up = applyQuickReply(proposedSdr(), { kind: "seniorityUp" });
-    expect(up.state.draft.seniority.value).toBe("S2");
-    expect(up.focus).toBe("diagnosis");
-    const down = applyQuickReply(proposedSdr(), { kind: "seniorityDown" });
-    expect(down.state.draft.seniority.value).toBe("S1");
+  it("switching role clears a seniority the new role does not allow", () => {
+    const { state } = applyQuickReply(sdrAt("S1"), { kind: "pickRole", jobTitleId: "sales-manager" });
+    expect(state.draft.seniority).toEqual({ value: null, source: null, status: "missing" });
   });
 
-  it("another role clears the job title; picking one confirms it at an allowed seniority", () => {
-    const cleared = applyQuickReply(proposedSdr(), { kind: "chooseOtherRole" }).state;
-    expect(cleared.draft.jobTitle.status).toBe("missing");
-    const picked = applyQuickReply(cleared, { kind: "pickRole", jobTitleId: "sales-manager" });
-    expect(picked.state.draft.jobTitle).toEqual({ value: { kind: "catalog", id: "sales-manager" }, source: "user", status: "confirmed" });
-    expect(picked.state.draft.seniority.value).toBe("S3");
-    expect(picked.state.diagnosis).toMatchObject({ kind: "catalog", jobTitleId: "sales-manager", seniority: "S3" });
-    expect(picked.focus).toBe("diagnosis");
+  it("keeping the role remembers the declined one", () => {
+    const { state, focus } = applyQuickReply(sdrAt("S1"), { kind: "keepRole", declinedId: "account-executive" });
+    expect(state.draft.jobTitle.value).toEqual({ kind: "catalog", id: "sdr" });
+    expect(state.planner.declinedRoles).toEqual(["account-executive"]);
+    expect(focus).toBe("plan");
   });
 
   it("hiring reason waits for the mission sentence, or completes an existing one", () => {

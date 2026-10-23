@@ -1,55 +1,23 @@
-import type { Diagnosis } from "@/domain/diagnosis";
 import { describe, expect, it } from "vitest";
 import { emptyDraft } from "@/domain/draft";
 import { withField } from "@/domain/testing";
 import { initialState } from "../state";
 import { COPY } from "./copy";
-import { chooseRoleMessage, diagnosisMessage } from "./diagnosis";
 import { optionalMessage } from "./optional";
 import { requiredQuestions } from "./questions";
+import { roleSwitchMessage } from "./role-switch";
 
 const planner = initialState().planner;
 const sdrDraft = withField(withField(emptyDraft(), "jobTitle", { kind: "catalog", id: "sdr" }), "seniority", "S1");
 
-describe("diagnosis messages", () => {
-  it("single role", () => {
-    const parts = diagnosisMessage({ kind: "catalog", jobTitleId: "account-executive", seniority: "S2", otherRoles: [], hybrid: false }, "S2");
-    expect(parts.text).toBe("Stai cercando un **Account Executive**, livello **Mid**. Va bene?");
-    expect(parts.replies.map((reply) => reply.action.kind)).toEqual(["confirmRole", "seniorityDown", "seniorityUp", "chooseOtherRole"]);
-  });
-
-  it("role with key activities from other roles", () => {
-    const otherRoles = [
-      { jobTitleId: "sdr", activities: ["cold call"] },
-      { jobTitleId: "account-manager", activities: ["rinnovi"] },
-    ];
-    const parts = diagnosisMessage({ kind: "catalog", jobTitleId: "account-executive", seniority: "S3", otherRoles, hybrid: false }, "S3");
-    expect(parts.text).toBe(
-      "Stai cercando un **Account Executive**, livello **Senior**. Vedo anche attività da **SDR** e **Account Manager**: le tengo come parte del ruolo. Va bene?",
-    );
-    expect(parts.replies.map((reply) => reply.action.kind)).toEqual(["confirmRole", "seniorityDown", "chooseOtherRole"]);
-  });
-
-  it("hybrid profile", () => {
-    const otherRoles = [{ jobTitleId: "growth-marketer", activities: ["esperimenti"] }];
-    const parts = diagnosisMessage({ kind: "catalog", jobTitleId: "performance-marketing-specialist", seniority: "S2", otherRoles, hybrid: true }, "S2");
-    expect(parts.text).toBe(
-      "Stai descrivendo più ruoli in uno: Performance Marketing Specialist, Growth Marketer. Profili così sono difficili da trovare: ti consiglio **Performance Marketing Specialist**, perché copre le attività più importanti. Va bene?",
-    );
-  });
-
-  it("choose another role: never the rejected one", () => {
-    const diagnosis: Diagnosis = { kind: "catalog", jobTitleId: "sdr", seniority: "S1", otherRoles: [{ jobTitleId: "bdr", activities: ["x"] }], hybrid: false };
-    const parts = chooseRoleMessage(diagnosis, "sdr");
-    expect(parts.text).toBe(COPY.chooseRole);
-    const ids = parts.replies.map((reply) => (reply.action.kind === "pickRole" ? reply.action.jobTitleId : null));
-    expect(ids[0]).toBe("bdr");
-    expect(ids).not.toContain("sdr");
-    expect(ids.length).toBeLessThanOrEqual(4);
-  });
-
-  it("choose a role without any diagnosis asks to describe it", () => {
-    expect(chooseRoleMessage(null, null)).toEqual({ text: COPY.describeRole, questions: [], replies: [] });
+describe("role switch message", () => {
+  it("names both roles and offers to switch or keep", () => {
+    const parts = roleSwitchMessage(sdrDraft, "account-executive");
+    expect(parts.text).toBe("Quello che descrivi sembra più un **Account Executive** che un **SDR**. Vuoi cambiare ruolo?");
+    expect(parts.replies).toEqual([
+      { label: "Passa a Account Executive", action: { kind: "pickRole", jobTitleId: "account-executive" } },
+      { label: "Resto su SDR", action: { kind: "keepRole", declinedId: "account-executive" } },
+    ]);
   });
 });
 

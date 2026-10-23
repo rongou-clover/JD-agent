@@ -1,5 +1,4 @@
 import { EXTRACTED_FIELD_IDS, type ExtractorOutput } from "@/agents/extractor/schema";
-import type { Diagnosis } from "@/domain/diagnosis";
 import { Draft } from "@/domain/draft";
 
 type Updates = ExtractorOutput["updates"];
@@ -22,19 +21,4 @@ export function applyExtraction(draft: Draft, extraction: ExtractorOutput): Draf
     const update = extraction.updates[field];
     return update === null ? next : mergeField(next, field, update, extraction.skipped.includes(field));
   }, draft);
-}
-
-/** The diagnosis proposes job title and seniority; the user confirms them with a quick reply. */
-export function applyDiagnosis(draft: Draft, diagnosis: Diagnosis): Draft {
-  if (diagnosis.kind === "outOfCatalog") {
-    return {
-      ...draft,
-      jobTitle: { value: { kind: "outOfCatalog", title: diagnosis.title }, source: "inferred", status: "proposed" },
-    };
-  }
-  return {
-    ...draft,
-    jobTitle: { value: { kind: "catalog", id: diagnosis.jobTitleId }, source: "catalog", status: "proposed" },
-    seniority: { value: diagnosis.seniority, source: "inferred", status: "proposed" },
-  };
 }

@@ -69,6 +69,10 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-23 · La demo va online su Railway (workspace Clover venture, progetto jd-agent), con deploy da GitHub a ogni push del branch phase-7-integration.
 - 2026-10-23 · Una voce obbligatoria si chiede al massimo due volte di fila: alla terza l'agent fa come per "non lo so". Su una voce incompleta la domanda dice cosa manca, e la proposta dell'agent completa quello che l'utente ha dato.
 - 2026-10-23 · Una domanda per messaggio, o da scegliere con i pulsanti o da scrivere: con due domande il pulsante rispondeva solo a una.
+- 2026-10-23 · L'agent scrive solo la JD, non trova il ruolo: il job title si sceglie da una lista del catalogo in Home, sopra il campo di testo, prima di iniziare. Sparisce il caso fuori catalogo.
+- 2026-10-23 · Seniority chiesta sempre, con pulsanti limitati ai livelli ammessi dal job title scelto.
+- 2026-10-23 · Agent di diagnosi del ruolo congelato: resta nel repo ma il workflow non lo chiama. Via il messaggio "Stai cercando un…" e i pulsanti "È più junior/senior" e "Scegli un altro ruolo".
+- 2026-10-23 · Profili ibridi: attività di altri ruoli restano nella JD senza avvisi; solo se le attività sono tutte di un altro ruolo l'agent lo segnala e propone di cambiare, senza bloccare. Il segnale viene dall'estrattore.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

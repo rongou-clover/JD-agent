@@ -1,4 +1,5 @@
 import { Agent } from "@mastra/core/agent";
+import { catalog } from "@/domain/catalog";
 import { FIELD_IDS } from "@/domain/fields";
 import { anthropicOptions, model } from "../models";
 import { loadPrompt } from "../prompt";
@@ -13,6 +14,9 @@ export const extractorAgent = new Agent({
   model: () => model("fast"),
 });
 
+/** The catalog roles the extractor may point to when the activities belong to another one. */
+const catalogRoles = catalog.jobTitles.map(({ id, family, name, aliases }) => ({ id, family, name, aliases }));
+
 function draftValues(input: ExtractorInput) {
   return Object.fromEntries(FIELD_IDS.map((id) => [id, input.draft[id].value]));
 }
@@ -24,6 +28,7 @@ export async function extract(raw: ExtractorInput): Promise<AgentResult<Extracto
     draft: draftValues(input),
     askedFields: input.askedFields,
     lastAskFields: input.lastAskFields,
+    catalogRoles,
   });
   const result = await extractorAgent.generate(prompt, {
     structuredOutput: { schema: ExtractorLlmOutput, jsonPromptInjection: true },

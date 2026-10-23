@@ -1,5 +1,4 @@
 import type { z } from "zod";
-import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft, FieldValue } from "@/domain/draft";
 import type { SummaryRow } from "./contract";
 import {
@@ -20,8 +19,8 @@ import { fieldValue, jobTitleName, resolveJobTitle } from "./draft-values";
 
 type Row = z.infer<typeof SummaryRow>;
 
-export function postingTitle(draft: Draft, diagnosis: Diagnosis | null): string {
-  return jobTitleName(resolveJobTitle(draft, diagnosis)) ?? TITLE_PLACEHOLDER;
+export function postingTitle(draft: Draft): string {
+  return jobTitleName(resolveJobTitle(draft)) ?? TITLE_PLACEHOLDER;
 }
 
 function modeLabel(location: FieldValue<"location">): string {

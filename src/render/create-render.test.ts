@@ -7,7 +7,6 @@ import { fakeWriter } from "./testing";
 
 const input = (overrides: Partial<RenderInput> = {}): RenderInput => ({
   draft: completeDraft(),
-  diagnosis: null,
   forcedWordings: [],
   ...overrides,
 });

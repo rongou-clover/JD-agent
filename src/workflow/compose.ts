@@ -4,10 +4,10 @@ import { missingRequiredFields, type Plan } from "@/domain/planner";
 import type { StoredQuickReply } from "./quick-reply-actions";
 import type { SessionState } from "./state";
 import { COPY } from "./templates/copy";
-import { chooseRoleMessage, diagnosisMessage } from "./templates/diagnosis";
 import { fieldLabels, type MessageParts } from "./templates/format";
 import { optionalMessage } from "./templates/optional";
 import { requiredQuestions } from "./templates/questions";
+import { roleSwitchMessage } from "./templates/role-switch";
 import type { TurnContext } from "./turn-context";
 
 type Body = { parts: MessageParts; askedFields: FieldId[]; optionalOffered: boolean };
@@ -22,10 +22,6 @@ const body = (parts: MessageParts, askedFields: FieldId[] = [], optionalOffered 
 function planBody(plan: Plan, state: SessionState, hasNotes: boolean): Body {
   const missing = missingRequiredFields(state.draft);
   switch (plan.kind) {
-    case "diagnosis": {
-      const rejected = state.diagnosis?.kind === "catalog" ? state.diagnosis.jobTitleId : null;
-      return body(chooseRoleMessage(state.diagnosis, rejected), ["jobTitle"]);
-    }
     case "required": {
       const { questions, replies } = requiredQuestions(plan.fields, state.draft, state.planner);
       const lead = hasNotes ? "" : COPY.updatedOne;
@@ -45,10 +41,7 @@ function planBody(plan: Plan, state: SessionState, hasNotes: boolean): Body {
 
 function messageBody(ctx: TurnContext, plan: Plan): Body {
   const { state, focus } = ctx;
-  const seniority = state.draft.seniority.value;
-  if (focus === "diagnosis" && state.diagnosis?.kind === "catalog" && seniority !== null) {
-    return body(diagnosisMessage(state.diagnosis, seniority), ["jobTitle", "seniority"]);
-  }
+  if (focus === "roleSwitch" && ctx.suggestedRole) return body(roleSwitchMessage(state.draft, ctx.suggestedRole));
   if (focus === "completeAnyway") {
     const missing = missingRequiredFields(state.draft);
     if (missing.length > 0) return body({ text: COPY.completeAnyway(fieldLabels(missing)), questions: [], replies: [] });

@@ -3,7 +3,8 @@ import { isBudgetExhausted, startOfBudgetDay, totalsByKind, type ModelKind, type
 import type { Db } from "@/db/client";
 import { loadSession, recordUsage, saveTurn, SessionBusyError, type StoredSession } from "@/db/sessions-repo";
 import { usageTotalsSince } from "@/db/usage-repo";
-import { initialState } from "@/workflow/state";
+import { findJobTitle } from "@/domain/catalog";
+import { startState, type SessionState } from "@/workflow/state";
 import { runTurn, TurnFailedError, type TurnWorkflow } from "@/workflow/turn";
 import type { TurnInput } from "@/workflow/turn-context";
 import { ApiFailure } from "./api-errors";
@@ -19,12 +20,24 @@ export type ChatServiceDeps = {
 };
 
 const STALE_QUICK_REPLY = "Questa risposta rapida non è più valida: scrivi pure in chat.";
+const UNKNOWN_JOB_TITLE = "Scegli il ruolo dall'elenco e riprova.";
 
 function turnInput(request: ChatRequest, stored: StoredSession | null): TurnInput {
-  if (request.kind === "message") return { kind: "message", text: request.text };
+  if (request.kind !== "quickReply") return { kind: "message", text: request.text };
   const reply = stored?.state.quickReplies.find((candidate) => candidate.id === request.replyId);
   if (!reply) throw new ApiFailure("invalidRequest", STALE_QUICK_REPLY);
   return { kind: "quickReply", label: reply.label, action: reply.action };
+}
+
+/** The state the turn starts from: the stored one, or a new session on the picked catalog role. */
+function previousState(request: ChatRequest, stored: StoredSession | null): SessionState {
+  if (request.kind !== "start") {
+    if (!stored) throw new ApiFailure("sessionNotFound");
+    return stored.state;
+  }
+  const jobTitle = findJobTitle(request.jobTitleId);
+  if (!jobTitle) throw new ApiFailure("invalidRequest", UNKNOWN_JOB_TITLE);
+  return startState(jobTitle);
 }
 
 async function assertBudget(deps: ChatServiceDeps): Promise<void> {
@@ -37,12 +50,12 @@ async function assertBudget(deps: ChatServiceDeps): Promise<void> {
  * `clientId` is the browser that starts a new session, so it shows up in that browser's list.
  */
 export async function handleChat(request: ChatRequest, deps: ChatServiceDeps, clientId: string | null = null): Promise<SessionView> {
-  const stored = request.sessionId ? await loadSession(deps.db, request.sessionId) : null;
-  if (request.sessionId && !stored) throw new ApiFailure("sessionNotFound");
+  const stored = request.kind === "start" ? null : await loadSession(deps.db, request.sessionId);
+  const previous = previousState(request, stored);
   const input = turnInput(request, stored);
   await assertBudget(deps);
 
-  const outcome = await runTurn(deps.workflow, input, stored?.state ?? initialState()).catch(async (error: unknown) => {
+  const outcome = await runTurn(deps.workflow, input, previous).catch(async (error: unknown) => {
     if (error instanceof TurnFailedError) await recordUsage(deps.db, stored?.id ?? null, error.usage);
     throw error;
   });

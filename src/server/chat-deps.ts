@@ -2,7 +2,6 @@ import { randomBytes } from "node:crypto";
 import { extract } from "@/agents/extractor/agent";
 import { model } from "@/agents/models";
 import { checkMessage } from "@/agents/prompt-injection/guard";
-import { diagnose } from "@/agents/role-diagnosis/agent";
 import { dailyLimits } from "@/budget/daily-limit";
 import { getDb } from "@/db/client";
 import { createTurnWorkflow, type TurnWorkflow } from "@/workflow/turn";
@@ -16,7 +15,6 @@ export function chatDeps(): ChatServiceDeps {
   workflow ??= createTurnWorkflow({
     checkMessage,
     extract,
-    diagnose,
     render,
     guardModel: () => model("fast"),
     newReplyId: () => randomBytes(9).toString("base64url"),

@@ -4,18 +4,17 @@ import { afterAll, describe, expect, it } from "vitest";
 import { extract } from "@/agents/extractor/agent";
 import { model } from "@/agents/models";
 import { checkMessage } from "@/agents/prompt-injection/guard";
-import { diagnose } from "@/agents/role-diagnosis/agent";
 import type { Usage } from "@/agents/usage";
 import { buildChecklist } from "@/domain/checklist";
 import type { FieldId } from "@/domain/fields";
 import { render } from "@/render/render";
-import { initialState, type SessionState } from "@/workflow/state";
+import { findJobTitle } from "@/domain/catalog";
+import { startState, type SessionState } from "@/workflow/state";
 import { createTurnWorkflow, runTurn } from "@/workflow/turn";
 import type { TurnInput } from "@/workflow/turn-context";
 import { CONVERSATIONS, type Conversation } from "./conversations";
 import { postingWords, scorePlaceholders, scoreSalary } from "./render-scorers";
 
-const CONFIRM_ROLE = "Sì, va bene";
 const DONT_KNOW = "Non lo so";
 const NOTHING_ELSE = "No, va bene così.";
 /** Prices per million tokens on 2026-10-23, only to report the cost of a run. */
@@ -25,7 +24,6 @@ let replyId = 0;
 const workflow = createTurnWorkflow({
   checkMessage,
   extract,
-  diagnose,
   render,
   guardModel: () => model("fast"),
   newReplyId: () => `r${++replyId}`,
@@ -44,8 +42,10 @@ function cost(usage: Usage[]): number {
 
 /** The simulated user's next input, or null when the agent has nothing left to ask. */
 function nextInput(script: Conversation, state: SessionState, answered: Set<FieldId>): TurnInput | null {
-  const confirm = state.quickReplies.find((reply) => reply.label === CONFIRM_ROLE);
-  if (confirm) return { kind: "quickReply", label: confirm.label, action: confirm.action };
+  const level = state.quickReplies.find(
+    (reply) => reply.action.kind === "pickSeniority" && reply.action.seniority === script.seniority,
+  );
+  if (level) return { kind: "quickReply", label: level.label, action: level.action };
   const asked = state.planner.askedFields;
   if (asked.length === 0) return null;
   const texts = asked.flatMap((field) => (script.answers[field] && !answered.has(field) ? [script.answers[field]] : []));
@@ -62,7 +62,9 @@ function repliedFields(script: Conversation, state: SessionState, input: TurnInp
 }
 
 async function converse(script: Conversation): Promise<Report> {
-  let state = initialState();
+  const jobTitle = findJobTitle(script.jobTitleId);
+  if (!jobTitle) throw new Error(`${script.id}: unknown job title ${script.jobTitleId}`);
+  let state = startState(jobTitle);
   const turns: Turn[] = [];
   const usage: Usage[] = [];
   const answered = new Set<FieldId>();

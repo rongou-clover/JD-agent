@@ -1,5 +1,4 @@
 import type { z } from "zod";
-import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import type { FieldId } from "@/domain/fields";
 import { JUNIOR_ACTIVITIES_HEADING, LANGUAGE_LEVEL_LABELS, SECTION_HEADINGS, SENIORITY_LABELS } from "./copy";
@@ -94,8 +93,8 @@ function practicalDetails(draft: Draft): Record<string, string> | null {
 
 const isEmpty = (value: unknown) => value === null || (Array.isArray(value) && value.length === 0);
 
-function contextView(field: ContextField, draft: Draft, diagnosis: Diagnosis | null): string | null {
-  if (field === "jobTitle") return jobTitleName(resolveJobTitle(draft, diagnosis));
+function contextView(field: ContextField, draft: Draft): string | null {
+  if (field === "jobTitle") return jobTitleName(resolveJobTitle(draft));
   const seniority = fieldValue(draft, "seniority");
   return seniority ? `${seniority} ${SENIORITY_LABELS[seniority]}` : null;
 }
@@ -106,11 +105,11 @@ export type SectionPlan =
   | { kind: "write"; data: Record<string, unknown> };
 
 /** Placeholder when a required field is missing, omitted when there is nothing to say, else the writer's input. */
-export function planSection(section: ProseSection, draft: Draft, diagnosis: Diagnosis | null): SectionPlan {
+export function planSection(section: ProseSection, draft: Draft): SectionPlan {
   const spec = SECTION_SPECS[section];
   if (spec.required.some((field) => isMissing(draft, field))) return { kind: "placeholder" };
   const fields = spec.fields.map((field) => [field, fieldView(section, field, draft)] as const);
   if (fields.every(([, value]) => isEmpty(value))) return { kind: "omit" };
-  const context = spec.context.map((field) => [field, contextView(field, draft, diagnosis)] as const);
+  const context = spec.context.map((field) => [field, contextView(field, draft)] as const);
   return { kind: "write", data: Object.fromEntries([...fields, ...context].filter(([, value]) => !isEmpty(value))) };
 }

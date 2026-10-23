@@ -45,29 +45,19 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  /** Extractor and diagnosis run in parallel; the diagnosis only while the job title is missing. */
+  /** The job title is picked in Home: only the extractor reads the message. */
   const understand = createStep({
     id: "understand",
     ...io,
     execute: async ({ inputData: ctx }) => {
       if (ctx.input.kind !== "message") return ctx;
-      const message = ctx.input.text;
-      const diagnose = ctx.state.draft.jobTitle.status === "missing";
-      const [extraction, diagnosis] = await Promise.all([
-        deps.extract({
-          message,
-          draft: ctx.state.draft,
-          askedFields: ctx.state.planner.askedFields,
-          lastAskFields: repeatedAsks(ctx.state.planner, ctx.state.draft),
-        }),
-        diagnose ? deps.diagnose({ message }) : null,
-      ]);
-      return {
-        ...ctx,
-        extraction: extraction.output,
-        diagnosis: diagnosis?.output ?? null,
-        usage: [...ctx.usage, ...extraction.usage, ...(diagnosis?.usage ?? [])],
-      };
+      const extraction = await deps.extract({
+        message: ctx.input.text,
+        draft: ctx.state.draft,
+        askedFields: ctx.state.planner.askedFields,
+        lastAskFields: repeatedAsks(ctx.state.planner, ctx.state.draft),
+      });
+      return { ...ctx, extraction: extraction.output, usage: [...ctx.usage, ...extraction.usage] };
     },
   });
 
@@ -83,8 +73,8 @@ export function createTurnSteps(deps: TurnDeps) {
     id: "render",
     ...io,
     execute: async ({ inputData: ctx }) => {
-      const { draft, diagnosis, forcedWordings, sectionCache } = ctx.state;
-      const result = await deps.render({ draft, diagnosis, forcedWordings }, sectionCache);
+      const { draft, forcedWordings, sectionCache } = ctx.state;
+      const result = await deps.render({ draft, forcedWordings }, sectionCache);
       const { posting, sheet, cache } = result.output;
       return { ...ctx, state: { ...ctx.state, posting, sheet, sectionCache: cache }, usage: [...ctx.usage, ...result.usage] };
     },

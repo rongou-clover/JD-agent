@@ -27,8 +27,8 @@ const reports: CaseReport[] = [];
 const run = (usage: Usage[]): RunReport => ({ calls: usage.length, usage, costUsd: costUsd(usage) });
 
 async function runCase(fixture: RenderFixture): Promise<CaseReport> {
-  const { id, draft, diagnosis, forcedWordings } = fixture;
-  const full = await render({ draft, diagnosis, forcedWordings }, {});
+  const { id, draft, forcedWordings } = fixture;
+  const full = await render({ draft, forcedWordings }, {});
   const { posting } = full.output;
   return {
     id,
@@ -47,7 +47,7 @@ async function runCase(fixture: RenderFixture): Promise<CaseReport> {
 /** One changed field must re-render exactly its section. */
 async function reRender(fixture: RenderFixture, report: CaseReport): Promise<CaseReport["reRender"]> {
   const draft = withField(fixture.draft, "sixMonthResults", ["Chiudere almeno 300k di nuovo ARR", "Pipeline coperta 3 volte il target"]);
-  const next = await render({ draft, diagnosis: fixture.diagnosis, forcedWordings: fixture.forcedWordings }, report.output.cache);
+  const next = await render({ draft, forcedWordings: fixture.forcedWordings }, report.output.cache);
   const sections = next.output.posting.sections
     .filter((section) => report.output.cache[section.id]?.section !== next.output.cache[section.id]?.section)
     .map((section) => section.id);

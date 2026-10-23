@@ -51,7 +51,7 @@ export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: S
     notes: [],
     focus: "plan",
     extraction: null,
-    diagnosis: null,
+    suggestedRole: null,
     plan: null,
     message: null,
   };

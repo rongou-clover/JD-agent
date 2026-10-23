@@ -52,10 +52,9 @@ describe("buildSummary", () => {
 
 describe("postingTitle", () => {
   it("uses the catalog name, the out-of-catalog title or a placeholder", () => {
-    expect(postingTitle(completeDraft(), null)).toBe("Content / Social Media Manager");
+    expect(postingTitle(completeDraft())).toBe("Content / Social Media Manager");
     const outOfCatalog = withField(emptyDraft(), "jobTitle", { kind: "outOfCatalog", title: "Sales Engineer" });
-    expect(postingTitle(outOfCatalog, null)).toBe("Sales Engineer");
-    expect(postingTitle(emptyDraft(), { kind: "catalog", jobTitleId: "sdr", seniority: "S1", otherRoles: [], hybrid: false })).toBe("SDR");
-    expect(postingTitle(emptyDraft(), null)).toBe("Ruolo da definire");
+    expect(postingTitle(outOfCatalog)).toBe("Sales Engineer");
+    expect(postingTitle(emptyDraft())).toBe("Ruolo da definire");
   });
 });

@@ -23,7 +23,6 @@ function toTranscript(row: typeof messages.$inferSelect): TranscriptEntry {
 function stateColumns(state: SessionState) {
   return {
     draft: state.draft,
-    diagnosis: state.diagnosis,
     plannerState: state.planner,
     forcedWordings: state.forcedWordings,
     sectionCache: state.sectionCache,
@@ -38,7 +37,6 @@ export async function loadSession(db: Db, id: string): Promise<StoredSession | n
   if (!row) return null;
   const state = SessionState.parse({
     draft: row.draft,
-    diagnosis: row.diagnosis,
     planner: row.plannerState,
     forcedWordings: row.forcedWordings,
     sectionCache: row.sectionCache,
