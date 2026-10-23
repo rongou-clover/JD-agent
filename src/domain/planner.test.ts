@@ -1,16 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { buildChecklist } from "./checklist";
-import { emptyDraft, type Draft } from "./draft";
+import { emptyDraft } from "./draft";
 import { REQUIRED_FIELD_IDS, type FieldId } from "./fields";
 import { planNext } from "./planner";
-import { completeDraft, withField } from "./testing";
+import { completeDraft, withField, without } from "./testing";
 
-const notOffered = { optionalOffered: false };
-
-function without(draft: Draft, ...fields: FieldId[]): Draft {
-  const empty = emptyDraft();
-  return fields.reduce((acc, field) => ({ ...acc, [field]: empty[field] }), draft);
-}
+const notOffered = { optionalOffered: false, skipped: [] };
 
 describe("buildChecklist", () => {
   it("counts the 12 required fields", () => {
@@ -69,6 +64,21 @@ describe("planNext", () => {
       kind: "optional",
       fields: ["offer", "languages", "prerequisites", "kpis", "selectionProcess", "missionValues", "managerNotes"],
     });
-    expect(planNext(draft, { optionalOffered: true })).toEqual({ kind: "done" });
+    expect(planNext(draft, { optionalOffered: true, skipped: [] })).toEqual({ kind: "done" });
+  });
+
+  it("never asks a skipped field again; the diagnosis is never skipped", () => {
+    const draft = without(completeDraft(), "companyName", "roleMission", "location");
+    expect(planNext(draft, { optionalOffered: false, skipped: ["companyName"] })).toEqual({ kind: "required", fields: ["roleMission"] });
+    const noRole = without(draft, "jobTitle");
+    expect(planNext(noRole, { optionalOffered: false, skipped: ["jobTitle"] })).toEqual({ kind: "diagnosis" });
+  });
+
+  it("with only skipped fields left, offers the optional fields, then is done", () => {
+    const draft = without(completeDraft(), "location", "contract");
+    const skipped: FieldId[] = ["location", "contract"];
+    expect(planNext(draft, { optionalOffered: false, skipped }).kind).toBe("optional");
+    expect(planNext(draft, { optionalOffered: true, skipped })).toEqual({ kind: "done" });
+    expect(buildChecklist(draft).complete).toBe(false);
   });
 });

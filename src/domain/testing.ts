@@ -13,6 +13,12 @@ export function withField<F extends FieldId>(
   return { ...draft, [field]: { value, status, source } };
 }
 
+/** Test helper: returns a copy of the draft with the given fields emptied. */
+export function without(draft: Draft, ...fields: FieldId[]): Draft {
+  const empty = emptyDraft();
+  return fields.reduce((acc, field) => ({ ...acc, [field]: empty[field] }), draft);
+}
+
 /** A draft with all 11 required fields valid and confirmed. */
 export function completeDraft(): Draft {
   let draft = emptyDraft();

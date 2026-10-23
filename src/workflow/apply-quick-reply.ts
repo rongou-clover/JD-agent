@@ -1,4 +1,5 @@
 import { findJobTitle } from "@/domain/catalog";
+import { MAX_SOFT_SKILLS } from "@/domain/catalog-proposals";
 import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import type { ContractType, HiringReason, Seniority, WorkMode } from "@/domain/enums";
@@ -6,9 +7,6 @@ import type { QuickReplyAction } from "./quick-reply-actions";
 import { nearestSeniority, shiftSeniority } from "./roles";
 import type { SessionState } from "./state";
 import type { Focus } from "./turn-context";
-
-/** Soft skills: at most 4 (docs/decisioni.md). */
-const MAX_SOFT_SKILLS = 4;
 
 type Result = { state: SessionState; focus: Focus };
 

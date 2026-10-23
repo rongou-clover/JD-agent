@@ -4,7 +4,8 @@ import type { Usage } from "@/agents/usage";
 import { planNext } from "@/domain/planner";
 import { applyQuickReply } from "./apply-quick-reply";
 import { composeMessage } from "./compose";
-import { mergeMessage } from "./merge-turn";
+import { mergeTurn } from "./merge-turn";
+import { repeatedAsks } from "./skipped";
 import { COPY } from "./templates/copy";
 import type { TurnContext, TurnDeps } from "./turn-context";
 
@@ -53,7 +54,12 @@ export function createTurnSteps(deps: TurnDeps) {
       const message = ctx.input.text;
       const diagnose = ctx.state.draft.jobTitle.status === "missing";
       const [extraction, diagnosis] = await Promise.all([
-        deps.extract({ message, draft: ctx.state.draft, askedFields: ctx.state.planner.askedFields }),
+        deps.extract({
+          message,
+          draft: ctx.state.draft,
+          askedFields: ctx.state.planner.askedFields,
+          lastAskFields: repeatedAsks(ctx.state.planner, ctx.state.draft),
+        }),
         diagnose ? deps.diagnose({ message }) : null,
       ]);
       return {
@@ -65,7 +71,7 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  const merge = createStep({ id: "merge", ...io, execute: async ({ inputData: ctx }) => mergeMessage(ctx) });
+  const merge = createStep({ id: "merge", ...io, execute: async ({ inputData: ctx }) => mergeTurn(ctx) });
 
   const plan = createStep({
     id: "plan",

@@ -1,6 +1,10 @@
 import type { ContractType, HiringReason, WorkMode } from "@/domain/enums";
 import type { DiscriminationCategory } from "@/domain/validation/discrimination";
 
+function stillMissing(missing: string): string {
+  return `Mancano ancora: ${missing}. Nel testo restano come [Da definire in chat]: puoi aggiungerle quando vuoi.`;
+}
+
 /** Fixed agent copy (docs/domande.md). Product copy is Italian. */
 export const COPY = {
   blocked: "Non posso usare questo messaggio. Raccontami il ruolo che stai cercando.",
@@ -13,8 +17,14 @@ export const COPY = {
   describeRole: "Quale ruolo stai cercando? Descrivimelo con parole tue.",
   optionalIntro: "La JD è quasi pronta. Vuoi aggiungere anche una di queste cose?",
   done: "La JD è pronta 🎉 Puoi esportarla o chiedermi modifiche.",
-  completeAnyway: (missing: string) =>
-    `Va bene, scrivo la JD con quello che ho. Mancano ancora: ${missing}. Nel testo restano come [Da definire in chat]: puoi aggiungerle quando vuoi.`,
+  completeAnyway: (missing: string) => `Va bene, scrivo la JD con quello che ho. ${stillMissing(missing)}`,
+  /** The user skipped a required field and the agent derived it. */
+  proposedOnSkip: (fields: string) => `Ho proposto io ${fields}: trovi tutto nell'anteprima e puoi cambiarlo quando vuoi.`,
+  /** The user skipped a required field the agent cannot derive: it is not asked again. */
+  leftOpen: (fields: string) => `Va bene, lascio da definire ${fields}: non te lo richiedo, ma puoi dirmelo quando vuoi.`,
+  /** Closing reminder when only skipped required fields are missing. */
+  stillMissing,
+  doneWithMissing: (missing: string) => `Ho scritto la JD con quello che ho. ${stillMissing(missing)} Puoi esportarla o chiedermi modifiche.`,
 } as const;
 
 export const ROLE_REPLIES = {

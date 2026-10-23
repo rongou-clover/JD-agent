@@ -7,9 +7,10 @@ import {
   PrerequisiteType,
   WorkMode,
 } from "@/domain/enums";
+import { FIELD_IDS } from "@/domain/fields";
 import { ProseSectionId } from "@/render/contract";
 import { DISCRIMINATION_CATEGORIES } from "@/domain/validation/discrimination";
-import { EXTRACTED_FIELD_IDS, ExtractedSource, Intent, type ExtractorOutput } from "./schema";
+import { ExtractedSource, Intent, type ExtractorOutput } from "./schema";
 
 /**
  * Schema sent to the model. It exceeds Anthropic's native structured output limits
@@ -70,7 +71,7 @@ export const ExtractorLlmOutput = z.object({
     selectionProcess: withSource(z.array(z.object({ step: z.string(), timing: z.string().nullish() }))),
     managerNotes: withSource(z.string()),
   }),
-  skipped: z.array(z.enum(EXTRACTED_FIELD_IDS)),
+  skipped: z.array(z.enum(FIELD_IDS)),
   forcedWording: z.object({ section: ProseSectionId, text: z.string() }).nullish().catch(null),
   discriminationFlags: z.array(z.object({ category: z.enum(DISCRIMINATION_CATEGORIES), quote: z.string() })),
 });
