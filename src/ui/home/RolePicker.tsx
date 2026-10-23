@@ -12,10 +12,10 @@ const FAMILIES = catalog.jobFamilies.map((family) => ({
   jobTitles: catalog.jobTitles.filter((jobTitle) => jobTitle.family === family),
 }));
 
-type Props = { value: string | null; onChange: (jobTitleId: string) => void; disabled: boolean };
+type Props = { value: string | null; onChange: (jobTitleId: string) => void };
 
 /** The job title is picked from the catalog before starting (docs/decisioni.md): the agent does not diagnose it. */
-export function RolePicker({ value, onChange, disabled }: Props) {
+export function RolePicker({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const selected = value ? findJobTitle(value) : undefined;
@@ -49,11 +49,10 @@ export function RolePicker({ value, onChange, disabled }: Props) {
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-labelledby={LABEL_ID}
-        className={`flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-lg border bg-white px-3.5 text-left text-base disabled:cursor-not-allowed ${open ? "border-accent ring-3 ring-accent-tint" : "border-border"}`}
+        className={`flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-lg border bg-white px-3.5 text-left text-base ${open ? "border-accent ring-3 ring-accent-tint" : "border-border"}`}
       >
         {selected ? (
           <span className="inline-flex items-center gap-2.5">

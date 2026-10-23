@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { QuickReply, SessionView } from "@/api/contract";
 import { ApiClientError, getSession, loginUrl, renderSession, sendChat } from "@/ui/api/client";
+import { takePrimedSession } from "./primed-session";
 
 export type ChatSession = {
   view: SessionView | null;
@@ -53,8 +54,9 @@ export function useChatSession(sessionId: string): ChatSession {
   );
 
   useEffect(() => {
+    const primed = takePrimedSession(sessionId);
     let active = true;
-    getSession(sessionId).then(
+    (primed ? Promise.resolve(primed) : getSession(sessionId)).then(
       (loaded) => active && showView(loaded),
       (caught: unknown) => active && handleError(caught),
     );

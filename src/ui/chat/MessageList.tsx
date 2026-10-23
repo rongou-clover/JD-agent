@@ -34,6 +34,16 @@ function TypingIndicator() {
   );
 }
 
+/** The user turn the agent is answering: optimistic bubble and typing dots. */
+export function PendingTurn({ text }: { text: string }) {
+  return (
+    <>
+      <UserBubble text={text} />
+      <TypingIndicator />
+    </>
+  );
+}
+
 /**
  * The transcript, bottom-aligned. It scrolls inside the chat column only, and jumps to the latest turn
  * whenever a message is added (docs/decisioni.md, 2026-10-23).
@@ -63,12 +73,7 @@ export function MessageList({ view, pendingText, onQuickReply }: Props) {
           />
         ),
       )}
-      {pendingText !== null && (
-        <>
-          <UserBubble text={pendingText} />
-          <TypingIndicator />
-        </>
-      )}
+      {pendingText !== null && <PendingTurn text={pendingText} />}
       </div>
     </div>
   );
