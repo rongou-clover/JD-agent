@@ -10,7 +10,6 @@ export const COPY = {
   blocked: "Non posso usare questo messaggio. Raccontami il ruolo che stai cercando.",
   offTopic: "Sono qui per scrivere la job description con te. Torniamo al ruolo.",
   updatedOne: "Ho aggiornato la JD. Mi serve ancora una cosa:",
-  updatedTwo: "Ho aggiornato la JD. Mi servono ancora un paio di cose:",
   forcedWording: "Fatto: uso il tuo testo così com'è.",
   outOfCatalog: "Questo ruolo non è ancora nella mia libreria: scrivo comunque la JD, senza suggerimenti sulle competenze.",
   chooseRole: "Quale ruolo stai cercando? Scegline uno qui sotto o descrivilo con parole tue.",

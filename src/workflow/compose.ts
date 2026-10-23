@@ -28,7 +28,7 @@ function planBody(plan: Plan, state: SessionState, hasNotes: boolean): Body {
     }
     case "required": {
       const { questions, replies } = requiredQuestions(plan.fields, state.draft, state.planner);
-      const lead = hasNotes ? "" : questions.length > 1 ? COPY.updatedTwo : COPY.updatedOne;
+      const lead = hasNotes ? "" : COPY.updatedOne;
       return body({ text: lead, questions, replies }, plan.fields);
     }
     case "optional": {

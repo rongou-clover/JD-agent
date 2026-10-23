@@ -3,7 +3,7 @@
 Come l'agent chiede ogni voce dello schema. Basato sulle domande dell'onboarding di Luca e sull'intake HR. Numeri delle voci come in "Schema bozza JD".
 
 ## Regole generali
-- Massimo 2 domande per messaggio, solo voci con la stessa priorità o vicine.
+- Una domanda per messaggio: o da scegliere con i pulsanti, o da scrivere.
 - Mai chiedere una voce già coperta dal testo dell'utente o dal documento allegato: prima si estrae, poi si chiede.
 - Tono: "tu", frasi corte, niente gergo HR.
 - Ogni domanda ha risposte rapide quando le opzioni sono poche; l'utente può sempre scrivere libero.

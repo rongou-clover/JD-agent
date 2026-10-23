@@ -9,7 +9,7 @@ export type QuickReply = z.infer<typeof QuickReply>;
 /** Strings may contain **bold** spans and nothing else. */
 export const AgentMessage = z.object({
   text: z.string(),
-  /** Numbered questions, at most 2 (docs/domande.md). */
+  /** One question per message (docs/domande.md); messages saved before that may hold two. */
   questions: z.array(z.string()).max(2),
   quickReplies: z.array(QuickReply),
 });
