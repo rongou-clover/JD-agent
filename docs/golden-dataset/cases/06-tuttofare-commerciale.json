@@ -1,0 +1,39 @@
+{
+  "id": "06-tuttofare-commerciale",
+  "title": "Un commerciale che fa tutto",
+  "notes": "Ruolo principale chiaro, l'Account Executive (chiude i contratti), con attività chiave da Customer Success (seguire i clienti perché rinnovino).",
+  "input": "Startup B2B di software per le risorse umane, 15 persone a Bologna. Ci serve qualcuno che faccia tutto il commerciale: trovare i lead con LinkedIn e cold email, fare le demo, chiudere i contratti e poi seguire i clienti dopo l'acquisto perché rinnovino. Riporta ai due founder.",
+  "expected": {
+    "diagnosis": {
+      "kind": "catalog",
+      "jobTitleId": "account-executive",
+      "seniority": [
+        "S2",
+        "S3"
+      ],
+      "otherRoles": [
+        "customer-success-manager"
+      ]
+    },
+    "fields": {
+      "companyDescription": {
+        "present": true
+      },
+      "activities": {
+        "minItems": 3
+      },
+      "team": {
+        "includes": {
+          "reportsTo": "founder"
+        }
+      }
+    },
+    "absent": [
+      "companyName",
+      "contract",
+      "salary",
+      "sixMonthResults"
+    ],
+    "mustNotContain": []
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "03-csm-remoto",
+  "title": "Customer Success Manager da remoto",
+  "notes": "Testo medio: mancano contratto, risultati, team. Remoto senza città.",
+  "input": "Lavoro in Cliniko, gestionale per studi medici, siamo 25. Abbiamo 300 clienti e il CEO segue ancora lui gli account più grandi: ci serve un Customer Success Manager con 2-3 anni di esperienza. Seguirà onboarding, QBR e rinnovi, e dovrà ridurre il churn. Lavoro da remoto, con una trasferta al mese a Torino.",
+  "expected": {
+    "diagnosis": {
+      "kind": "catalog",
+      "jobTitleId": "customer-success-manager",
+      "seniority": [
+        "S2"
+      ]
+    },
+    "fields": {
+      "companyName": {
+        "equals": "Cliniko"
+      },
+      "companyDescription": {
+        "present": true
+      },
+      "activities": {
+        "minItems": 3
+      },
+      "location": {
+        "includes": {
+          "mode": "remote"
+        }
+      }
+    },
+    "absent": [
+      "contract",
+      "salary",
+      "languages",
+      "selectionProcess"
+    ],
+    "mustNotContain": []
+  }
+}

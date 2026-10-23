@@ -1,0 +1,32 @@
+{
+  "id": "05-una-riga",
+  "title": "Una riga sola",
+  "notes": "Input minimo: nessuna voce va inventata, la seniority è una proposta qualsiasi ammessa.",
+  "input": "Cerco un performance marketer",
+  "expected": {
+    "diagnosis": {
+      "kind": "catalog",
+      "jobTitleId": "performance-marketing-specialist",
+      "seniority": [
+        "S1",
+        "S2",
+        "S3"
+      ]
+    },
+    "fields": {},
+    "absent": [
+      "companyName",
+      "companyDescription",
+      "roleMission",
+      "team",
+      "activities",
+      "sixMonthResults",
+      "technicalSkills",
+      "softSkills",
+      "location",
+      "contract",
+      "salary"
+    ],
+    "mustNotContain": []
+  }
+}
