@@ -13,7 +13,8 @@ describe("SECTION_SPECS", () => {
         expect(FIELDS[field].required).toBe(true);
         expect(spec.fields).toContain(field);
       }
-      expect(spec.bounds.minWords).toBeLessThan(spec.bounds.maxWords);
+      expect(spec.bounds.minWords).toBeLessThan(spec.bounds.targetWords);
+      expect(spec.bounds.targetWords).toBeLessThan(spec.bounds.maxWords);
     }
   });
 });
@@ -47,7 +48,7 @@ describe("planSection", () => {
 });
 
 describe("sectionHash", () => {
-  const base = { section: "team" as const, heading: "Il team", data: { team: { size: 6 } }, forcedWording: null };
+  const base = { section: "team" as const, heading: "Il team", data: { team: { size: 6 } }, forcedWording: null, bounds: SECTION_SPECS.team.bounds };
 
   it("is stable and changes with data, heading and forced wording", () => {
     expect(sectionHash(base)).toBe(sectionHash({ ...base }));

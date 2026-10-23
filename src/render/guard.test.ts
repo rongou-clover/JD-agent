@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { checkSection, type WrittenBlock } from "./guard";
 import type { Bounds } from "./sections";
 
-const bounds: Bounds = { minWords: 5, maxWords: 30, maxBullets: 3 };
+const bounds: Bounds = { minWords: 5, targetWords: 15, maxWords: 30, maxBullets: 3 };
 const paragraph = (text: string): WrittenBlock => ({ kind: "paragraph", text });
 const ok = paragraph("Gestirai il piano editoriale dei nostri canali social.");
 const code = (blocks: WrittenBlock[], forced: string | null = null, b = bounds) => checkSection(blocks, b, forced)?.code ?? null;

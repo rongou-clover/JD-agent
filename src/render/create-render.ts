@@ -2,7 +2,7 @@ import type { WriteSection } from "@/agents/renderer/schema";
 import type { Usage } from "@/agents/usage";
 import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
-import { sectionHash } from "./cache";
+import { sectionHash, type HashInput } from "./cache";
 import {
   PROSE_SECTION_IDS,
   RenderInput,
@@ -14,7 +14,7 @@ import {
 } from "./contract";
 import { EQUAL_OPPORTUNITY_TEXT, SECTION_HEADINGS } from "./copy";
 import { checkSection, type WrittenBlock } from "./guard";
-import { SECTION_SPECS, planSection, sectionHeading, type Bounds, type ProseSection } from "./sections";
+import { SECTION_SPECS, planSection, sectionHeading, type ProseSection } from "./sections";
 import { buildSheet } from "./sheet";
 import { buildSummary, postingTitle } from "./summary";
 
@@ -37,17 +37,13 @@ function forcedBySection(forcedWordings: ForcedWording[]): Map<ProseSection, str
   return new Map(forcedWordings.map((forced) => [forced.section, forced.text]));
 }
 
-async function writeGuarded(
-  write: WriteSection,
-  request: { section: ProseSection; heading: string; data: Record<string, unknown>; forcedWording: string | null },
-  bounds: Bounds,
-): Promise<{ blocks: WrittenBlock[] | null; usage: Usage[] }> {
+async function writeGuarded(write: WriteSection, request: HashInput): Promise<{ blocks: WrittenBlock[] | null; usage: Usage[] }> {
   const usage: Usage[] = [];
   let retryReason: string | null = null;
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-    const result = await write({ ...request, bounds, retryReason });
+    const result = await write({ ...request, retryReason });
     usage.push(...result.usage);
-    const failure = checkSection(result.output, bounds, request.forcedWording);
+    const failure = checkSection(result.output, request.bounds, request.forcedWording);
     if (!failure) return { blocks: result.output, usage };
     retryReason = `${failure.code}: ${failure.detail}`;
   }
@@ -65,11 +61,11 @@ async function renderProse(id: ProseSection, context: SectionContext): Promise<P
   if (plan.kind === "placeholder") return fixed(fallback);
   if (plan.kind === "omit") return forcedWording ? fixed(fallback) : { section: null, cacheEntry: null, usage: [] };
 
-  const request = { section: id, heading, data: plan.data, forcedWording };
+  const request: HashInput = { section: id, heading, data: plan.data, forcedWording, bounds: SECTION_SPECS[id].bounds };
   const hash = sectionHash(request);
   if (cached?.hash === hash) return { section: cached.section, cacheEntry: cached, usage: [] };
 
-  const { blocks, usage } = await writeGuarded(write, request, SECTION_SPECS[id].bounds);
+  const { blocks, usage } = await writeGuarded(write, request);
   // A fallback is not cached, so the next turn tries again.
   if (!blocks) return { ...fixed(fallback), usage };
   const section: PostingSection = { id, heading, blocks };

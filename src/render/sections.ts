@@ -8,8 +8,18 @@ import { fieldValue, isMissing, jobTitleName, resolveJobTitle } from "./draft-va
 
 export type ProseSection = z.infer<typeof ProseSectionId>;
 
-/** Guard limits on one written section: total words and number of bullet points (0 = prose only). */
-export type Bounds = { minWords: number; maxWords: number; maxBullets: number };
+/**
+ * Length of one written section: the guard enforces min/max words and bullet points (0 = prose only);
+ * the target steers the writer so that a complete posting lands at 500–700 words.
+ */
+export type Bounds = { minWords: number; targetWords: number; maxWords: number; maxBullets: number };
+
+const words = (minWords: number, targetWords: number, maxWords: number, maxBullets: number): Bounds => ({
+  minWords,
+  targetWords,
+  maxWords,
+  maxBullets,
+});
 
 /** Draft values that only shape the wording or heading of a section. */
 type ContextField = "jobTitle" | "seniority";
@@ -25,33 +35,23 @@ type SectionSpec = {
 
 /** What each prose section depends on (docs/template-output.md). A change here re-renders the section. */
 export const SECTION_SPECS: Record<ProseSection, SectionSpec> = {
-  role: { fields: ["roleMission"], required: ["roleMission"], context: ["jobTitle"], bounds: { minWords: 20, maxWords: 110, maxBullets: 0 } },
-  team: { fields: ["team"], required: ["team"], context: [], bounds: { minWords: 12, maxWords: 80, maxBullets: 0 } },
-  activities: {
-    fields: ["activities", "kpis"],
-    required: ["activities"],
-    context: ["seniority"],
-    bounds: { minWords: 30, maxWords: 200, maxBullets: 8 },
-  },
-  results: { fields: ["sixMonthResults"], required: ["sixMonthResults"], context: [], bounds: { minWords: 12, maxWords: 110, maxBullets: 5 } },
+  role: { fields: ["roleMission"], required: ["roleMission"], context: ["jobTitle"], bounds: words(20, 60, 110, 0) },
+  team: { fields: ["team"], required: ["team"], context: [], bounds: words(12, 40, 80, 0) },
+  activities: { fields: ["activities", "kpis"], required: ["activities"], context: ["seniority"], bounds: words(30, 105, 200, 8) },
+  results: { fields: ["sixMonthResults"], required: ["sixMonthResults"], context: [], bounds: words(12, 45, 110, 5) },
   requirements: {
     fields: ["technicalSkills", "prerequisites", "languages"],
     required: ["technicalSkills"],
     context: ["seniority"],
-    bounds: { minWords: 20, maxWords: 160, maxBullets: 7 },
+    bounds: words(20, 80, 160, 7),
   },
-  niceToHave: { fields: ["technicalSkills", "languages"], required: [], context: [], bounds: { minWords: 4, maxWords: 80, maxBullets: 4 } },
-  howYouWork: { fields: ["softSkills"], required: ["softSkills"], context: [], bounds: { minWords: 15, maxWords: 110, maxBullets: 5 } },
-  offer: { fields: ["offer"], required: [], context: [], bounds: { minWords: 8, maxWords: 150, maxBullets: 8 } },
-  practicalInfo: { fields: ["location", "contract"], required: [], context: [], bounds: { minWords: 8, maxWords: 120, maxBullets: 8 } },
-  selectionProcess: { fields: ["selectionProcess"], required: [], context: [], bounds: { minWords: 10, maxWords: 110, maxBullets: 5 } },
-  about: {
-    fields: ["companyName", "companyDescription"],
-    required: ["companyName", "companyDescription"],
-    context: [],
-    bounds: { minWords: 15, maxWords: 110, maxBullets: 0 },
-  },
-  missionValues: { fields: ["missionValues"], required: [], context: [], bounds: { minWords: 6, maxWords: 90, maxBullets: 4 } },
+  niceToHave: { fields: ["technicalSkills", "languages"], required: [], context: [], bounds: words(4, 15, 80, 4) },
+  howYouWork: { fields: ["softSkills"], required: ["softSkills"], context: [], bounds: words(15, 55, 110, 5) },
+  offer: { fields: ["offer"], required: [], context: [], bounds: words(8, 60, 150, 8) },
+  practicalInfo: { fields: ["location", "contract"], required: [], context: [], bounds: words(8, 45, 120, 8) },
+  selectionProcess: { fields: ["selectionProcess"], required: [], context: [], bounds: words(10, 45, 110, 5) },
+  about: { fields: ["companyName", "companyDescription"], required: ["companyName", "companyDescription"], context: [], bounds: words(15, 55, 110, 0) },
+  missionValues: { fields: ["missionValues"], required: [], context: [], bounds: words(6, 35, 90, 4) },
 };
 
 export function sectionHeading(section: ProseSection, draft: Draft): string {

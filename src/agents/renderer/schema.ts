@@ -3,7 +3,7 @@ import { ProseSectionId } from "@/render/contract";
 import type { WrittenBlock } from "@/render/guard";
 import type { AgentResult } from "../usage";
 
-export const PROMPT_VERSION = "renderer@1";
+export const PROMPT_VERSION = "renderer@3";
 
 /** Input of one call: one posting section, written from the data the section depends on. */
 export const SectionRequest = z.object({
@@ -12,7 +12,12 @@ export const SectionRequest = z.object({
   data: z.record(z.string(), z.unknown()),
   /** The user's exact text for this section: it must appear verbatim. */
   forcedWording: z.string().nullable(),
-  bounds: z.object({ minWords: z.number().int(), maxWords: z.number().int(), maxBullets: z.number().int() }),
+  bounds: z.object({
+    minWords: z.number().int(),
+    targetWords: z.number().int(),
+    maxWords: z.number().int(),
+    maxBullets: z.number().int(),
+  }),
   /** Why the previous attempt was rejected by the output guard; null on the first attempt. */
   retryReason: z.string().nullable(),
 });
