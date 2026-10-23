@@ -53,6 +53,14 @@ function nextInput(script: Conversation, state: SessionState, answered: Set<Fiel
   return { kind: "message", text: state.planner.optionalOffered ? NOTHING_ELSE : DONT_KNOW };
 }
 
+/** Fields the user really answered: the scripted ones sent, or every asked field on "Non lo so". */
+function repliedFields(script: Conversation, state: SessionState, input: TurnInput): FieldId[] {
+  if (input.kind !== "message") return [];
+  const asked = state.planner.askedFields;
+  const scripted = asked.filter((field) => script.answers[field] !== undefined && input.text.includes(script.answers[field]));
+  return scripted.length > 0 ? scripted : asked;
+}
+
 async function converse(script: Conversation): Promise<Report> {
   let state = initialState();
   const turns: Turn[] = [];
@@ -62,7 +70,7 @@ async function converse(script: Conversation): Promise<Report> {
   let input: TurnInput | null = { kind: "message", text: script.opening };
   while (input && turns.length < script.maxTurns + 2) {
     for (const field of state.planner.askedFields) if (answered.has(field)) redundant.push(field);
-    if (input.kind === "message") for (const field of state.planner.askedFields) answered.add(field);
+    for (const field of repliedFields(script, state, input)) answered.add(field);
     const outcome = await runTurn(workflow, input, state);
     state = outcome.state;
     usage.push(...outcome.usage);
