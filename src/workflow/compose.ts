@@ -7,6 +7,7 @@ import { COPY } from "./templates/copy";
 import { fieldLabels, type MessageParts } from "./templates/format";
 import { optionalMessage } from "./templates/optional";
 import { requiredQuestions } from "./templates/questions";
+import { chooseRoleMessage, diagnosisMessage } from "./templates/diagnosis";
 import { roleSwitchMessage } from "./templates/role-switch";
 import type { TurnContext } from "./turn-context";
 
@@ -22,6 +23,8 @@ const body = (parts: MessageParts, askedFields: FieldId[] = [], optionalOffered 
 function planBody(plan: Plan, state: SessionState, hasNotes: boolean): Body {
   const missing = missingRequiredFields(state.draft);
   switch (plan.kind) {
+    case "role":
+      return body(chooseRoleMessage(null), ["jobTitle"]);
     case "required": {
       const { questions, replies } = requiredQuestions(plan.fields, state.draft, state.planner);
       const lead = hasNotes ? "" : COPY.updatedOne;
@@ -41,6 +44,12 @@ function planBody(plan: Plan, state: SessionState, hasNotes: boolean): Body {
 
 function messageBody(ctx: TurnContext, plan: Plan): Body {
   const { state, focus } = ctx;
+  const jobTitle = state.draft.jobTitle.value;
+  const seniority = state.draft.seniority.value;
+  if (focus === "diagnosis" && jobTitle?.kind === "catalog" && seniority !== null) {
+    return body(diagnosisMessage(jobTitle.id, seniority), ["jobTitle", "seniority"]);
+  }
+  if (focus === "chooseRole") return body(chooseRoleMessage(jobTitle?.kind === "catalog" ? jobTitle.id : null), ["jobTitle"]);
   if (focus === "roleSwitch" && ctx.suggestedRole) return body(roleSwitchMessage(state.draft, ctx.suggestedRole));
   if (focus === "completeAnyway") {
     const missing = missingRequiredFields(state.draft);

@@ -10,6 +10,9 @@ export const COPY = {
   blocked: "Non posso usare questo messaggio. Raccontami il ruolo che stai cercando.",
   offTopic: "Sono qui per scrivere la job description con te. Torniamo al ruolo.",
   updatedOne: "Ho aggiornato la JD. Mi serve ancora una cosa:",
+  outOfCatalog: "Questo ruolo non è ancora nella mia libreria: scrivo comunque la JD.",
+  chooseRole: "Quale ruolo stai cercando? Scegline uno qui sotto o descrivilo con parole tue.",
+  describeRole: "Quale ruolo stai cercando? Descrivimelo con parole tue.",
   forcedWording: "Fatto: uso il tuo testo così com'è.",
   optionalIntro: "La JD è quasi pronta. Vuoi aggiungere anche una di queste cose?",
   done: "La JD è pronta 🎉 Puoi esportarla o chiedermi modifiche.",
@@ -21,6 +24,14 @@ export const COPY = {
   /** Closing reminder when only skipped required fields are missing. */
   stillMissing,
   doneWithMissing: (missing: string) => `Ho scritto la JD con quello che ho. ${stillMissing(missing)} Puoi esportarla o chiedermi modifiche.`,
+} as const;
+
+/** Quick replies under the role proposal (docs/domande.md, "Primo messaggio"). */
+export const ROLE_REPLIES = {
+  confirm: "Sì, va bene",
+  junior: "È più junior",
+  senior: "È più senior",
+  other: "Scegli un altro ruolo",
 } as const;
 
 export const HIRING_REASON_LABELS: Record<HiringReason, string> = {

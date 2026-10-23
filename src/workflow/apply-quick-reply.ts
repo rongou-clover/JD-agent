@@ -3,6 +3,7 @@ import { MAX_SOFT_SKILLS } from "@/domain/catalog-proposals";
 import type { Draft } from "@/domain/draft";
 import type { ContractType, HiringReason, WorkMode } from "@/domain/enums";
 import type { QuickReplyAction } from "./quick-reply-actions";
+import { shiftSeniority } from "./roles";
 import type { SessionState } from "./state";
 import type { Focus } from "./turn-context";
 
@@ -14,7 +15,27 @@ function withDraft(state: SessionState, draft: Draft, focus: Focus = "plan"): Re
   return { state: { ...state, draft }, focus };
 }
 
-/** The suggested role is confirmed; a seniority the new role does not allow is asked again. */
+/** "Sì, va bene" under the role proposal: job title and seniority are confirmed. */
+function confirmRole(state: SessionState): Result {
+  const { jobTitle, seniority } = state.draft;
+  return withDraft(state, {
+    ...state.draft,
+    jobTitle: jobTitle.value === null ? jobTitle : { ...jobTitle, status: "confirmed" },
+    seniority: seniority.value === null ? seniority : { ...seniority, status: "confirmed" },
+  });
+}
+
+/** One level down or up among the ones the role allows; the proposal is shown again. */
+function shift(state: SessionState, step: -1 | 1): Result {
+  const value = state.draft.jobTitle.value;
+  const current = state.draft.seniority.value;
+  const jobTitle = value?.kind === "catalog" ? findJobTitle(value.id) : undefined;
+  const next = jobTitle && current ? shiftSeniority(jobTitle, current, step) : null;
+  if (!next) return { state, focus: "diagnosis" };
+  return withDraft(state, { ...state.draft, seniority: { value: next, source: "user", status: "proposed" } }, "diagnosis");
+}
+
+/** The picked or suggested role is confirmed; a seniority the new role does not allow is asked again. */
 function pickRole(state: SessionState, jobTitleId: string): Result {
   const jobTitle = findJobTitle(jobTitleId);
   if (!jobTitle) return { state, focus: "plan" };
@@ -70,6 +91,14 @@ function softSkill(state: SessionState, name: string): Result {
 
 export function applyQuickReply(state: SessionState, action: QuickReplyAction): Result {
   switch (action.kind) {
+    case "confirmRole":
+      return confirmRole(state);
+    case "seniorityDown":
+      return shift(state, -1);
+    case "seniorityUp":
+      return shift(state, 1);
+    case "chooseOtherRole":
+      return { state, focus: "chooseRole" };
     case "pickRole":
       return pickRole(state, action.jobTitleId);
     case "keepRole":

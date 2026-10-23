@@ -1,4 +1,5 @@
 import { EXTRACTED_FIELD_IDS, ExtractorOutput } from "@/agents/extractor/schema";
+import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import type { FieldId } from "@/domain/fields";
 import type { Render } from "@/render/contract";
@@ -48,11 +49,12 @@ export const fakeRender: Render = async (input, cache) => ({
 export type FakeOptions = {
   allowed?: boolean;
   extraction?: ExtractorOutput;
+  diagnosis?: Diagnosis;
 };
 
 /** Fake agents; `calls` records which ones ran. */
 export function fakeDeps(options: FakeOptions = {}) {
-  const calls = { guard: 0, extract: 0 };
+  const calls = { guard: 0, extract: 0, diagnose: 0 };
   let replyId = 0;
   const deps: TurnDeps = {
     checkMessage: async () => {
@@ -62,6 +64,11 @@ export function fakeDeps(options: FakeOptions = {}) {
     extract: async () => {
       calls.extract++;
       return { output: options.extraction ?? extraction(), usage: [{ model: FAST, inputTokens: 10, outputTokens: 5 }] };
+    },
+    diagnose: async () => {
+      calls.diagnose++;
+      const output = options.diagnosis ?? { kind: "outOfCatalog", title: "" };
+      return { output, usage: [{ model: FAST, inputTokens: 20, outputTokens: 8 }] };
     },
     guardModel: () => FAST,
     newReplyId: () => `r${++replyId}`,

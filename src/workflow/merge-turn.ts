@@ -2,12 +2,18 @@ import type { ExtractorOutput } from "@/agents/extractor/schema";
 import { findJobTitle } from "@/domain/catalog";
 import type { Draft } from "@/domain/draft";
 import type { ForcedWording } from "@/render/contract";
-import { applyExtraction } from "./merge";
+import type { Diagnosis } from "@/domain/diagnosis";
+import { applyDiagnosis, applyExtraction } from "./merge";
 import { applySkipped, repeatedAsks } from "./skipped";
 import type { PlannerMemory } from "./state";
 import { COPY, discriminationNote } from "./templates/copy";
 import { fieldLabels } from "./templates/format";
 import type { Focus, TurnContext } from "./turn-context";
+
+/** The diagnosis falls back to an untitled out-of-catalog role when it fails: that one is not applied. */
+function isUsable(diagnosis: Diagnosis): boolean {
+  return diagnosis.kind === "catalog" || diagnosis.title.trim().length > 0;
+}
 
 /** The extractor's closer role, unless it is unknown, the current one, or one the user already turned down. */
 function closerRole(ctx: TurnContext, extraction: ExtractorOutput): string | null {
@@ -32,7 +38,7 @@ function upsertWording(wordings: ForcedWording[], wording: ForcedWording): Force
   return [...wordings.filter((existing) => existing.section !== wording.section), wording];
 }
 
-/** Merges what the extractor found in the user's message into the session state. */
+/** Merges what the extractor and the diagnosis found in the user's message into the session state. */
 export function mergeMessage(ctx: TurnContext): TurnContext {
   const extraction = ctx.extraction;
   if (!extraction) return ctx;
@@ -40,12 +46,19 @@ export function mergeMessage(ctx: TurnContext): TurnContext {
   const notes = [...ctx.notes, ...flags.map((flag) => discriminationNote(flag.category, flag.quote))];
   if (extraction.intent === "other") return { ...ctx, notes: [...notes, COPY.offTopic] };
 
-  const { draft, planner } = applyPendingReason(applyExtraction(ctx.state.draft, extraction), ctx.state.planner);
+  const { draft: extracted, planner } = applyPendingReason(applyExtraction(ctx.state.draft, extraction), ctx.state.planner);
+  let draft = extracted;
   let forcedWordings = ctx.state.forcedWordings;
   // A dictated wording always wins, except over the anti-discrimination rules (docs/decisioni.md).
   if (extraction.forcedWording && flags.length === 0) {
     forcedWordings = upsertWording(forcedWordings, extraction.forcedWording);
     notes.push(COPY.forcedWording);
+  }
+
+  if (ctx.diagnosis && isUsable(ctx.diagnosis)) {
+    draft = applyDiagnosis(draft, ctx.diagnosis);
+    if (ctx.diagnosis.kind === "outOfCatalog") notes.push(COPY.outOfCatalog);
+    else return { ...ctx, notes, focus: "diagnosis", state: { ...ctx.state, draft, planner, forcedWordings } };
   }
 
   const suggestedRole = closerRole(ctx, extraction);

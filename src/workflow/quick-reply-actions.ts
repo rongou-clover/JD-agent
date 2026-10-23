@@ -4,7 +4,12 @@ import { ContractType, HiringReason, Seniority, WorkMode } from "@/domain/enums"
 
 /** What a quick reply does when clicked; handled in code, never by an LLM. */
 export const QuickReplyAction = z.discriminatedUnion("kind", [
-  /** Switch to the catalog role the extractor found closer to the activities. */
+  /** Role proposal from the first message: confirm it, move the seniority, or pick another role. */
+  z.object({ kind: z.literal("confirmRole") }),
+  z.object({ kind: z.literal("seniorityDown") }),
+  z.object({ kind: z.literal("seniorityUp") }),
+  z.object({ kind: z.literal("chooseOtherRole") }),
+  /** Switch to a catalog role: picked from the list, or the one the extractor found closer to the activities. */
   z.object({ kind: z.literal("pickRole"), jobTitleId: z.string() }),
   /** Keep the current role: the declined one is not suggested again. */
   z.object({ kind: z.literal("keepRole"), declinedId: z.string() }),
