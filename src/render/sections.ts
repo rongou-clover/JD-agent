@@ -43,12 +43,12 @@ export const SECTION_SPECS: Record<ProseSection, SectionSpec> = {
     fields: ["technicalSkills", "prerequisites", "languages"],
     required: ["technicalSkills"],
     context: ["seniority"],
-    bounds: words(20, 80, 160, 7),
+    bounds: words(20, 90, 160, 7),
   },
   niceToHave: { fields: ["technicalSkills", "languages"], required: [], context: [], bounds: words(4, 15, 80, 4) },
-  howYouWork: { fields: ["softSkills"], required: ["softSkills"], context: [], bounds: words(15, 55, 110, 5) },
+  howYouWork: { fields: ["softSkills"], required: ["softSkills"], context: [], bounds: words(15, 60, 110, 5) },
   offer: { fields: ["offer"], required: [], context: [], bounds: words(8, 60, 150, 8) },
-  practicalInfo: { fields: ["location", "contract"], required: [], context: [], bounds: words(8, 45, 120, 8) },
+  practicalInfo: { fields: ["location"], required: [], context: [], bounds: words(6, 30, 80, 4) },
   selectionProcess: { fields: ["selectionProcess"], required: [], context: [], bounds: words(10, 45, 110, 5) },
   about: { fields: ["companyName", "companyDescription"], required: ["companyName", "companyDescription"], context: [], bounds: words(15, 55, 110, 0) },
   missionValues: { fields: ["missionValues"], required: [], context: [], bounds: words(6, 35, 90, 4) },
@@ -76,7 +76,20 @@ function fieldView(section: ProseSection, field: FieldId, draft: Draft): unknown
       .filter((language) => language.required === wantsRequired(section))
       .map((language) => `${language.language} ${LANGUAGE_LEVEL_LABELS[language.level]}`);
   }
+  if (field === "location") return practicalDetails(draft);
   return fieldValue(draft, field);
+}
+
+/**
+ * Practical information beyond the summary box: schedule and travel. City, work mode, office days
+ * and contract (type, duration, CCNL, level) are in the summary and never repeated.
+ */
+function practicalDetails(draft: Draft): Record<string, string> | null {
+  const location = fieldValue(draft, "location");
+  const details = Object.entries({ schedule: location?.schedule, travel: location?.travel }).filter(
+    (entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].length > 0,
+  );
+  return details.length > 0 ? Object.fromEntries(details) : null;
 }
 
 const isEmpty = (value: unknown) => value === null || (Array.isArray(value) && value.length === 0);

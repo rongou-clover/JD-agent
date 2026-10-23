@@ -12,18 +12,48 @@ describe("buildSheet", () => {
   it("takes P level, type and criticality from the catalog when a skill matches", () => {
     const sheet = buildSheet(withField(completeDraft(), "technicalSkills", skills), null);
     expect(sheet.inCatalog).toBe(true);
-    expect(sheet.skills).toEqual([
-      { name: "girare e montare VIDEO", type: "hard", criticality: "importante", expectedLevel: "P3", required: true },
-      { name: "Photoshop", type: null, criticality: null, expectedLevel: "P2", required: false },
+    expect(sheet.skills.filter((skill) => skill.source === "draft")).toEqual([
+      { name: "girare e montare VIDEO", type: "hard", criticality: "importante", expectedLevel: "P3", required: true, source: "draft" },
+      { name: "Photoshop", type: null, criticality: null, expectedLevel: "P2", required: false, source: "draft" },
     ]);
     expect(sheet.recommendedDimensions.length).toBeGreaterThan(0);
   });
 
-  it("has no P levels and no dimensions out of catalog", () => {
+  it("adds the catalog skills the draft does not cite, after the draft's own", () => {
+    const sheet = buildSheet(withField(completeDraft(), "technicalSkills", skills), null);
+    const catalogSkills = sheet.skills.filter((skill) => skill.source === "catalog");
+    expect(sheet.skills.slice(0, 2).every((skill) => skill.source === "draft")).toBe(true);
+    expect(catalogSkills.map((skill) => skill.name)).toEqual([
+      "Costruire un piano editoriale",
+      "Scrivere e revisionare testi",
+      "Gestire i canali social",
+      "Usare l'AI per produrre contenuti",
+      "Leggere i dati di performance",
+    ]);
+    expect(catalogSkills[0]).toEqual({
+      name: "Costruire un piano editoriale",
+      type: "hard",
+      criticality: "critica",
+      expectedLevel: "P3",
+      required: false,
+      source: "catalog",
+    });
+  });
+
+  it("leaves out catalog skills not expected at the seniority", () => {
+    let draft = withField(completeDraft(), "jobTitle", { kind: "catalog", id: "account-executive" });
+    draft = withField(draft, "seniority", "S1");
+    const names = buildSheet(draft, null).skills.filter((skill) => skill.source === "catalog").map((skill) => skill.name);
+    expect(names).toContain("Condurre una discovery");
+    expect(names).not.toContain("Prevedere la pipeline");
+  });
+
+  it("has no P levels, no catalog skills and no dimensions out of catalog", () => {
     const draft = withField(withField(completeDraft(), "technicalSkills", skills), "jobTitle", { kind: "outOfCatalog", title: "Video Maker" });
     const sheet = buildSheet(draft, null);
     expect(sheet).toMatchObject({ jobTitle: "Video Maker", inCatalog: false, recommendedDimensions: [] });
-    expect(sheet.skills.every((skill) => skill.expectedLevel === null && skill.criticality === null)).toBe(true);
+    expect(sheet.skills).toHaveLength(2);
+    expect(sheet.skills.every((skill) => skill.source === "draft" && skill.expectedLevel === null && skill.criticality === null)).toBe(true);
   });
 
   it("keeps the salary even when not published, plus prerequisites and manager notes", () => {

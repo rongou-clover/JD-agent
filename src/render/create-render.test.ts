@@ -26,12 +26,11 @@ describe("render: sections", () => {
       "requirements",
       "niceToHave",
       "howYouWork",
-      "practicalInfo",
       "about",
       "equalOpportunity",
     ]);
-    expect(requests).toHaveLength(9);
-    expect(result.usage).toHaveLength(9);
+    expect(requests).toHaveLength(8);
+    expect(result.usage).toHaveLength(8);
     const last = result.output.posting.sections.at(-1);
     expect(last?.blocks).toEqual([{ kind: "paragraph", text: EQUAL_OPPORTUNITY_TEXT }]);
   });

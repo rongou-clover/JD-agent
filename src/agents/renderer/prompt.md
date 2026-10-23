@@ -38,7 +38,7 @@ Plain text only: no markdown, no `#`, no `**`, no `-` or numbers at the start of
 | `niceToHave` | Optional skills and preferred languages. | 1–4 bullets |
 | `howYouWork` | Each soft skill in `softSkills`, in the given order, rewritten as an observable behaviour ("Prendi l'iniziativa quando..."). | 2–5 bullets |
 | `offer` | Benefits from `offer`, keeping their concrete values (amounts, days, budgets). | 2–8 bullets |
-| `practicalInfo` | Practical facts from `location` and `contract`: city, work mode and office days, schedule, travel, contract type, duration, CCNL and level. Never pay. | 2–6 bullets |
+| `practicalInfo` | Only the practical details in `location`: working hours (`schedule`) and travel (`travel`). City, work mode, office days, contract, CCNL and pay are in the summary box: never repeat them. | 1–3 bullets |
 | `selectionProcess` | The steps in `selectionProcess` in order, with timing when given; close with the response time if present. | 2–5 bullets |
 | `about` | The company: `companyName`, what it does, size and stage, from `companyDescription`. First person plural ("Siamo...", "Aiutiamo..."). Prose. | 2–4 sentences |
 | `missionValues` | Mission and values from `missionValues`, as behaviours. One sentence or 3–4 bullets. | 1 sentence or 3–4 bullets |

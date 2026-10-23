@@ -60,6 +60,8 @@ export const InternalSheet = z.object({
       criticality: Criticality.nullable(),
       expectedLevel: ExpectedLevel.nullable(),
       required: z.boolean(),
+      /** "draft": named by the user; "catalog": expected for the role but not cited in the draft. */
+      source: z.enum(["draft", "catalog"]),
     }),
   ),
   softSkills: z.array(z.string()),

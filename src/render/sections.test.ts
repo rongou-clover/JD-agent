@@ -41,6 +41,13 @@ describe("planSection", () => {
     expect(planSection("about", draft, null)).toEqual({ kind: "placeholder" });
   });
 
+  it("writes practical information only with details beyond the summary box", () => {
+    expect(planSection("practicalInfo", completeDraft(), null)).toEqual({ kind: "omit" });
+    let draft = withField(completeDraft(), "location", { city: "Milano", mode: "hybrid", officeDays: 2, schedule: null, travel: "Trasferte in Italia" });
+    draft = withField(draft, "contract", { type: "permanent", months: null, ccnl: "Commercio", level: "Quadro" });
+    expect(planSection("practicalInfo", draft, null)).toEqual({ kind: "write", data: { location: { travel: "Trasferte in Italia" } } });
+  });
+
   it("gives the role section the job title as context", () => {
     const plan = planSection("role", completeDraft(), null);
     expect(plan.kind === "write" && plan.data.jobTitle).toBe("Content / Social Media Manager");

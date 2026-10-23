@@ -3,7 +3,7 @@ import { ProseSectionId } from "@/render/contract";
 import type { WrittenBlock } from "@/render/guard";
 import type { AgentResult } from "../usage";
 
-export const PROMPT_VERSION = "renderer@3";
+export const PROMPT_VERSION = "renderer@4";
 
 /** Input of one call: one posting section, written from the data the section depends on. */
 export const SectionRequest = z.object({
