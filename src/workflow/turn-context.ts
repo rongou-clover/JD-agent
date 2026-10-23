@@ -3,7 +3,6 @@ import type { ExtractorInput, ExtractorOutput } from "@/agents/extractor/schema"
 import type { GuardResult } from "@/agents/prompt-injection/guard";
 import type { AgentResult, Usage } from "@/agents/usage";
 import type { Plan } from "@/domain/planner";
-import type { Render } from "@/render/contract";
 import type { QuickReplyAction } from "./quick-reply-actions";
 import type { SessionState } from "./state";
 
@@ -15,11 +14,10 @@ export type TurnInput =
   | { kind: "message"; text: string }
   | { kind: "quickReply"; label: string; action: QuickReplyAction };
 
-/** Everything a turn calls outside plain code; injected so tests use fakes. */
+/** Everything a turn calls outside plain code; injected so tests use fakes. The renderer runs after the turn. */
 export type TurnDeps = {
   checkMessage: (text: string) => Promise<GuardResult>;
   extract: (input: ExtractorInput) => Promise<AgentResult<ExtractorOutput>>;
-  render: Render;
   /** Model id the guard runs on, for its usage estimate. */
   guardModel: () => string;
   /** Opaque id for a quick reply. */
@@ -39,7 +37,9 @@ export type TurnContext = {
   suggestedRole: string | null;
   plan: Plan | null;
   message: AgentMessage | null;
+  /** The guard stopped the message: the reply is the fixed text and nothing else changed. */
+  blocked: boolean;
 };
 
 /** The turn result: the new session state and the agent's reply. */
-export type TurnOutcome = { state: SessionState; message: AgentMessage; usage: Usage[] };
+export type TurnOutcome = { state: SessionState; message: AgentMessage; usage: Usage[]; blocked: boolean };

@@ -12,6 +12,7 @@ function Muted({ children }: { children: ReactNode }) {
 }
 
 const LOADING = "Caricamento…";
+const WRITING = "Sto scrivendo l'annuncio…";
 
 /**
  * One tab panel: a document page that scrolls inside the panel only; the page never scrolls (docs/decisioni.md).
@@ -35,12 +36,24 @@ function Panel({ tab, selected, children }: { tab: PreviewTab; selected: Preview
   );
 }
 
-/** Right pane: "Annuncio" and "Scheda interna" tabs over a document page. Only the posting is printed for the PDF export. */
-export function PreviewPane({ posting, sheet }: { posting: Posting | null; sheet: InternalSheet | null }) {
+type Props = { posting: Posting | null; sheet: InternalSheet | null; pending: boolean };
+
+/**
+ * Right pane: "Annuncio" and "Scheda interna" tabs over a document page. Only the posting is printed for the PDF export.
+ * While the posting is being written for the last turn, the previous one stays visible under a notice.
+ */
+export function PreviewPane({ posting, sheet, pending }: Props) {
   const [selected, setSelected] = useState<PreviewTab>("posting");
   return (
-    <section aria-label="Anteprima job description" className="flex min-h-0 min-w-0 flex-[999_1_560px] flex-col print:block">
+    <section aria-label="Anteprima job description" className="relative flex min-h-0 min-w-0 flex-[999_1_560px] flex-col print:block">
       <PreviewTabs selected={selected} onSelect={setSelected} />
+      {/* Beside the tabs, out of the flow: the layout does not move when the notice comes and goes. */}
+      {pending && (
+        <p role="status" className="absolute top-3 right-6 m-0 flex h-9 items-center gap-2 text-xs text-muted-foreground print:hidden">
+          <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-accent" />
+          {WRITING}
+        </p>
+      )}
       <Panel tab="posting" selected={selected}>
         {posting ? <PostingView posting={posting} /> : <Muted>{LOADING}</Muted>}
       </Panel>

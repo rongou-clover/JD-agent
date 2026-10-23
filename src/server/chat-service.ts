@@ -1,23 +1,15 @@
 import type { ChatRequest, SessionView } from "@/api/contract";
-import { isBudgetExhausted, startOfBudgetDay, totalsByKind, type ModelKind, type TokenTotals } from "@/budget/daily-limit";
 import type { Db } from "@/db/client";
 import { loadSession, recordUsage, saveTurn, SessionBusyError, type StoredSession } from "@/db/sessions-repo";
-import { usageTotalsSince } from "@/db/usage-repo";
 import { findJobTitle } from "@/domain/catalog";
-import { startState, type SessionState } from "@/workflow/state";
+import { initialState, needsRender, startState, type SessionState } from "@/workflow/state";
 import { runTurn, TurnFailedError, type TurnWorkflow } from "@/workflow/turn";
 import type { TurnInput } from "@/workflow/turn-context";
 import { ApiFailure } from "./api-errors";
+import { assertBudget, type BudgetDeps } from "./budget-check";
 import { toSessionView } from "./session-view";
 
-export type ChatServiceDeps = {
-  db: Db;
-  workflow: TurnWorkflow;
-  /** Model ids from env, to map usage rows to fast or writer. */
-  models: () => Record<ModelKind, string>;
-  limits: () => TokenTotals;
-  now: () => Date;
-};
+export type ChatServiceDeps = BudgetDeps & { workflow: TurnWorkflow };
 
 const STALE_QUICK_REPLY = "Questa risposta rapida non è più valida: scrivi pure in chat.";
 const UNKNOWN_JOB_TITLE = "Scegli il ruolo dall'elenco e riprova.";
@@ -40,13 +32,9 @@ function previousState(request: ChatRequest, stored: StoredSession | null): Sess
   return startState(jobTitle);
 }
 
-async function assertBudget(deps: ChatServiceDeps): Promise<void> {
-  const rows = await usageTotalsSince(deps.db, startOfBudgetDay(deps.now()));
-  if (isBudgetExhausted(totalsByKind(rows, deps.models()), deps.limits())) throw new ApiFailure("budgetExhausted");
-}
-
 /**
  * One chat turn: load, check the daily limit, run the workflow (LLM calls, no transaction), save.
+ * The posting is rendered by a separate call (render-service.ts) so the reply comes first.
  * `clientId` is the browser that starts a new session, so it shows up in that browser's list.
  */
 export async function handleChat(request: ChatRequest, deps: ChatServiceDeps, clientId: string | null = null): Promise<SessionView> {
@@ -60,10 +48,14 @@ export async function handleChat(request: ChatRequest, deps: ChatServiceDeps, cl
     throw error;
   });
   const userText = input.kind === "message" ? input.text : input.label;
+  // A new session is compared with the empty state: its picked role alone already needs a posting. Still pending
+  // if an earlier render was not saved yet; a blocked message never asks for one.
+  const changed = !outcome.blocked && needsRender(stored?.state ?? initialState(), outcome.state);
+  const postingPending = changed || (stored !== null && stored.renderedVersion < stored.version);
   const session = stored ? { id: stored.id, version: stored.version } : null;
   let sessionId: string;
   try {
-    sessionId = await saveTurn(deps.db, { session, clientId, state: outcome.state, userText, agentMessage: outcome.message, usage: outcome.usage });
+    sessionId = await saveTurn(deps.db, { session, clientId, state: outcome.state, userText, agentMessage: outcome.message, usage: outcome.usage, postingPending });
   } catch (error) {
     if (!(error instanceof SessionBusyError)) throw error;
     await recordUsage(deps.db, stored?.id ?? null, outcome.usage);
@@ -74,11 +66,11 @@ export async function handleChat(request: ChatRequest, deps: ChatServiceDeps, cl
     { role: "user" as const, text: userText },
     { role: "agent" as const, message: outcome.message },
   ];
-  return toSessionView(sessionId, outcome.state, transcript);
+  return toSessionView(sessionId, outcome.state, transcript, postingPending);
 }
 
 export async function getSessionView(db: Db, id: string): Promise<SessionView> {
   const stored = await loadSession(db, id);
   if (!stored) throw new ApiFailure("sessionNotFound");
-  return toSessionView(stored.id, stored.state, stored.transcript);
+  return toSessionView(stored.id, stored.state, stored.transcript, stored.renderedVersion < stored.version);
 }

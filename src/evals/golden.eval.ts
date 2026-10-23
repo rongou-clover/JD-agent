@@ -15,7 +15,7 @@ import { scoreDiagnosis, scoreExtraction, scoreGuard, scoreRedundantQuestions, t
 const THRESHOLDS = { guard: 1, diagnosis: 0.9, extraction: 0.8, redundantQuestions: 1 } as const;
 type ScorerName = keyof typeof THRESHOLDS;
 
-/** A blocked message never reaches the agents, so only the guard is scored. */
+/** The output of a blocked message is discarded, so only the guard is scored. */
 type CaseReport = {
   id: string;
   guard: GuardResult;

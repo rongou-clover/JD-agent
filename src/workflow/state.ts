@@ -3,7 +3,7 @@ import type { JobTitle } from "@/domain/catalog";
 import { Draft, emptyDraft } from "@/domain/draft";
 import { HiringReason } from "@/domain/enums";
 import { FIELD_IDS } from "@/domain/fields";
-import { ForcedWording, InternalSheet, Posting, SectionCache } from "@/render/contract";
+import { ForcedWording, InternalSheet, Posting, SectionCache, type RenderInput } from "@/render/contract";
 import { StoredQuickReply } from "./quick-reply-actions";
 
 /** Planner memory across turns: the domain PlannerState plus what the last agent message asked. */
@@ -34,6 +34,15 @@ export const SessionState = z.object({
   quickReplies: z.array(StoredQuickReply),
 });
 export type SessionState = z.infer<typeof SessionState>;
+
+/** What the renderer reads from the session: a turn that changes none of it needs no new render. */
+export function renderInput(state: SessionState): RenderInput {
+  return { draft: state.draft, forcedWordings: state.forcedWordings };
+}
+
+export function needsRender(before: SessionState, after: SessionState): boolean {
+  return JSON.stringify(renderInput(before)) !== JSON.stringify(renderInput(after));
+}
 
 /** Shown until the first render: a session whose first message was blocked has no posting yet. */
 export const EMPTY_POSTING: Posting = { title: "", summary: [], sections: [] };

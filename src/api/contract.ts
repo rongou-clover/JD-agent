@@ -36,6 +36,8 @@ export const SessionView = z.object({
   posting: Posting,
   /** Internal sheet for the hiring team; null before the first render. */
   sheet: InternalSheet.nullable(),
+  /** The posting lags the last turn: the client asks for the render, the preview shows it is being written. */
+  postingPending: z.boolean().default(false),
 });
 export type SessionView = z.infer<typeof SessionView>;
 

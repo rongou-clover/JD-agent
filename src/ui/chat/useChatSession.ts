@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { QuickReply, SessionView } from "@/api/contract";
-import { ApiClientError, getSession, loginUrl, sendChat } from "@/ui/api/client";
+import { ApiClientError, getSession, loginUrl, renderSession, sendChat } from "@/ui/api/client";
 
 export type ChatSession = {
   view: SessionView | null;
@@ -14,7 +14,10 @@ export type ChatSession = {
   sendQuickReply: (reply: QuickReply) => Promise<boolean>;
 };
 
-/** Loads the session, sends turns and maps API errors (unauthorized → login page, others → inline message). */
+/**
+ * Loads the session, sends turns and maps API errors (unauthorized → login page, others → inline message).
+ * A view whose posting lags is shown at once, then the render is requested; its result is dropped if a newer turn came first.
+ */
 export function useChatSession(sessionId: string): ChatSession {
   const router = useRouter();
   const pathname = usePathname();
@@ -31,23 +34,41 @@ export function useChatSession(sessionId: string): ChatSession {
     [router, pathname],
   );
 
+  const latest = useRef(0);
+  const showView = useCallback(
+    (next: SessionView) => {
+      const current = ++latest.current;
+      setView(next);
+      if (!next.postingPending) return;
+      renderSession(sessionId).then(
+        (rendered) => latest.current === current && setView(rendered),
+        (caught: unknown) => {
+          if (latest.current !== current) return;
+          setView((shown) => shown && { ...shown, postingPending: false });
+          handleError(caught);
+        },
+      );
+    },
+    [sessionId, handleError],
+  );
+
   useEffect(() => {
     let active = true;
     getSession(sessionId).then(
-      (loaded) => active && setView(loaded),
+      (loaded) => active && showView(loaded),
       (caught: unknown) => active && handleError(caught),
     );
     return () => {
       active = false;
     };
-  }, [sessionId, handleError]);
+  }, [sessionId, handleError, showView]);
 
   const send = useCallback(
     async (optimisticText: string, request: () => Promise<SessionView>): Promise<boolean> => {
       setPendingText(optimisticText);
       setError(null);
       try {
-        setView(await request());
+        showView(await request());
         return true;
       } catch (caught) {
         handleError(caught);
@@ -56,7 +77,7 @@ export function useChatSession(sessionId: string): ChatSession {
         setPendingText(null);
       }
     },
-    [handleError],
+    [handleError, showView],
   );
 
   const sendMessage = useCallback(

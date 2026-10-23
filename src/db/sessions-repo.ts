@@ -7,7 +7,14 @@ import { SessionState } from "@/workflow/state";
 import type { Db } from "./client";
 import { messages, sessions, usage as usageTable } from "./schema";
 
-export type StoredSession = { id: string; version: number; state: SessionState; transcript: TranscriptEntry[] };
+export type StoredSession = {
+  id: string;
+  version: number;
+  /** Below `version`: the posting was not rendered for the last turn yet. */
+  renderedVersion: number;
+  state: SessionState;
+  transcript: TranscriptEntry[];
+};
 
 /** Another turn on the same session was saved first. */
 export class SessionBusyError extends Error {}
@@ -20,16 +27,19 @@ function toTranscript(row: typeof messages.$inferSelect): TranscriptEntry {
     : { role: "agent", message: AgentMessage.parse(row.content) };
 }
 
-function stateColumns(state: SessionState) {
+/** Written by a turn. */
+function turnColumns(state: SessionState) {
   return {
     draft: state.draft,
     plannerState: state.planner,
     forcedWordings: state.forcedWordings,
-    sectionCache: state.sectionCache,
-    posting: state.posting,
-    sheet: state.sheet,
     quickReplies: state.quickReplies,
   };
+}
+
+/** Written by a render only, so a turn saved meanwhile never overwrites a newer posting. */
+function renderColumns(state: SessionState) {
+  return { sectionCache: state.sectionCache, posting: state.posting, sheet: state.sheet };
 }
 
 export async function loadSession(db: Db, id: string): Promise<StoredSession | null> {
@@ -45,7 +55,7 @@ export async function loadSession(db: Db, id: string): Promise<StoredSession | n
     quickReplies: row.quickReplies,
   });
   const rows = await db.select().from(messages).where(eq(messages.sessionId, id)).orderBy(asc(messages.id));
-  return { id, version: row.version, state, transcript: rows.map(toTranscript) };
+  return { id, version: row.version, renderedVersion: row.renderedVersion, state, transcript: rows.map(toTranscript) };
 }
 
 export type TurnRecord = {
@@ -57,6 +67,8 @@ export type TurnRecord = {
   userText: string;
   agentMessage: AgentMessage;
   usage: Usage[];
+  /** The posting lags this turn (it changed what the renderer reads, or an earlier render is unsaved). */
+  postingPending: boolean;
 };
 
 function usageRows(sessionId: string | null, usage: Usage[]) {
@@ -73,14 +85,27 @@ export async function saveTurn(db: Db, record: TurnRecord): Promise<string> {
   return db.transaction(async (tx) => {
     let id: string;
     if (record.session === null) {
-      const [created] = await tx.insert(sessions).values({ ...stateColumns(record.state), clientId: record.clientId }).returning({ id: sessions.id });
+      const [created] = await tx
+        .insert(sessions)
+        .values({
+          ...turnColumns(record.state),
+          ...renderColumns(record.state),
+          clientId: record.clientId,
+          renderedVersion: record.postingPending ? 0 : 1,
+        })
+        .returning({ id: sessions.id });
       if (!created) throw new Error("Session insert returned no row");
       id = created.id;
     } else {
       const { id: sessionId, version } = record.session;
       const updated = await tx
         .update(sessions)
-        .set({ ...stateColumns(record.state), version: sql`${sessions.version} + 1`, updatedAt: new Date() })
+        .set({
+          ...turnColumns(record.state),
+          version: sql`${sessions.version} + 1`,
+          renderedVersion: record.postingPending ? sessions.renderedVersion : sql`${sessions.version} + 1`,
+          updatedAt: new Date(),
+        })
         .where(and(eq(sessions.id, sessionId), eq(sessions.version, version)))
         .returning({ id: sessions.id });
       if (updated.length === 0) throw new SessionBusyError(`Session ${sessionId} changed during the turn`);
@@ -92,6 +117,24 @@ export async function saveTurn(db: Db, record: TurnRecord): Promise<string> {
     ]);
     if (record.usage.length > 0) await tx.insert(usageTable).values(usageRows(id, record.usage));
     return id;
+  });
+}
+
+export type RenderRecord = { id: string; version: number; state: SessionState; usage: Usage[] };
+
+/**
+ * Saves a posting rendered for `version`; false if a turn was saved meanwhile (its own render follows).
+ * The tokens count either way.
+ */
+export async function saveRender(db: Db, record: RenderRecord): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const updated = await tx
+      .update(sessions)
+      .set({ ...renderColumns(record.state), renderedVersion: record.version })
+      .where(and(eq(sessions.id, record.id), eq(sessions.version, record.version)))
+      .returning({ id: sessions.id });
+    if (record.usage.length > 0) await tx.insert(usageTable).values(usageRows(record.id, record.usage));
+    return updated.length > 0;
   });
 }
 

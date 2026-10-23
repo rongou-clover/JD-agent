@@ -9,7 +9,7 @@ import { buildChecklist } from "@/domain/checklist";
 import type { FieldId } from "@/domain/fields";
 import { render } from "@/render/render";
 import { findJobTitle } from "@/domain/catalog";
-import { startState, type SessionState } from "@/workflow/state";
+import { needsRender, renderInput, startState, type SessionState } from "@/workflow/state";
 import { createTurnWorkflow, runTurn } from "@/workflow/turn";
 import type { TurnInput } from "@/workflow/turn-context";
 import { CONVERSATIONS, type Conversation } from "./conversations";
@@ -24,7 +24,6 @@ let replyId = 0;
 const workflow = createTurnWorkflow({
   checkMessage,
   extract,
-  render,
   guardModel: () => model("fast"),
   newReplyId: () => `r${++replyId}`,
 });
@@ -74,8 +73,16 @@ async function converse(script: Conversation): Promise<Report> {
     for (const field of state.planner.askedFields) if (answered.has(field)) redundant.push(field);
     for (const field of repliedFields(script, state, input)) answered.add(field);
     const outcome = await runTurn(workflow, input, state);
-    state = outcome.state;
     usage.push(...outcome.usage);
+    // As in the app: the posting is rendered after the reply, only when the turn changed what the renderer reads.
+    if (needsRender(state, outcome.state)) {
+      const rendered = await render(renderInput(outcome.state), outcome.state.sectionCache);
+      const { posting, sheet, cache } = rendered.output;
+      state = { ...outcome.state, posting, sheet, sectionCache: cache };
+      usage.push(...rendered.usage);
+    } else {
+      state = outcome.state;
+    }
     const user = input.kind === "message" ? input.text : input.label;
     turns.push({ user, agent: [outcome.message.text, ...outcome.message.questions].join("\n"), asked: state.planner.askedFields });
     input = nextInput(script, state, answered);

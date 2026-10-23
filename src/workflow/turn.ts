@@ -10,16 +10,15 @@ const Context = z.custom<TurnContext>();
 /**
  * One workflow run per user message: it runs one turn and ends. No suspend/resume:
  * the conversation state lives in our tables and is passed in and out.
+ * The posting is rendered afterwards (src/server/render-service.ts), so the reply does not wait for it.
  */
 export function createTurnWorkflow(deps: TurnDeps) {
   const steps = createTurnSteps(deps);
   return createWorkflow({ id: "jd-turn", inputSchema: Context, outputSchema: Context })
-    .then(steps.guard)
     .then(steps.quickReply)
     .then(steps.understand)
     .then(steps.merge)
     .then(steps.plan)
-    .then(steps.render)
     .then(steps.compose)
     .commit();
 }
@@ -54,6 +53,7 @@ export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: S
     suggestedRole: null,
     plan: null,
     message: null,
+    blocked: false,
   };
   const run = await workflow.createRun();
   const result = await run.start({ inputData: initial });
@@ -61,5 +61,6 @@ export async function runTurn(workflow: TurnWorkflow, input: TurnInput, state: S
     const cause = result.status === "failed" ? result.error : result.status;
     throw new TurnFailedError(completedUsage(result.steps), { cause });
   }
-  return { state: result.result.state, message: result.result.message, usage: result.result.usage };
+  const { message, usage, blocked } = result.result;
+  return { state: result.result.state, message, usage, blocked };
 }

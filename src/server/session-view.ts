@@ -9,6 +9,11 @@ function sheetOf(state: SessionState): SessionView["sheet"] {
   return state.posting.sections.length > 0 ? buildSheet(state.draft) : null;
 }
 
-export function toSessionView(sessionId: string, state: SessionState, transcript: TranscriptEntry[]): SessionView {
-  return { sessionId, transcript, checklist: buildChecklist(state.draft), posting: state.posting, sheet: sheetOf(state) };
+export function toSessionView(
+  sessionId: string,
+  state: SessionState,
+  transcript: TranscriptEntry[],
+  postingPending: boolean,
+): SessionView {
+  return { sessionId, transcript, checklist: buildChecklist(state.draft), posting: state.posting, sheet: sheetOf(state), postingPending };
 }

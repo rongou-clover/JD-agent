@@ -50,9 +50,9 @@ export type FakeOptions = {
   extraction?: ExtractorOutput;
 };
 
-/** Fake agents and renderer; `calls` records which ones ran. */
+/** Fake agents; `calls` records which ones ran. */
 export function fakeDeps(options: FakeOptions = {}) {
-  const calls = { guard: 0, extract: 0, render: 0 };
+  const calls = { guard: 0, extract: 0 };
   let replyId = 0;
   const deps: TurnDeps = {
     checkMessage: async () => {
@@ -62,10 +62,6 @@ export function fakeDeps(options: FakeOptions = {}) {
     extract: async () => {
       calls.extract++;
       return { output: options.extraction ?? extraction(), usage: [{ model: FAST, inputTokens: 10, outputTokens: 5 }] };
-    },
-    render: async (input, cache) => {
-      calls.render++;
-      return fakeRender(input, cache);
     },
     guardModel: () => FAST,
     newReplyId: () => `r${++replyId}`,

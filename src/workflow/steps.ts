@@ -22,19 +22,6 @@ export function guardUsage(model: string, message: string): Usage {
 }
 
 export function createTurnSteps(deps: TurnDeps) {
-  const guard = createStep({
-    id: "guard",
-    ...io,
-    execute: async ({ inputData: ctx, bail }) => {
-      if (ctx.input.kind !== "message") return ctx;
-      const usage = [...ctx.usage, guardUsage(deps.guardModel(), ctx.input.text)];
-      const verdict = await deps.checkMessage(ctx.input.text);
-      if (verdict.allowed) return { ...ctx, usage };
-      const state = { ...ctx.state, quickReplies: [] };
-      return bail({ ...ctx, usage, state, message: { text: COPY.blocked, questions: [], quickReplies: [] } });
-    },
-  });
-
   const quickReply = createStep({
     id: "quick-reply",
     ...io,
@@ -45,19 +32,31 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  /** The job title is picked in Home: only the extractor reads the message. */
+  /**
+   * The job title is picked in Home: guard and extractor read the message in parallel.
+   * A blocked message gets the fixed reply; the tokens of the discarded extraction still count.
+   */
   const understand = createStep({
     id: "understand",
     ...io,
-    execute: async ({ inputData: ctx }) => {
+    execute: async ({ inputData: ctx, bail }) => {
       if (ctx.input.kind !== "message") return ctx;
-      const extraction = await deps.extract({
-        message: ctx.input.text,
-        draft: ctx.state.draft,
-        askedFields: ctx.state.planner.askedFields,
-        lastAskFields: repeatedAsks(ctx.state.planner, ctx.state.draft),
-      });
-      return { ...ctx, extraction: extraction.output, usage: [...ctx.usage, ...extraction.usage] };
+      const message = ctx.input.text;
+      const [verdict, extraction] = await Promise.all([
+        deps.checkMessage(message),
+        deps.extract({
+          message,
+          draft: ctx.state.draft,
+          askedFields: ctx.state.planner.askedFields,
+          lastAskFields: repeatedAsks(ctx.state.planner, ctx.state.draft),
+        }),
+      ]);
+      const usage = [...ctx.usage, guardUsage(deps.guardModel(), message), ...extraction.usage];
+      if (!verdict.allowed) {
+        const state = { ...ctx.state, quickReplies: [] };
+        return bail({ ...ctx, usage, state, blocked: true, message: { text: COPY.blocked, questions: [], quickReplies: [] } });
+      }
+      return { ...ctx, extraction: extraction.output, usage };
     },
   });
 
@@ -67,17 +66,6 @@ export function createTurnSteps(deps: TurnDeps) {
     id: "plan",
     ...io,
     execute: async ({ inputData: ctx }) => ({ ...ctx, plan: planNext(ctx.state.draft, ctx.state.planner) }),
-  });
-
-  const render = createStep({
-    id: "render",
-    ...io,
-    execute: async ({ inputData: ctx }) => {
-      const { draft, forcedWordings, sectionCache } = ctx.state;
-      const result = await deps.render({ draft, forcedWordings }, sectionCache);
-      const { posting, sheet, cache } = result.output;
-      return { ...ctx, state: { ...ctx.state, posting, sheet, sectionCache: cache }, usage: [...ctx.usage, ...result.usage] };
-    },
   });
 
   const compose = createStep({
@@ -90,5 +78,5 @@ export function createTurnSteps(deps: TurnDeps) {
     },
   });
 
-  return { guard, quickReply, understand, merge, plan, render, compose };
+  return { quickReply, understand, merge, plan, compose };
 }
