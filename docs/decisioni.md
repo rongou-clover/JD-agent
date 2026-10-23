@@ -38,6 +38,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-22 · Validatore anti-discriminazione scritto ma spento (flag in codice): non ancora affidabile. Per ora la regola resta solo nei prompt degli agent.
 - 2026-10-22 · Golden dataset completato con 10 casi fittizi (uno per famiglia più casi limite), scritti dall'agent e rivisti da Rongou.
 - 2026-10-22 · Test end-to-end con Playwright, con screenshot e video per i test visivi.
+- 2026-10-23 · Guard anti prompt injection: PromptInjectionDetector di Mastra con il modello veloce, una volta per messaggio prima degli agent. Blocca sopra 0,8 e blocca anche se il controllo fallisce. Nessun altro guardrail basato sul modello: l'output del renderer si controlla in codice.
 
 ## Esperienza utente
 - 2026-10-22 · Home: sotto il titolo, un breve paragrafo che dice cosa serve all'agent per scrivere la JD.
@@ -46,6 +47,7 @@ Registro delle decisioni di progetto. Una riga per decisione, la più recente in
 - 2026-10-22 · Il testo della JD non si modifica a mano: l'utente seleziona un passaggio e chiede in chat cosa cambiare, e l'agent lo riscrive.
 - 2026-10-22 · Home e chat stanno ciascuna in una sola schermata, senza scorrimento, anche dentro chat e anteprima.
 - 2026-10-22 · Template dell'output basato sull'analisi di 42 annunci GTM reali (vedi Template output JD e Corpus annunci).
+- 2026-10-23 · Più ruoli in una richiesta: l'agent non chiede quale sia il principale, lo propone lui (quello che copre le attività più importanti) e nomina le attività chiave degli altri ruoli, che restano nella JD. Se nessun ruolo prevale avvisa che il profilo è difficile da trovare, e la scheda interna lo segnala.
 
 ## Fonti
 - Documento di planning: "Agent Job Description — Planning" (tab Golden dataset e Catalogo job title GTM).

@@ -6,18 +6,17 @@ import { loadGoldenCases } from "./golden";
 const cases = loadGoldenCases();
 
 describe("golden dataset", () => {
-  it("has 10 cases with unique ids", () => {
-    expect(cases).toHaveLength(10);
+  it("has 11 cases with unique ids", () => {
+    expect(cases).toHaveLength(11);
     expect(new Set(cases.map((c) => c.id)).size).toBe(cases.length);
   });
 
   it.each(cases.map((c) => [c.id, c] as const))("%s is consistent with the catalog and schema", (_, c) => {
     const { diagnosis, fields, absent } = c.expected;
-    const ids = diagnosis.kind === "single" ? [diagnosis.jobTitleId] : diagnosis.kind === "multiple" ? diagnosis.candidates : [];
-    for (const id of ids) expect(findJobTitle(id), id).toBeDefined();
-
-    if (diagnosis.kind !== "outOfCatalog") {
-      const main = findJobTitle(ids[0] ?? "");
+    if (diagnosis.kind === "catalog") {
+      for (const id of diagnosis.otherRoles) expect(findJobTitle(id), id).toBeDefined();
+      const main = findJobTitle(diagnosis.jobTitleId);
+      expect(main, diagnosis.jobTitleId).toBeDefined();
       for (const seniority of diagnosis.seniority) expect(main?.seniority).toContain(seniority);
     }
 

@@ -14,7 +14,8 @@ Come l'agent chiede ogni voce dello schema. Basato sulle domande dell'onboarding
 ## Primo messaggio: diagnosi (voci 4 e 5)
 Non è una domanda: l'agent legge il primo testo e propone.
 - Un ruolo: "Stai cercando un **[Job title]**, livello **[Seniority]**. Va bene?"
-- Più ruoli: "Stai descrivendo più ruoli in uno: [A], [B], [C]. Quale è il principale?"
+- Attività di altri ruoli: "Stai cercando un **[Job title]**, livello **[Seniority]**. Vedo anche attività da **[B]**: le tengo come parte del ruolo. Va bene?"
+- Profilo ibrido (nessun ruolo prevale): "Stai descrivendo più ruoli in uno: [A], [B]. Profili così sono difficili da trovare: ti consiglio **[A]**, perché copre le attività più importanti. Va bene?"
 - Fuori catalogo: "Questo ruolo non è ancora nella mia libreria: scrivo comunque la JD, senza suggerimenti sulle competenze."
 - Risposte rapide: "Sì, va bene" · "È più junior" · "È più senior" · "Scegli un altro ruolo"
 - Coperta quando: l'utente conferma o sceglie.

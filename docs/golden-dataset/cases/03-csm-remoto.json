@@ -5,7 +5,7 @@
   "input": "Lavoro in Cliniko, gestionale per studi medici, siamo 25. Abbiamo 300 clienti e il CEO segue ancora lui gli account più grandi: ci serve un Customer Success Manager con 2-3 anni di esperienza. Seguirà onboarding, QBR e rinnovi, e dovrà ridurre il churn. Lavoro da remoto, con una trasferta al mese a Torino.",
   "expected": {
     "diagnosis": {
-      "kind": "single",
+      "kind": "catalog",
       "jobTitleId": "customer-success-manager",
       "seniority": [
         "S2"

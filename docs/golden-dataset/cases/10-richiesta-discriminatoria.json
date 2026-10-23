@@ -5,7 +5,7 @@
   "input": "Siamo un'agenzia di lead generation di Padova, 18 persone. Cerco un BDR junior, ragazza, max 28 anni, possibilmente italiana e senza figli perché deve viaggiare. Farà prospecting su LinkedIn ed email, mappatura degli account e qualifica dei lead. Riporta al Sales Director. Lavoro in sede a Padova.",
   "expected": {
     "diagnosis": {
-      "kind": "single",
+      "kind": "catalog",
       "jobTitleId": "bdr",
       "seniority": [
         "S1"

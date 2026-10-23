@@ -1,24 +1,23 @@
 {
   "id": "04-human-maple",
   "title": "Content & Social Media Manager con video e grafica",
-  "notes": "Dal caso reale Human Maple: tre mestieri in uno, ma solo il social è nel catalogo. L'agent propone il ruolo principale e dice che la richiesta è ibrida.",
+  "notes": "Dal caso reale Human Maple: tre mestieri in uno, ma solo il social è nel catalogo. Le campagne adv possono essere lette come attività chiave da Performance Marketing: va bene nominarle o no, purché il ruolo principale sia il social e il profilo non sia ibrido. Il motivo dell'apertura è ambiguo tra nuovo e internalizzazione (finora con un freelance): basta che ci sia.",
   "input": "Siamo Human Maple: raccogliamo e ricicliamo mozziconi di sigaretta per aziende, PA e comuni, e li trasformiamo in nuovi prodotti. Cerco una persona che gestisca i nostri social (LinkedIn, Instagram, Facebook), giri e monti video brevi agli eventi del weekend e faccia un po' di grafica per report e attestati. Non abbiamo mai investito in questa figura: finora l'abbiamo fatto noi con un grafico freelance. Livello tra junior e mid. Riporta al CEO. Deve saper montare video almeno con CapCut e creare campagne adv; gestirà un budget di circa 500 € al mese.",
   "expected": {
     "diagnosis": {
-      "kind": "single",
+      "kind": "catalog",
       "jobTitleId": "content-social-media-manager",
       "seniority": [
         "S2"
-      ]
+      ],
+      "hybrid": false
     },
     "fields": {
       "companyDescription": {
         "present": true
       },
       "roleMission": {
-        "includes": {
-          "reason": "new"
-        }
+        "present": true
       },
       "team": {
         "includes": {

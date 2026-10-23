@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
+import type { Diagnosis } from "@/domain/diagnosis";
 import { emptyDraft } from "@/domain/draft";
 import { withField } from "@/domain/testing";
-import type { GoldenCase } from "./golden";
-import { scoreDiagnosis, scoreExtraction, scoreRedundantQuestions } from "./scorers";
+import type { ExpectedDiagnosis, GoldenCase } from "./golden";
+import { scoreDiagnosis, scoreExtraction, scoreGuard, scoreRedundantQuestions } from "./scorers";
 
 const expected: GoldenCase["expected"] = {
-  diagnosis: { kind: "single", jobTitleId: "sdr", seniority: ["S1"] },
+  blocked: false,
+  diagnosis: { kind: "catalog", jobTitleId: "sdr", seniority: ["S1"], otherRoles: [] },
   fields: {
     companyDescription: { present: true },
     team: { includes: { reportsTo: "head of sales", size: 5 } },
@@ -15,25 +17,26 @@ const expected: GoldenCase["expected"] = {
   mustNotContain: ["ragazza"],
 };
 
+type CatalogDiagnosis = Extract<Diagnosis, { kind: "catalog" }>;
+const sdr: CatalogDiagnosis = { kind: "catalog", jobTitleId: "sdr", seniority: "S1", otherRoles: [], hybrid: false };
+
 describe("scoreDiagnosis", () => {
   it("passes on the right role and seniority", () => {
-    expect(scoreDiagnosis(expected.diagnosis, { kind: "single", jobTitleId: "sdr", seniority: "S1" })).toEqual({
-      score: 1,
-      failures: [],
-    });
+    expect(scoreDiagnosis(expected.diagnosis, sdr)).toEqual({ score: 1, failures: [] });
   });
 
   it("fails on a wrong kind or seniority", () => {
     expect(scoreDiagnosis(expected.diagnosis, { kind: "outOfCatalog", title: "SDR" }).score).toBe(0);
-    expect(scoreDiagnosis(expected.diagnosis, { kind: "single", jobTitleId: "sdr", seniority: "S2" }).score).toBe(0.5);
+    expect(scoreDiagnosis(expected.diagnosis, { ...sdr, seniority: "S2" }).score).toBe(0.5);
   });
 
-  it("checks the main role first for multiple roles", () => {
-    const result = scoreDiagnosis(
-      { kind: "multiple", candidates: ["account-executive", "sdr"], seniority: ["S2"] },
-      { kind: "multiple", candidates: ["sdr", "account-executive"], seniority: "S2" },
-    );
-    expect(result.failures).toEqual(["main role: got sdr"]);
+  it("requires the expected other roles but not extra ones", () => {
+    const wanted: ExpectedDiagnosis = { kind: "catalog", jobTitleId: "account-executive", seniority: ["S2"], otherRoles: ["sdr"], hybrid: false };
+    const actual: CatalogDiagnosis = { ...sdr, jobTitleId: "account-executive", seniority: "S2" };
+    expect(scoreDiagnosis(wanted, actual).failures).toEqual(["other roles missing: sdr"]);
+    const named = { ...actual, otherRoles: [{ jobTitleId: "sdr", activities: ["Prospecting"] }, { jobTitleId: "bdr", activities: ["Cold call"] }] };
+    expect(scoreDiagnosis(wanted, named).score).toBe(1);
+    expect(scoreDiagnosis(wanted, { ...named, hybrid: true }).failures).toEqual(["hybrid: expected false"]);
   });
 });
 
@@ -51,11 +54,25 @@ describe("scoreExtraction", () => {
 });
 
 describe("scoreRedundantQuestions", () => {
-  it("flags questions on fields the input covered", () => {
-    expect(scoreRedundantQuestions(expected, { kind: "required", fields: ["team", "location"] })).toEqual({
+  it("flags asking from scratch for a field the input covered", () => {
+    const draft = emptyDraft();
+    expect(scoreRedundantQuestions(expected, draft, { kind: "required", fields: ["team", "location"] })).toEqual({
       score: 0.5,
-      failures: ["asked covered field team"],
+      failures: ["asked covered field team from scratch"],
     });
-    expect(scoreRedundantQuestions(expected, { kind: "diagnosis" }).score).toBe(1);
+    expect(scoreRedundantQuestions(expected, draft, { kind: "diagnosis" }).score).toBe(1);
+  });
+
+  it("allows a follow-up on a partly filled field", () => {
+    const draft = withField(emptyDraft(), "team", { size: null, reportsTo: "CEO", departments: [] });
+    expect(scoreRedundantQuestions(expected, draft, { kind: "required", fields: ["team"] }).score).toBe(1);
+  });
+});
+
+describe("scoreGuard", () => {
+  it("passes when the guard blocks exactly the expected messages", () => {
+    expect(scoreGuard(true, { allowed: false, reason: "injection" }).score).toBe(1);
+    expect(scoreGuard(false, { allowed: true }).score).toBe(1);
+    expect(scoreGuard(false, { allowed: false, reason: "injection" }).failures).toEqual(["expected allowed, got blocked: injection"]);
   });
 });

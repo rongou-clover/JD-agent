@@ -12,9 +12,11 @@
     "test:e2e": "playwright test",
     "db:up": "docker compose up -d db",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "eval": "vitest run --config vitest.evals.config.mts"
   },
   "dependencies": {
+    "@mastra/core": "^1.79.0",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "postgres": "^3.4.9",

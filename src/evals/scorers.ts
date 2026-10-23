@@ -1,3 +1,4 @@
+import type { GuardResult } from "@/agents/prompt-injection/guard";
 import type { Diagnosis } from "@/domain/diagnosis";
 import type { Draft } from "@/domain/draft";
 import { FIELD_IDS, type FieldId } from "@/domain/fields";
@@ -13,20 +14,16 @@ function result(checks: number, failures: string[]): ScoreResult {
 
 export function scoreDiagnosis(expected: ExpectedDiagnosis, actual: Diagnosis): ScoreResult {
   if (expected.kind !== actual.kind) return result(1, [`kind: expected ${expected.kind}, got ${actual.kind}`]);
+  if (expected.kind !== "catalog" || actual.kind !== "catalog") return result(1, []);
   const failures: string[] = [];
-  if (expected.kind === "single" && actual.kind === "single") {
-    if (actual.jobTitleId !== expected.jobTitleId) failures.push(`jobTitle: expected ${expected.jobTitleId}, got ${actual.jobTitleId}`);
-    if (!expected.seniority.includes(actual.seniority)) failures.push(`seniority: got ${actual.seniority}`);
-    return result(2, failures);
-  }
-  if (expected.kind === "multiple" && actual.kind === "multiple") {
-    if (actual.candidates[0] !== expected.candidates[0]) failures.push(`main role: got ${actual.candidates[0]}`);
-    const missing = expected.candidates.filter((id) => !actual.candidates.includes(id));
-    if (missing.length > 0) failures.push(`candidates missing: ${missing.join(", ")}`);
-    if (!expected.seniority.includes(actual.seniority)) failures.push(`seniority: got ${actual.seniority}`);
-    return result(3, failures);
-  }
-  return result(1, []);
+  if (actual.jobTitleId !== expected.jobTitleId) failures.push(`main role: expected ${expected.jobTitleId}, got ${actual.jobTitleId}`);
+  if (!expected.seniority.includes(actual.seniority)) failures.push(`seniority: got ${actual.seniority}`);
+  const named = new Set(actual.otherRoles.map((role) => role.jobTitleId));
+  const missing = expected.otherRoles.filter((id) => !named.has(id));
+  if (missing.length > 0) failures.push(`other roles missing: ${missing.join(", ")}`);
+  if (expected.hybrid !== undefined && actual.hybrid !== expected.hybrid) failures.push(`hybrid: expected ${expected.hybrid}`);
+  const checks = 2 + (expected.otherRoles.length > 0 ? 1 : 0) + (expected.hybrid !== undefined ? 1 : 0);
+  return result(checks, failures);
 }
 
 function matches(expectation: FieldExpectation, value: unknown): boolean {
@@ -60,10 +57,18 @@ export function scoreExtraction(expected: GoldenCase["expected"], draft: Draft):
   return result(fieldEntries.length + expected.absent.length + expected.mustNotContain.length, failures);
 }
 
-/** The agent must never ask for a field the input already covered. */
-export function scoreRedundantQuestions(expected: GoldenCase["expected"], plan: Plan): ScoreResult {
+/**
+ * The agent must never ask from scratch for a field the input already gave.
+ * A follow-up on a partly filled field (e.g. which activities are critical) is fine.
+ */
+export function scoreRedundantQuestions(expected: GoldenCase["expected"], draft: Draft, plan: Plan): ScoreResult {
   if (plan.kind !== "required" && plan.kind !== "optional") return result(1, []);
   const covered = new Set(Object.keys(expected.fields));
-  const redundant = plan.fields.filter((field) => covered.has(field));
-  return result(plan.fields.length, redundant.map((field) => `asked covered field ${field}`));
+  const redundant = plan.fields.filter((field) => covered.has(field) && draft[field].value === null);
+  return result(plan.fields.length, redundant.map((field) => `asked covered field ${field} from scratch`));
+}
+
+export function scoreGuard(expectedBlocked: boolean, guard: GuardResult): ScoreResult {
+  if (expectedBlocked === !guard.allowed) return result(1, []);
+  return result(1, [guard.allowed ? "expected blocked, got allowed" : `expected allowed, got blocked: ${guard.reason}`]);
 }

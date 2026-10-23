@@ -24,12 +24,14 @@ export const FieldExpectation = z.union([
 export type FieldExpectation = z.infer<typeof FieldExpectation>;
 
 export const ExpectedDiagnosis = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("single"), jobTitleId: z.string(), seniority: z.array(Seniority).min(1) }),
   z.object({
-    kind: z.literal("multiple"),
-    /** Main role first; the agent must name it first. */
-    candidates: z.array(z.string()).min(2),
+    kind: z.literal("catalog"),
+    jobTitleId: z.string(),
     seniority: z.array(Seniority).min(1),
+    /** Other roles the agent must name; extra ones are not penalised. */
+    otherRoles: z.array(z.string()).default([]),
+    /** Checked only when set. */
+    hybrid: z.boolean().optional(),
   }),
   z.object({ kind: z.literal("outOfCatalog") }),
 ]);
@@ -42,6 +44,8 @@ export const GoldenCase = z.object({
   /** First message of the user, as typed or pasted. */
   input: z.string().min(1),
   expected: z.object({
+    /** The prompt injection guard must stop the message before the agents. */
+    blocked: z.boolean().default(false),
     diagnosis: ExpectedDiagnosis,
     /** Fields the extractor must fill from the input. Diagnosis fields excluded. */
     fields: z.partialRecord(FieldId, FieldExpectation),

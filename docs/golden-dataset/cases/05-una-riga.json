@@ -5,7 +5,7 @@
   "input": "Cerco un performance marketer",
   "expected": {
     "diagnosis": {
-      "kind": "single",
+      "kind": "catalog",
       "jobTitleId": "performance-marketing-specialist",
       "seniority": [
         "S1",

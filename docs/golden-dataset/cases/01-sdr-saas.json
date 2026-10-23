@@ -5,7 +5,7 @@
   "input": "Siamo Fattura Facile, un SaaS di fatturazione elettronica per piccole imprese, 40 persone a Milano. Cerchiamo il nostro primo SDR: oggi i lead in uscita li gestiscono direttamente gli Account Executive e non hanno tempo. Farà cold call e sequenze email verso studi commercialisti, qualificherà i lead e fisserà demo per gli AE; le cose più importanti sono le chiamate e la qualifica. Entra nel team sales di 5 persone e riporta all'Head of Sales. Ibrido, 3 giorni in ufficio a Milano. Contratto a tempo indeterminato, CCNL Commercio. Va bene anche alla prima esperienza.",
   "expected": {
     "diagnosis": {
-      "kind": "single",
+      "kind": "catalog",
       "jobTitleId": "sdr",
       "seniority": [
         "S1"
