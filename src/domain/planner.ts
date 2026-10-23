@@ -3,10 +3,6 @@ import type { Draft } from "./draft";
 import { FIELDS, REQUIRED_FIELD_IDS, type FieldId } from "./fields";
 import { blockingFields, validateDraft } from "./validation";
 
-export const MAX_QUESTIONS_PER_MESSAGE = 2;
-/** Two questions share a message only if their priorities differ by at most this. */
-const MAX_PRIORITY_GAP = 1;
-
 /** Order of the single "anything else?" message, as in docs/domande.md. */
 export const OPTIONAL_ASK_ORDER = [
   "salary",
@@ -43,12 +39,9 @@ export function planNext(draft: Draft, state: PlannerState): Plan {
   const missing = missingRequiredFields(draft);
   if (missing.includes("jobTitle")) return { kind: "diagnosis" };
 
-  const [first, ...rest] = missing.filter((field) => !state.skipped.includes(field));
-  if (first) {
-    const firstPriority = FIELDS[first].priority ?? Infinity;
-    const companions = rest.filter((field) => (FIELDS[field].priority ?? Infinity) - firstPriority <= MAX_PRIORITY_GAP);
-    return { kind: "required", fields: [first, ...companions].slice(0, MAX_QUESTIONS_PER_MESSAGE) };
-  }
+  // One question per message: one to pick from the quick replies, or one to write.
+  const next = missing.find((field) => !state.skipped.includes(field));
+  if (next) return { kind: "required", fields: [next] };
 
   if (!state.optionalOffered) {
     const optional = OPTIONAL_ASK_ORDER.filter((field) => draft[field].status === "missing");

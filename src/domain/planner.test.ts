@@ -30,26 +30,19 @@ describe("planNext", () => {
     expect(planNext(emptyDraft(), notOffered)).toEqual({ kind: "diagnosis" });
   });
 
-  it("asks the highest priority field first, paired with a close one", () => {
+  it("asks one field at a time, highest priority first", () => {
     const draft = without(completeDraft(), "companyDescription", "roleMission", "contract");
-    expect(planNext(draft, notOffered)).toEqual({ kind: "required", fields: ["companyDescription", "roleMission"] });
-  });
-
-  it("never pairs fields whose priorities are far apart", () => {
-    const draft = without(completeDraft(), "companyDescription", "location");
     expect(planNext(draft, notOffered)).toEqual({ kind: "required", fields: ["companyDescription"] });
   });
 
-  it("asks at most two questions", () => {
+  it("never pairs a field to write with one to pick", () => {
     const draft = without(completeDraft(), "seniority", "activities", "team", "sixMonthResults");
-    const plan = planNext(draft, notOffered);
-    expect(plan).toEqual({ kind: "required", fields: ["seniority", "activities"] });
+    expect(planNext(draft, notOffered)).toEqual({ kind: "required", fields: ["seniority"] });
   });
 
   it("never asks a field already covered", () => {
     const draft = without(completeDraft(), "location", "contract");
-    const plan = planNext(draft, notOffered);
-    expect(plan.kind === "required" && plan.fields).toEqual(["location", "contract"]);
+    expect(planNext(draft, notOffered)).toEqual({ kind: "required", fields: ["location"] });
   });
 
   it("re-asks a field with a blocking issue", () => {

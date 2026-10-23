@@ -60,10 +60,10 @@ describe("turn workflow", () => {
     const found = extraction({ updates: { companyName: { value: "Acme", source: "user" } } });
     const result = await turn({ extraction: found }, message("Acme"), state);
     expect(result.calls.diagnose).toBe(0);
-    expect(result.message.text).toBe(COPY.updatedTwo);
-    expect(result.message.questions).toEqual(["Cosa fa la tua azienda, in due righe?", "Perché assumi adesso?"]);
-    expect(result.message.quickReplies).toHaveLength(3);
-    expect(result.state.planner.askedFields).toEqual(["companyDescription", "roleMission"]);
+    expect(result.message.text).toBe(COPY.updatedOne);
+    expect(result.message.questions).toEqual(["Cosa fa la tua azienda, in due righe?"]);
+    expect(result.message.quickReplies).toHaveLength(0);
+    expect(result.state.planner.askedFields).toEqual(["companyDescription"]);
   });
 
   it("completeAnyway: reminds what is missing without blocking", async () => {

@@ -10,7 +10,7 @@ Rules for working on JD Agent. Short answers, straight to the point.
 ## Product
 - Standalone demo, no login. GTM job titles only (`data/catalog.json`). Out of catalog → say so, still write the JD.
 - The JD draft is a typed object (`docs/schema-bozza.md`); the posting is a view of it. The user never edits the text by hand: they select a passage and ask in chat.
-- Questions follow `docs/domande.md`: max 2 per message, never ask what is already known.
+- Questions follow `docs/domande.md`: one per message, never ask what is already known.
 - Never age, gender, marital status, nationality. Equal opportunity line is fixed text.
 - UI follows `design/` (tokens, wireframe). One screen, no scroll.
 

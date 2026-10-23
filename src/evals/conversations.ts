@@ -32,7 +32,7 @@ export const CONVERSATIONS: Conversation[] = [
       offer: "Buoni pasto, formazione sulla vendita, bonus trimestrale sugli obiettivi.",
       selectionProcess: "Call conoscitiva, caso pratico, incontro con i founder; risposta entro una settimana.",
     },
-    maxTurns: 10,
+    maxTurns: 16,
   },
   {
     id: "human-maple-social",
@@ -48,6 +48,6 @@ export const CONVERSATIONS: Conversation[] = [
       location: "Milano, in presenza con eventi nel weekend.",
       contract: "Tempo determinato 12 mesi, CCNL Commercio.",
     },
-    maxTurns: 10,
+    maxTurns: 16,
   },
 ];

@@ -18,7 +18,12 @@ export function AgentTurn({ message, onQuickReply, missingCount }: Props) {
     <div className="flex max-w-[90%] flex-col gap-2.5 self-start">
       <div className="rounded-[14px_14px_14px_4px] border border-[#eef0f2] bg-surface px-3.5 py-3 text-sm leading-[1.55] whitespace-pre-line">
         <RichText text={message.text} />
-        {message.questions.length > 0 && (
+        {message.questions.length === 1 && (
+          <p className="m-0 mt-1">
+            <RichText text={message.questions[0] ?? ""} />
+          </p>
+        )}
+        {message.questions.length > 1 && (
           <ol className="m-0 mt-1 list-decimal pl-5">
             {message.questions.map((question) => (
               <li key={question}>
